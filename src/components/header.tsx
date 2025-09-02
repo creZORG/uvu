@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ const navLinks = [
   { href: "#values", label: "Values" },
   { href: "#programs", label: "Programs" },
   { href: "#impact", label: "Impact" },
+  { href: "#partners", label: "Partners" },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -55,8 +56,8 @@ export function Header() {
     )}>
       <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
         <Link href="#home" className="flex items-center gap-2 font-bold font-headline text-lg">
-          <UcnLogo className="h-8 w-8 text-primary" />
-          UCN
+          <UcnLogo className="h-10 w-auto" />
+          <span className="hidden sm:inline">Uvumbuzi Community Network</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-6">

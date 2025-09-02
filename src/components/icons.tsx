@@ -1,20 +1,15 @@
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export function UcnLogo({ className }: { className?: string }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={cn("h-6 w-6", className)}
-    >
-      <path d="M12 2L2 7l10 5 10-5-10-5z" />
-      <path d="M2 17l10 5 10-5" />
-      <path d="M2 12l10 5 10-5" />
-    </svg>
+    <div className={cn("relative", className)}>
+      <Image
+        src="https://i.postimg.cc/Lspf9mbM/Whats-App-Image-2025-09-03-at-00-46-50-8b10af69.jpg"
+        alt="Uvumbuzi Community Network Logo"
+        layout="fill"
+        objectFit="contain"
+      />
+    </div>
   );
 }

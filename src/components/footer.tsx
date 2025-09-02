@@ -9,8 +9,8 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
-              <UcnLogo className="h-8 w-8 text-primary" />
-              <span>Uvumbuzi Community Network</span>
+              <UcnLogo className="h-10 w-auto" />
+              <span className="sr-only">Uvumbuzi Community Network</span>
             </Link>
             <p className="text-muted-foreground">
               Empowering communities through digital innovation.
@@ -22,6 +22,7 @@ export function Footer() {
               <li><Link href="#about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
               <li><Link href="#programs" className="text-muted-foreground hover:text-primary">Programs</Link></li>
               <li><Link href="#impact" className="text-muted-foreground hover:text-primary">Our Impact</Link></li>
+              <li><Link href="#partners" className="text-muted-foreground hover:text-primary">Partners</Link></li>
               <li><Link href="#contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
             </ul>
           </div>

@@ -12,6 +12,17 @@ import { Footer } from "@/components/footer";
 export default function Home() {
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
   const missionVisionContent = `Vision: To empower underserved communities through inclusive access to digital innovation, sustainable development, and lifelong learning, fostering a resilient and connected society. Mission: To create inclusive platforms that promote digital literacy, environmental stewardship, and social innovation by establishing ICT hubs, supporting e-waste recycling initiatives, and equipping youth and women with practical skills for sustainable development. Our Approach: UCN works with schools, community-based organizations, and local governments to co-create solutions that respond to real challenges faced by our communities.`;
+  const partnerLogos = [
+    { src: "https://i.postimg.cc/CRSfm4qK/photo-1521790609145-bacea5940bde.avif", alt: "Partner 1" },
+    { src: "https://i.postimg.cc/Fd3cHFdP/Whats-App-Image-2025-09-03-at-00-21-08-46a2e09a.jpg", alt: "Partner 2" },
+    { src: "https://i.postimg.cc/BP3FLW2J/Whats-App-Image-2025-09-03-at-00-22-49-4862a8d6.jpg", alt: "Partner 3" },
+    { src: "https://i.postimg.cc/1gLwSVtn/Whats-App-Image-2025-09-03-at-00-26-21-be5c188b.jpg", alt: "Partner 4" },
+    { src: "https://i.postimg.cc/rddx7N82/Whats-App-Image-2025-09-03-at-00-27-46-2a5346dd.jpg", alt: "Partner 5" },
+    { src: "https://i.postimg.cc/QHbQ7M6w/Whats-App-Image-2025-09-03-at-00-29-16-dc51b28f.jpg", alt: "Partner 6" },
+    { src: "https://i.postimg.cc/w7H53NkD/Whats-App-Image-2025-09-03-at-00-32-12-1cd3f1ec.jpg", alt: "Partner 7" },
+    { src: "https://i.postimg.cc/yDp0fbCT/Whats-App-Image-2025-09-03-at-00-37-32-de020fbf.jpg", alt: "Partner 8" },
+    { src: "https://i.postimg.cc/0zyp0qFQ/whitelogo-en.png", alt: "Partner 9" },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -193,7 +204,30 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="contact" className="py-16 md:py-24">
+        <section id="partners" className="py-16 md:py-24">
+          <div className="container px-4 md:px-6">
+            <div className="text-center mb-12">
+              <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Our Partners</h2>
+              <p className="max-w-2xl mx-auto text-muted-foreground mt-4 text-lg">
+                We are proud to collaborate with these organizations to drive our mission forward.
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+              {partnerLogos.map((logo, index) => (
+                <div key={index} className="relative h-20 w-40 grayscale hover:grayscale-0 transition-all duration-300">
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="py-16 md:py-24 bg-background">
             <div className="container px-4 md:px-6">
                 <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
                     <div>
