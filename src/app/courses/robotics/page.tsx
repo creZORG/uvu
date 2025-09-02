@@ -1,5 +1,6 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function RoboticsPage() {
   return (
@@ -13,9 +14,28 @@ export default function RoboticsPage() {
                 Robotics Courses
               </h1>
               <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                More information coming soon.
+                Explore the exciting field of robotics and automation.
               </p>
             </div>
+             <Card className="max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle>Beginner's Guide to Robotics</CardTitle>
+                <CardDescription>Learn the fundamental concepts of robotics, including components, programming, and real-world applications in this introductory video.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-w-16 aspect-h-9">
+                  <iframe 
+                    src="https://www.youtube.com/embed/D_v-2vYJMvA" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="w-full h-full rounded-lg"
+                    style={{ aspectRatio: "16 / 9" }}
+                  ></iframe>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>

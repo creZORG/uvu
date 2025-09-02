@@ -1,5 +1,6 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function WebDesignPage() {
   return (
@@ -13,9 +14,28 @@ export default function WebDesignPage() {
                 Web Design Courses
               </h1>
               <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                More information coming soon.
+                Learn to create beautiful and functional websites.
               </p>
             </div>
+             <Card className="max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle>Web Design for Beginners</CardTitle>
+                <CardDescription>Get a complete overview of web design with this full course, covering everything from design principles to building your first website.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-w-16 aspect-h-9">
+                  <iframe 
+                    src="https://www.youtube.com/embed/C0S6H_4gJ2A" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="w-full h-full rounded-lg"
+                    style={{ aspectRatio: "16 / 9" }}
+                  ></iframe>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>

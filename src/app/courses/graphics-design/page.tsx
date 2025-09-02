@@ -1,5 +1,6 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function GraphicsDesignPage() {
   return (
@@ -13,9 +14,28 @@ export default function GraphicsDesignPage() {
                 Graphics Design Courses
               </h1>
               <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                More information coming soon.
+                Unleash your creativity and learn the art of visual communication.
               </p>
             </div>
+            <Card className="max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle>Graphic Design for Beginners</CardTitle>
+                <CardDescription>An excellent tutorial for aspiring designers, covering the fundamental principles and tools of graphic design.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-w-16 aspect-h-9">
+                  <iframe 
+                    src="https://www.youtube.com/embed/cimY8w9Tf2c" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="w-full h-full rounded-lg"
+                    style={{ aspectRatio: "16 / 9" }}
+                  ></iframe>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>

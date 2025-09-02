@@ -1,5 +1,6 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function CctvInstallationPage() {
   return (
@@ -13,9 +14,28 @@ export default function CctvInstallationPage() {
                 CCTV Installation Courses
               </h1>
               <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                More information coming soon.
+                Gain practical skills in security system installation.
               </p>
             </div>
+            <Card className="max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle>CCTV Installation Training</CardTitle>
+                <CardDescription>This comprehensive guide covers everything you need to know about setting up a professional CCTV system from start to finish.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-w-16 aspect-h-9">
+                  <iframe 
+                    src="https://www.youtube.com/embed/eL5g3A64a2M" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="w-full h-full rounded-lg"
+                    style={{ aspectRatio: "16 / 9" }}
+                  ></iframe>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </main>
