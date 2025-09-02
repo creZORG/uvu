@@ -17,9 +17,16 @@ import {
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/#about", label: "About" },
-  { href: "/#programs", label: "Programs" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
+];
+
+const programLinks = [
+    { href: "/programs/digital-literacy", label: "Digital Access & Literacy" },
+    { href: "/programs/environmental-stewardship", label: "Environmental Stewardship" },
+    { href: "/programs/vumbuachiqs", label: "Vumbuachiqs" },
+    { href: "/programs/youth-empowerment", label: "Youth Empowerment" },
+    { href: "/programs/women-in-tech", label: "Women in Tech" },
 ];
 
 const courseLinks = [
@@ -59,6 +66,18 @@ export function Header() {
           {link.label}
         </Link>
       ))}
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors outline-none">
+            Programs <ChevronDown className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {programLinks.map((link) => (
+            <DropdownMenuItem key={link.href} asChild>
+              <Link href={link.href}>{link.label}</Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors outline-none">
             Courses <ChevronDown className="h-4 w-4" />

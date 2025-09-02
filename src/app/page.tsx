@@ -124,26 +124,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <section id="contact" className="py-16 md:py-24 bg-background">
-            <div className="container px-4 md:px-6">
-                <div className="text-center">
-                    <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Contact Us</h2>
-                    <p className="text-muted-foreground mt-4 text-lg max-w-xl mx-auto">
-                        Have a question or want to get involved? We'd love to hear from you.
-                    </p>
-                    <div className="mt-8 space-y-4 text-lg">
-                        <p><strong>Email:</strong> info@uvumbuzicommunity.org</p>
-                        <p><strong>Phone:</strong> +254 741 626 496</p>
-                        <p><strong>Website:</strong> <a href="http://uvumbuzicommunity.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">uvumbuzicommunity.org</a></p>
-                        <p><strong>Location:</strong> Kivumbini, Nakuru, Kenya</p>
-                    </div>
-                    <Button asChild size="lg" className="mt-8">
-                        <Link href="/contact">Send us a message</Link>
-                    </Button>
-                </div>
-            </div>
-        </section>
       </main>
       <Footer />
     </div>
