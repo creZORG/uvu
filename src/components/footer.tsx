@@ -22,14 +22,14 @@ export function Footer() {
               <li><Link href="/#about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
               <li><Link href="/#programs" className="text-muted-foreground hover:text-primary">Programs</Link></li>
               <li><Link href="/gallery" className="text-muted-foreground hover:text-primary">Gallery</Link></li>
-              <li><Link href="/#contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
+              <li><Link href="/contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-headline font-semibold mb-4">Contact</h3>
             <ul className="space-y-2 text-muted-foreground">
-              <li>info@uvumbuzi.org</li>
-              <li>+254 700 000 000</li>
+              <li>info@uvumbuzicommunity.org</li>
+              <li>+254 741 626 496</li>
               <li>Kivumbini, Nakuru, Kenya</li>
             </ul>
           </div>

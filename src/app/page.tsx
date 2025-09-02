@@ -3,11 +3,9 @@
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ContactForm } from "@/components/contact-form";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, Code, Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, Stethoscope, TowerControl, TrendingUp, Users } from "lucide-react";
-import { UcnLogo } from "@/components/icons";
+import { Code, Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, TrendingUp } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -67,7 +65,7 @@ export default function Home() {
                 <Link href="#programs">Our Programs</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 hover:text-white">
-                <Link href="#contact">Contact Us</Link>
+                <Link href="/contact">Contact Us</Link>
               </Button>
             </div>
           </div>
@@ -156,26 +154,20 @@ export default function Home() {
 
         <section id="contact" className="py-16 md:py-24 bg-background">
             <div className="container px-4 md:px-6">
-                <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
-                    <div>
-                        <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Contact Us</h2>
-                        <p className="text-muted-foreground mt-4 text-lg">
-                            Have a question or want to get involved? We'd love to hear from you.
-                        </p>
-                        <div className="mt-8 space-y-4 text-lg">
-                            <p><strong>Email:</strong> info@uvumbuzi.org</p>
-                            <p><strong>Phone:</strong> +254 700 000 000</p>
-                            <p><strong>Location:</strong> Kivumbini, Nakuru, Kenya</p>
-                        </div>
+                <div className="text-center">
+                    <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Contact Us</h2>
+                    <p className="text-muted-foreground mt-4 text-lg max-w-xl mx-auto">
+                        Have a question or want to get involved? We'd love to hear from you.
+                    </p>
+                    <div className="mt-8 space-y-4 text-lg">
+                        <p><strong>Email:</strong> info@uvumbuzicommunity.org</p>
+                        <p><strong>Phone:</strong> +254 741 626 496</p>
+                        <p><strong>Website:</strong> <a href="http://uvumbuzicommunity.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">uvumbuzicommunity.org</a></p>
+                        <p><strong>Location:</strong> Kivumbini, Nakuru, Kenya</p>
                     </div>
-                    <Card className="p-6 sm:p-8">
-                      <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Send us a message</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ContactForm />
-                      </CardContent>
-                    </Card>
+                    <Button asChild size="lg" className="mt-8">
+                        <Link href="/contact">Send us a message</Link>
+                    </Button>
                 </div>
             </div>
         </section>
