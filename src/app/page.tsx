@@ -8,7 +8,6 @@ import Link from "next/link";
 import { BookOpen, Code, Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, Stethoscope, TowerControl, TrendingUp, Users } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
 import { Footer } from "@/components/footer";
-import { AISummary } from "@/components/ai-summary";
 
 export default function Home() {
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
@@ -18,19 +17,22 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        <section id="home" className="relative text-center py-20 md:py-32 lg:py-40 bg-primary/10">
-          <div className="container px-4 md:px-6 z-10">
+        <section id="home" className="relative text-center py-20 md:py-32 lg:py-40 text-white">
+          <div className="absolute inset-0 bg-black/50 z-0">
+             <Image src="https://i.postimg.cc/52Fq9798/photo-1521790609145-bacea5940bde.avif" alt="Community" layout="fill" objectFit="cover" className="opacity-50" />
+          </div>
+          <div className="container px-4 md:px-6 z-10 relative">
             <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-4">
               Empowering Communities Through Digital Innovation
             </h1>
-            <p className="max-w-3xl mx-auto text-lg md:text-xl text-foreground/80 mb-8">
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-white/90 mb-8">
               Uvumbuzi Community Network is dedicated to creating inclusive pathways for underserved populations to participate in the digital economy and social progress.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href="#programs">Our Programs</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/5 hover:text-primary">
+              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 hover:text-white">
                 <Link href="#contact">Contact Us</Link>
               </Button>
             </div>
@@ -45,7 +47,7 @@ export default function Home() {
                 <p className="text-muted-foreground text-lg mb-6">
                   Building resilient and connected communities through technology and collaboration.
                 </p>
-                <AISummary contentToSummarize={aboutContent} />
+                <p className="text-foreground text-lg">{aboutContent}</p>
               </div>
               <div className="relative h-64 md:h-full w-full rounded-lg overflow-hidden shadow-lg">
                 <Image src="https://picsum.photos/600/500" alt="Community Meeting" layout="fill" objectFit="cover" data-ai-hint="community meeting" />
@@ -60,7 +62,7 @@ export default function Home() {
             <p className="max-w-3xl mx-auto text-muted-foreground text-lg mb-8">
               Guiding principles that drive our community initiatives.
             </p>
-            <AISummary contentToSummarize={missionVisionContent} />
+            <p className="text-foreground text-lg">{missionVisionContent}</p>
           </div>
         </section>
 
