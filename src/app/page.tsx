@@ -2,25 +2,57 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContactForm } from "@/components/contact-form";
-import { AnimatedCounter } from "@/components/animated-counter";
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Code, Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, Stethoscope, TowerControl, TrendingUp, Users } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
 import { Footer } from "@/components/footer";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function Home() {
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
   const missionVisionContent = `Vision: To empower underserved communities through inclusive access to digital innovation, sustainable development, and lifelong learning, fostering a resilient and connected society. Mission: To create inclusive platforms that promote digital literacy, environmental stewardship, and social innovation by establishing ICT hubs, supporting e-waste recycling initiatives, and equipping youth and women with practical skills for sustainable development. Our Approach: UCN works with schools, community-based organizations, and local governments to co-create solutions that respond to real challenges faced by our communities.`;
   
+  const heroImages = [
+    "https://i.postimg.cc/52Fq9798/photo-1521790609145-bacea5940bde.avif",
+    "https://i.postimg.cc/jLFzc1b4/IMG-20250902-WA0004.jpg",
+    "https://i.postimg.cc/NK2RzxGq/IMG-20250902-WA0005.jpg",
+  ];
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
         <section id="home" className="relative text-center py-20 md:py-32 lg:py-40 text-white">
-          <div className="absolute inset-0 bg-black/50 z-0">
-             <Image src="https://i.postimg.cc/52Fq9798/photo-1521790609145-bacea5940bde.avif" alt="Community" fill objectFit="cover" className="opacity-50" />
-          </div>
+          <Carousel
+            className="absolute inset-0 z-0"
+            plugins={[
+              Autoplay({
+                delay: 5000,
+                stopOnInteraction: false,
+              }),
+            ]}
+            opts={{
+              loop: true,
+            }}
+          >
+            <CarouselContent>
+              {heroImages.map((src, index) => (
+                <CarouselItem key={index}>
+                  <div className="absolute inset-0 bg-black/50">
+                    <Image
+                      src={src}
+                      alt={`Community image ${index + 1}`}
+                      fill
+                      objectFit="cover"
+                      className="opacity-50"
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
           <div className="container px-4 md:px-6 z-10 relative">
             <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-4">
               Empowering Communities Through Digital Innovation
