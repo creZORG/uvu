@@ -9,14 +9,13 @@ import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#mission", label: "Mission" },
-  { href: "#values", label: "Values" },
-  { href: "#programs", label: "Programs" },
-  { href: "#impact", label: "Impact" },
-  { href: "#partners", label: "Partners" },
-  { href: "#contact", label: "Contact" },
+  { href: "/", label: "Home" },
+  { href: "/#about", label: "About" },
+  { href: "/#programs", label: "Programs" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/#impact", label: "Impact" },
+  { href: "/#partners", label: "Partners" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export function Header() {
@@ -55,7 +54,7 @@ export function Header() {
       scrolled ? "bg-background/80 backdrop-blur-sm shadow-md" : "bg-transparent"
     )}>
       <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
-        <Link href="#home" className="flex items-center gap-2 font-bold font-headline text-lg">
+        <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
           <UcnLogo className="h-10 w-auto" />
           <span className="hidden sm:inline">Uvumbuzi Community Network</span>
         </Link>

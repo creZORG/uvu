@@ -30,7 +30,7 @@ export default function Home() {
       <main className="flex-1">
         <section id="home" className="relative text-center py-20 md:py-32 lg:py-40 text-white">
           <div className="absolute inset-0 bg-black/50 z-0">
-             <Image src="https://i.postimg.cc/52Fq9798/photo-1521790609145-bacea5940bde.avif" alt="Community" layout="fill" objectFit="cover" className="opacity-50" />
+             <Image src="https://i.postimg.cc/52Fq9798/photo-1521790609145-bacea5940bde.avif" alt="Community" fill objectFit="cover" className="opacity-50" />
           </div>
           <div className="container px-4 md:px-6 z-10 relative">
             <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-4">
@@ -61,7 +61,7 @@ export default function Home() {
                 <p className="text-foreground text-lg">{aboutContent}</p>
               </div>
               <div className="relative h-64 md:h-full w-full rounded-lg overflow-hidden shadow-lg">
-                <Image src="https://picsum.photos/600/500" alt="Community Meeting" layout="fill" objectFit="cover" data-ai-hint="community meeting" />
+                <Image src="https://picsum.photos/600/500" alt="Community Meeting" fill objectFit="cover" data-ai-hint="community meeting" />
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function Home() {
                 <Card key={item.title} className="overflow-hidden group">
                   <CardHeader className="p-0">
                     <div className="relative h-48 w-full">
-                       <Image src={item.image} alt={item.title} layout="fill" objectFit="cover" data-ai-hint={item.hint} />
+                       <Image src={item.image} alt={item.title} fill objectFit="cover" data-ai-hint={item.hint} />
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
@@ -218,7 +218,7 @@ export default function Home() {
                   <Image
                     src={logo.src}
                     alt={logo.alt}
-                    layout="fill"
+                    fill
                     objectFit="contain"
                   />
                 </div>
