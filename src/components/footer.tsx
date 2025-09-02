@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
-              <UcnLogo className="h-10 w-auto" />
+              <UcnLogo className="h-10 w-10" />
               <span className="sr-only">Uvumbuzi Community Network</span>
             </Link>
             <p className="text-muted-foreground">

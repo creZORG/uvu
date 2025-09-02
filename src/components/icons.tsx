@@ -7,7 +7,7 @@ export function UcnLogo({ className }: { className?: string }) {
       <Image
         src="https://i.postimg.cc/Lspf9mbM/Whats-App-Image-2025-09-03-at-00-46-50-8b10af69.jpg"
         alt="Uvumbuzi Community Network Logo"
-        layout="fill"
+        fill
         objectFit="contain"
       />
     </div>
