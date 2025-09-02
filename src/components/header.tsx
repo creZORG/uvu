@@ -107,7 +107,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-6">
             <NavLinks />
             <Button asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90">
-                <Link href="#">Donate</Link>
+                <Link href="/donate">Donate</Link>
             </Button>
         </div>
 
@@ -122,7 +122,7 @@ export function Header() {
               <div className="flex flex-col items-center justify-center h-full gap-8">
                 <NavLinks inSheet />
                 <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4">
-                  <Link href="#" onClick={() => setSheetOpen(false)}>Donate</Link>
+                  <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
                 </Button>
               </div>
             </SheetContent>
