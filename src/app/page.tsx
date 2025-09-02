@@ -12,18 +12,7 @@ import { Footer } from "@/components/footer";
 export default function Home() {
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
   const missionVisionContent = `Vision: To empower underserved communities through inclusive access to digital innovation, sustainable development, and lifelong learning, fostering a resilient and connected society. Mission: To create inclusive platforms that promote digital literacy, environmental stewardship, and social innovation by establishing ICT hubs, supporting e-waste recycling initiatives, and equipping youth and women with practical skills for sustainable development. Our Approach: UCN works with schools, community-based organizations, and local governments to co-create solutions that respond to real challenges faced by our communities.`;
-  const partnerLogos = [
-    { src: "https://i.postimg.cc/CRSfm4qK/photo-1521790609145-bacea5940bde.avif", alt: "Partner 1" },
-    { src: "https://i.postimg.cc/Fd3cHFdP/Whats-App-Image-2025-09-03-at-00-21-08-46a2e09a.jpg", alt: "Partner 2" },
-    { src: "https://i.postimg.cc/BP3FLW2J/Whats-App-Image-2025-09-03-at-00-22-49-4862a8d6.jpg", alt: "Partner 3" },
-    { src: "https://i.postimg.cc/1gLwSVtn/Whats-App-Image-2025-09-03-at-00-26-21-be5c188b.jpg", alt: "Partner 4" },
-    { src: "https://i.postimg.cc/rddx7N82/Whats-App-Image-2025-09-03-at-00-27-46-2a5346dd.jpg", alt: "Partner 5" },
-    { src: "https://i.postimg.cc/QHbQ7M6w/Whats-App-Image-2025-09-03-at-00-29-16-dc51b28f.jpg", alt: "Partner 6" },
-    { src: "https://i.postimg.cc/w7H53NkD/Whats-App-Image-2025-09-03-at-00-32-12-1cd3f1ec.jpg", alt: "Partner 7" },
-    { src: "https://i.postimg.cc/yDp0fbCT/Whats-App-Image-2025-09-03-at-00-37-32-de020fbf.jpg", alt: "Partner 8" },
-    { src: "https://i.postimg.cc/0zyp0qFQ/whitelogo-en.png", alt: "Partner 9" },
-  ];
-
+  
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -102,37 +91,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <section id="impact-in-action" className="py-16 md:py-24 bg-primary/10">
-          <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Impact in Action</h2>
-              <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                See how our initiatives are transforming communities across Kenya.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8">
-               {[
-                { image: "https://picsum.photos/600/400?random=1", hint: "internet tower", icon: <TowerControl className="size-6" />, title: "Internet Connectivity", description: "Our base stations provide affordable internet access to schools, health centers, and communities, bridging the digital divide in underserved areas." },
-                { image: "https://picsum.photos/600/400?random=2", hint: "students computers", icon: <BookOpen className="size-6" />, title: "Digital Education", description: "Students in our connected schools gain digital literacy skills and access educational resources that were previously unavailable." },
-                { image: "https://picsum.photos/600/400?random=3", hint: "telemedicine doctor", icon: <Stethoscope className="size-6" />, title: "Telemedicine Services", description: "Health centers connected to our network can access telemedicine services, improving healthcare delivery in remote communities." },
-               ].map(item => (
-                <Card key={item.title} className="overflow-hidden group">
-                  <CardHeader className="p-0">
-                    <div className="relative h-48 w-full">
-                       <Image src={item.image} alt={item.title} fill objectFit="cover" data-ai-hint={item.hint} />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <CardTitle className="font-headline text-2xl mb-2 flex items-center gap-2">{item.icon} {item.title}</CardTitle>
-                    <CardDescription>{item.description}</CardDescription>
-                    <Button variant="link" className="p-0 mt-4 text-primary">Learn More &rarr;</Button>
-                  </CardContent>
-                </Card>
-               ))}
-            </div>
-          </div>
-        </section>
         
         <section id="programs" className="py-16 md:py-24">
           <div className="container px-4 md:px-6">
@@ -158,71 +116,6 @@ export default function Home() {
                         </div>
                     </Card>
                 ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="impact" className="py-16 md:py-24 bg-primary/10">
-            <div className="container px-4 md:px-6">
-                <div className="text-center mb-12">
-                    <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Our Impact</h2>
-                    <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                        Measuring our progress in community transformation.
-                    </p>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-16">
-                    {[
-                        { value: 5000, label: "Community Members Reached", suffix: "+" },
-                        { value: 12, label: "ICT Hubs Established" },
-                        { value: 25, label: "E-Waste Initiatives", suffix: "+" },
-                        { value: 1500, label: "Youth Trained", suffix: "+" },
-                    ].map(stat => (
-                        <div key={stat.label}>
-                            <div className="font-headline text-4xl md:text-5xl font-bold text-primary">
-                                <AnimatedCounter value={stat.value} />{stat.suffix}
-                            </div>
-                            <p className="text-muted-foreground mt-2">{stat.label}</p>
-                        </div>
-                    ))}
-                </div>
-                 <div className="text-center mb-12">
-                    <h3 className="font-headline text-2xl md:text-3xl font-bold tracking-tight">Key Impact Areas</h3>
-                </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {[
-                        { title: "Digital Inclusion", description: "Connecting schools, health centers, markets, and homes to affordable internet and digital resources." },
-                        { title: "Environmental Protection", description: "Promoting e-waste recycling, clean energy, and sustainable practices within communities." },
-                        { title: "Economic Empowerment", description: "Creating jobs, supporting local enterprises, and fostering entrepreneurship." },
-                        { title: "Gender Equality", description: "Empowering women and girls in leadership, technology, and decision-making spaces." },
-                    ].map(area => (
-                        <Card key={area.title} className="p-6">
-                            <CardTitle className="font-headline text-xl mb-2">{area.title}</CardTitle>
-                            <CardDescription>{area.description}</CardDescription>
-                        </Card>
-                    ))}
-                </div>
-            </div>
-        </section>
-
-        <section id="partners" className="py-16 md:py-24">
-          <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Our Partners</h2>
-              <p className="max-w-2xl mx-auto text-muted-foreground mt-4 text-lg">
-                We are proud to collaborate with these organizations to drive our mission forward.
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
-              {partnerLogos.map((logo, index) => (
-                <div key={index} className="relative h-20 w-40 grayscale hover:grayscale-0 transition-all duration-300">
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    fill
-                    objectFit="contain"
-                  />
-                </div>
-              ))}
             </div>
           </div>
         </section>
