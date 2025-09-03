@@ -107,12 +107,13 @@ export default function Home() {
             </div>
             <div className="grid md:grid-cols-2 gap-8">
                 {[
-                    { icon: <Computer className="size-10 text-primary" />, title: "Digital Access & Literacy", description: "We provide affordable internet connectivity and Wi-Fi hotspots to schools, market centers, health facilities, and households. These hotspots improve access to education, business opportunities, healthcare, and daily communication." },
-                    { icon: <Recycle className="size-10 text-primary" />, title: "Environmental Stewardship", description: "Our community e-waste recycling and awareness campaigns create green jobs for youth in recycling and renewable energy. We also establish solar-powered ICT centers for sustainable access." },
-                    { icon: <Code className="size-10 text-primary" />, title: "Vumbuachiqs - Girls in Technology", description: "Our flagship program empowering girls and young women in technology through hands-on training in coding, robotics, and digital creativity. We provide mentorship, safe learning spaces, and STEM career guidance." },
-                    { icon: <TrendingUp className="size-10 text-primary" />, title: "Youth Empowerment", description: "We equip young people with leadership, entrepreneurship, and life-skills training. Our innovation labs support youth-driven problem solving and provide access to digital tools for market and financial inclusion." },
+                    { href: "/programs/digital-literacy", icon: <Computer className="size-10 text-primary" />, title: "Digital Access & Literacy", description: "We provide affordable internet connectivity and Wi-Fi hotspots to schools, market centers, health facilities, and households. These hotspots improve access to education, business opportunities, healthcare, and daily communication." },
+                    { href: "/programs/environmental-stewardship", icon: <Recycle className="size-10 text-primary" />, title: "Environmental Stewardship", description: "Our community e-waste recycling and awareness campaigns create green jobs for youth in recycling and renewable energy. We also establish solar-powered ICT centers for sustainable access." },
+                    { href: "/programs/vumbuachiqs", icon: <Code className="size-10 text-primary" />, title: "Vumbuachiqs - Girls in Technology", description: "Our flagship program empowering girls and young women in technology through hands-on training in coding, robotics, and digital creativity. We provide mentorship, safe learning spaces, and STEM career guidance." },
+                    { href: "/programs/youth-empowerment", icon: <TrendingUp className="size-10 text-primary" />, title: "Youth Empowerment", description: "We equip young people with leadership, entrepreneurship, and life-skills training. Our innovation labs support youth-driven problem solving and provide access to digital tools for market and financial inclusion." },
                 ].map(program => (
-                    <Card key={program.title} className="flex flex-col sm:flex-row items-center p-6 gap-6 hover:shadow-lg transition-shadow">
+                  <Link href={program.href} key={program.title}>
+                    <Card className="flex flex-col sm:flex-row items-center p-6 gap-6 hover:shadow-lg transition-shadow h-full">
                         <div className="flex-shrink-0">{program.icon}</div>
                         <div>
                             <CardTitle className="font-headline text-xl mb-2">{program.title}</CardTitle>
@@ -120,6 +121,7 @@ export default function Home() {
                              <Button variant="link" className="p-0 mt-2 text-primary">Learn More &rarr;</Button>
                         </div>
                     </Card>
+                   </Link>
                 ))}
             </div>
           </div>

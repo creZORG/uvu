@@ -27,6 +27,7 @@ const programLinks = [
     { href: "/programs/vumbuachiqs", label: "Vumbuachiqs" },
     { href: "/programs/youth-empowerment", label: "Youth Empowerment" },
     { href: "/programs/women-in-tech", label: "Women in Tech" },
+    { href: "/programs/ucn-radio", label: "UCN Radio" },
 ];
 
 const courseLinks = [
