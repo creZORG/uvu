@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 const courses = [
     {
       title: "General Coding Course",
-      description: "Learn fundamental programming concepts and build your first applications. Master Python, from variables to APIs.",
+      description: "Learn fundamental programming concepts and build your first applications. Master Python, from variables to APIs, and solve real-world problems like Git authentication!",
       href: "/courses/coding",
       icon: <Code className="size-10 text-primary" />,
       status: "available",
@@ -74,13 +74,13 @@ export default function CoursesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {courses.map((course) => {
                     const isAvailable = course.status === 'available';
-                    const CardWrapper = isAvailable ? Link : 'div';
                     
                     return (
-                        <CardWrapper href={isAvailable ? course.href : ''} key={course.title} className="flex">
+                        <div key={course.title} className={cn("flex", isAvailable && "transform scale-105 shadow-2xl rounded-lg")}>
                             <Card className={cn(
                                 "flex flex-col w-full hover:shadow-lg transition-all duration-300", 
-                                !isAvailable && "bg-muted/50 cursor-not-allowed opacity-60"
+                                !isAvailable && "bg-muted/50 cursor-not-allowed opacity-60",
+                                isAvailable && "border-primary border-2"
                             )}>
                                 <CardHeader className="flex-row items-start gap-4">
                                     {course.icon}
@@ -89,18 +89,23 @@ export default function CoursesPage() {
                                         <CardDescription className="mt-2">{course.description}</CardDescription>
                                     </div>
                                 </CardHeader>
-                                <CardFooter className="mt-auto flex justify-between items-center">
+                                <CardFooter className="mt-auto flex justify-between items-center pt-4">
                                     <Badge variant={isAvailable ? "default" : "secondary"}>
                                         {isAvailable ? "Available Now" : "Coming Soon"}
                                     </Badge>
                                     
-                                     <Button variant="link" className="p-0 text-primary" disabled={!isAvailable}>
-                                        {isAvailable ? "Start Learning" : <Lock className="mr-2" />} 
-                                        {isAvailable && <span className="ml-1">&rarr;</span>}
-                                    </Button>
+                                    {isAvailable ? (
+                                        <Button asChild>
+                                            <Link href={course.href}>Start Learning &rarr;</Link>
+                                        </Button>
+                                    ) : (
+                                         <Button variant="outline" className="p-0 text-muted-foreground" disabled>
+                                            <Lock className="mr-2" /> Coming Soon
+                                        </Button>
+                                    )}
                                 </CardFooter>
                             </Card>
-                        </CardWrapper>
+                        </div>
                     );
                 })}
             </div>
