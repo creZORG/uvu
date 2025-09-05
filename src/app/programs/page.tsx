@@ -2,46 +2,52 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Code, Bot, Computer, Recycle, TrendingUp, Tv, Users } from "lucide-react";
+import { Code, Computer, Recycle, TrendingUp, Tv, Users, Wifi } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const programs = [
-    { 
-        href: "/programs/digital-literacy", 
-        icon: <Computer className="size-12 text-primary" />, 
-        title: "Digital Access & Literacy", 
-        description: "Providing affordable internet and digital skills training to bridge the technology gap in underserved communities." 
+    {
+        href: "/programs/digital-literacy",
+        icon: <Computer className="size-12 text-primary" />,
+        title: "Digital Literacy",
+        description: "Equipping youth, women, and marginalized groups with practical digital skills for education, business, and social development."
     },
-    { 
-        href: "/programs/environmental-stewardship", 
-        icon: <Recycle className="size-12 text-primary" />, 
-        title: "Environmental Stewardship", 
-        description: "Promoting green jobs and sustainability through community e-waste recycling and renewable energy awareness campaigns." 
+    {
+        href: "/programs/digital-literacy",
+        icon: <Wifi className="size-12 text-primary" />,
+        title: "Affordable Community Internet",
+        description: "Providing affordable and reliable internet connectivity to schools, market centers, and households to improve access to essential services."
     },
-    { 
-        href: "/programs/vumbuachiqs", 
-        icon: <Code className="size-12 text-primary" />, 
-        title: "Vumbuachiqs - Girls in Technology", 
-        description: "Our flagship program empowering girls and young women with hands-on training in coding, robotics, and digital creativity." 
+    {
+        href: "/programs/environmental-stewardship",
+        icon: <Recycle className="size-12 text-primary" />,
+        title: "Environmental Stewardship",
+        description: "Promoting green jobs and sustainability through community e-waste recycling and renewable energy awareness campaigns."
     },
-    { 
-        href: "/programs/youth-empowerment", 
-        icon: <TrendingUp className="size-12 text-primary" />, 
-        title: "Youth Empowerment", 
-        description: "Equipping young people with leadership, entrepreneurship, and life-skills through innovation labs and digital tools." 
+    {
+        href: "/programs/vumbuachiqs",
+        icon: <Code className="size-12 text-primary" />,
+        title: "Vumbuachiqs - Girls in Technology",
+        description: "Our flagship program empowering girls and young women with hands-on training in coding, robotics, and digital creativity."
     },
-    { 
-        href: "/programs/women-in-tech", 
-        icon: <Users className="size-12 text-primary" />, 
-        title: "Women in Tech", 
+    {
+        href: "/programs/youth-empowerment",
+        icon: <TrendingUp className="size-12 text-primary" />,
+        title: "Youth Empowerment",
+        description: "Equipping young people with leadership, entrepreneurship, and life-skills through innovation labs and digital tools."
+    },
+    {
+        href: "/programs/women-in-tech",
+        icon: <Users className="size-12 text-primary" />,
+        title: "Women in Tech",
         description: "Fostering a supportive ecosystem for women to advance their careers and become leaders in the technology industry."
     },
-    { 
-        href: "/programs/ucn-radio", 
-        icon: <Tv className="size-12 text-primary" />, 
-        title: "UCN Radio (Future Plan)", 
-        description: "Our upcoming community radio station will serve as a voice for education, empowerment, and civic engagement." 
+    {
+        href: "/programs/ucn-radio",
+        icon: <Tv className="size-12 text-primary" />,
+        title: "UCN Radio (Future Plan)",
+        description: "Our upcoming community radio station will serve as a voice for education, empowerment, and civic engagement."
     },
 ];
 
