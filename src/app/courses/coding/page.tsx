@@ -19,24 +19,57 @@ const courseContent = [
   {
     title: "Module 0: Introduction to Programming",
     pages: [
-      {
-        title: "What is Programming?",
-        content: [
-          "Programming is the process of creating a set of instructions that tell a computer how to perform a task.",
-          "It involves designing and building an executable computer program to accomplish a specific computing result.",
-          "Think of it as teaching a computer a new skill by giving it very precise commands in a language it understands."
-        ],
-        researchPrompt: "Research the difference between a compiler and an interpreter. The quiz may ask you about this."
-      },
-      {
-        title: "Why Learn to Code & How Computers 'Think'",
-        content: [
-          "Learning to code opens up career paths in web development, data science, game development, and automation.",
-          "Computers 'think' using binary logic (0s and 1s). Programming languages act as a bridge, allowing us to write human-readable instructions that get converted into machine code.",
-          "Popular languages include Python (great for beginners), JavaScript (for web development), and Java (for large-scale applications)."
-        ],
-        researchPrompt: "Find out which programming language is most in-demand in your country or city."
-      }
+        {
+            title: "Lesson 0.1: What is Programming?",
+            content: [
+                "Programming is the process of writing exact instructions for a computer to follow.",
+                "These instructions are written in special languages that computers understand, like Python or JavaScript.",
+                "Using these languages, we can create websites (like Facebook), mobile apps (like Instagram), games, and software tools (like Excel).",
+                "It even allows us to control hardware like robots and smart home devices."
+            ],
+            researchPrompt: "Think about an app you use every day. Try to list five specific instructions you think a programmer had to write to make it work."
+        },
+        {
+            title: "Lesson 0.2: Why Learn Programming?",
+            content: [
+                "Learning to code is a valuable skill that opens up many career opportunities in fields like Web Development, Data Science, AI, and Game Development.",
+                "It's a tool for problem-solving and automation. You can use it to automate repetitive tasks in your work or personal life.",
+                "Programming is a creative outlet. It gives you the power to build anything you can imagine.",
+                "It enhances logical thinking and your ability to break down complex problems into manageable steps."
+            ],
+            researchPrompt: "Research one career path that interests you (e.g., 'Web Developer'). What are the typical day-to-day tasks for someone in that role?"
+        },
+        {
+            title: "Lesson 0.3: How Programming Works",
+            content: [
+                "First, we write human-readable code in a text editor like Visual Studio Code.",
+                "Next, a special program called a 'compiler' or 'interpreter' translates our code into machine code (binary 1s and 0s) that the computer's processor (CPU) can execute.",
+                "The command line, or terminal, is a powerful tool we use to run these translators and manage our project files.",
+                "An IDE (Integrated Development Environment) bundles all these tools—text editor, translator, and terminal—into one application to make development easier."
+            ],
+            researchPrompt: "What is the key difference between a compiler and an interpreter? Which one does Python use?"
+        },
+        {
+            title: "Lesson 0.4: Overview of Programming Languages",
+            content: [
+                "There are many different programming languages, each with its own strengths. Think of them as different tools for different jobs.",
+                "Python is known for being beginner-friendly and is widely used for web development, data analysis, and AI.",
+                "JavaScript is the language of the web, used to make websites interactive.",
+                "Other languages like C++, Java, and SQL are used for things like high-performance games, large-scale enterprise applications, and managing databases, respectively."
+            ],
+            researchPrompt: "Besides Python and JavaScript, find two other programming languages and what they are commonly used for."
+        },
+        {
+            title: "Lesson 0.5: The Programmer's Mindset",
+            content: [
+                "Thinking like a programmer is more important than memorizing code. It's about how you approach problems.",
+                "Decomposition: The skill of breaking a large, complex problem down into smaller, simpler, solvable steps.",
+                "Pattern Recognition: Identifying similarities between problems to reuse solutions.",
+                "Debugging: Understanding that errors are a normal and essential part of the process. Finding and fixing them is a core skill.",
+                "Persistence: The best programmers are not those who know everything, but those who are skilled at finding answers and are persistent when facing challenges."
+            ],
+            researchPrompt: "What is 'pseudocode' and how can it help you plan your program before you write any actual code?"
+        }
     ]
   },
   {
