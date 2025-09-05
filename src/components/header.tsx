@@ -126,7 +126,8 @@ export function Header() {
                     </div>
                 </div>
 
-                <div className="md:hidden flex items-center gap-4">
+                <div className="md:hidden flex items-center gap-2">
+                <ThemeToggle />
                 <AuthNav />
                 <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger asChild>
@@ -137,12 +138,9 @@ export function Header() {
                     <SheetContent side="right" className="w-[80vw] sm:w-[50vw] bg-background">
                     <div className="flex flex-col items-center justify-center h-full gap-8">
                         <NavLinks inSheet />
-                        <div className="flex items-center gap-4">
-                          <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4 rounded-full">
-                          <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
-                          </Button>
-                          <ThemeToggle />
-                        </div>
+                        <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4 rounded-full">
+                            <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
+                        </Button>
                     </div>
                     </SheetContent>
                 </Sheet>
