@@ -12,10 +12,12 @@ import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CodingPage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
+  const { toast } = useToast();
 
   const topics = [
     {
@@ -42,9 +44,16 @@ export default function CodingPage() {
       return;
     }
     
-    // Check for user profile
-    const profileDoc = await getDoc(doc(db, "userProfiles", user.uid));
-    if (!profileDoc.exists()) {
+    // Check for user profile completeness
+    const profileDocRef = doc(db, "userProfiles", user.uid);
+    const profileDoc = await getDoc(profileDocRef);
+
+    if (!profileDoc.exists() || !isProfileComplete(profileDoc.data())) {
+      toast({
+          variant: "destructive",
+          title: "Profile Incomplete",
+          description: "Please complete your profile before starting the quiz.",
+      });
       sessionStorage.setItem('redirectAfterProfileUpdate', '/courses/coding/quiz');
       router.push('/profile');
     } else {
@@ -52,31 +61,22 @@ export default function CodingPage() {
     }
   };
 
+  const isProfileComplete = (profile: any) => {
+      if (!profile) return false;
+      const requiredFields = ['fullName', 'location', 'dateOfBirth', 'gender', 'occupation'];
+      return requiredFields.every(field => profile[field]);
+  };
+
 
   const renderStartButton = () => {
     if (loading) {
       return <Button size="lg" disabled>Loading...</Button>;
     }
-    if (user) {
-      return (
-        <Button onClick={handleStartQuiz} size="lg">
+    // The button is always active, but the check happens in handleStartQuiz
+    return (
+       <Button onClick={handleStartQuiz} size="lg">
           Start Quiz
         </Button>
-      );
-    }
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-             <Button onClick={handleStartQuiz} size="lg">
-              Start Quiz
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Please log in to start the quiz.</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
     );
   };
 

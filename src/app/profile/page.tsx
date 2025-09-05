@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -17,10 +19,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const profileSchema = z.object({
   fullName: z.string().min(3, { message: "Full name must be at least 3 characters." }),
   location: z.string().min(2, { message: "Location is required." }),
+  dateOfBirth: z.date({ required_error: "A date of birth is required." }),
+  gender: z.string({ required_error: "Please select a gender." }),
+  occupation: z.string().min(2, { message: "Occupation is required." }),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -36,6 +46,7 @@ export default function ProfilePage() {
     defaultValues: {
       fullName: "",
       location: "",
+      occupation: "",
     },
   });
 
@@ -52,7 +63,11 @@ export default function ProfilePage() {
 
       if (docSnap.exists()) {
         const profileData = docSnap.data();
-        form.reset(profileData);
+        const dataWithDate = {
+            ...profileData,
+            dateOfBirth: profileData.dateOfBirth?.toDate(),
+        };
+        form.reset(dataWithDate);
         setIsProfileCreated(true);
       }
     };
@@ -76,7 +91,6 @@ export default function ProfilePage() {
         description: "Your information has been successfully updated.",
       });
 
-      // Redirect back to courses if they were coming from there
       const redirectPath = sessionStorage.getItem('redirectAfterProfileUpdate');
       if(redirectPath) {
         sessionStorage.removeItem('redirectAfterProfileUpdate');
@@ -141,6 +155,83 @@ export default function ProfilePage() {
                         <FormLabel>Location</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., Nairobi, Kenya" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Date of Birth</FormLabel>
+                         <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() || date < new Date("1900-01-01")
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select your gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                             <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="occupation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Occupation</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Student, Developer" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
