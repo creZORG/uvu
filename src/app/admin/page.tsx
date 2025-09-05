@@ -12,8 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
+import { cn } from "@/lib/utils";
 
 type Submission = {
   id: string;
@@ -48,6 +48,8 @@ type HomepageContent = {
   programs: Program[];
 };
 
+type AdminView = "submissions" | "homepage" | "mail";
+
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +59,8 @@ export default function AdminPage() {
   const [isSendingMail, setIsSendingMail] = useState(false);
   const { toast } = useToast();
   
+  const [activeView, setActiveView] = useState<AdminView>("submissions");
+
   const contentForm = useForm<HomepageContent>();
   const mailForm = useForm<SendMailInput>();
 
@@ -143,60 +147,39 @@ export default function AdminPage() {
     }
   };
 
-  if (authLoading || loading || !isAuthorized) {
-    return (
-      <div className="flex flex-col min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="mt-4 text-muted-foreground">
-          {isAuthorized ? 'Loading dashboard...' : 'Verifying access...'}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-1 py-12">
-        <section className="container max-w-6xl mx-auto">
-           <Card>
-              <CardHeader>
-                <CardTitle className="font-headline text-4xl">Admin Dashboard</CardTitle>
-                <CardDescription>Review submissions, manage site content, and send emails.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="submissions">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="submissions">Submissions</TabsTrigger>
-                    <TabsTrigger value="homepage">Homepage Content</TabsTrigger>
-                    <TabsTrigger value="mail">Send Mail</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="submissions" className="mt-6">
-                     <Table>
+  const renderContent = () => {
+    switch (activeView) {
+        case "submissions":
+            return (
+                <div className="mt-6 md:mt-0">
+                    <Table>
                         <TableHeader>
-                          <TableRow>
+                            <TableRow>
                             <TableHead>Student Email</TableHead>
                             <TableHead>Submitted At</TableHead>
                             <TableHead>Status</TableHead>
-                          </TableRow>
+                            </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {submissions.map((sub) => (
+                            {submissions.map((sub) => (
                             <TableRow key={sub.id} onClick={() => router.push(`/admin/submissions/${sub.id}`)} className="cursor-pointer">
-                              <TableCell className="font-medium">{sub.userEmail}</TableCell>
-                              <TableCell>{sub.submittedAt ? format(sub.submittedAt.toDate(), "PPP p") : "N/A"}</TableCell>
-                              <TableCell>
+                                <TableCell className="font-medium">{sub.userEmail}</TableCell>
+                                <TableCell>{sub.submittedAt ? format(sub.submittedAt.toDate(), "PPP p") : "N/A"}</TableCell>
+                                <TableCell>
                                 <Badge variant={getStatusVariant(sub.status)}>{sub.status}</Badge>
-                              </TableCell>
+                                </TableCell>
                             </TableRow>
-                          ))}
+                            ))}
                         </TableBody>
-                      </Table>
-                      {submissions.length === 0 && (
-                          <p className="text-center text-muted-foreground py-8">No submissions yet.</p>
-                        )}
-                  </TabsContent>
-                  <TabsContent value="homepage" className="mt-6">
+                    </Table>
+                    {submissions.length === 0 && (
+                        <p className="text-center text-muted-foreground py-8">No submissions yet.</p>
+                    )}
+                </div>
+            )
+        case "homepage":
+            return (
+                <div className="mt-6 md:mt-0">
                     <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-8">
                       <div className="space-y-4 p-4 border rounded-lg">
                         <h3 className="font-headline text-xl">Carousel Images</h3>
@@ -236,8 +219,11 @@ export default function AdminPage() {
                       
                       <Button type="submit">Save Homepage Content</Button>
                     </form>
-                  </TabsContent>
-                   <TabsContent value="mail" className="mt-6">
+                </div>
+            )
+        case "mail":
+            return (
+                 <div className="mt-6 md:mt-0">
                     <form onSubmit={mailForm.handleSubmit(onMailSubmit)} className="space-y-6">
                         <div>
                             <Label htmlFor="mail-to">Recipient Email</Label>
@@ -256,8 +242,63 @@ export default function AdminPage() {
                             Send Email
                         </Button>
                     </form>
-                   </TabsContent>
-                </Tabs>
+                </div>
+            )
+        default:
+            return null;
+    }
+  }
+
+  if (authLoading || loading || !isAuthorized) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <p className="mt-4 text-muted-foreground">
+          {isAuthorized ? 'Loading dashboard...' : 'Verifying access...'}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+      <Header />
+      <main className="flex-1 py-12">
+        <section className="container max-w-6xl mx-auto">
+           <Card>
+              <CardHeader>
+                <CardTitle className="font-headline text-4xl">Admin Dashboard</CardTitle>
+                <CardDescription>Review submissions, manage site content, and send emails.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-[240px_1fr] gap-8">
+                    <nav className="flex flex-col gap-2">
+                        <Button
+                            variant={activeView === 'submissions' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'submissions' && "font-bold")}
+                            onClick={() => setActiveView("submissions")}
+                        >
+                            <FileText className="mr-2" /> Submissions
+                        </Button>
+                        <Button
+                            variant={activeView === 'homepage' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'homepage' && "font-bold")}
+                            onClick={() => setActiveView("homepage")}
+                        >
+                            <LayoutDashboard className="mr-2" /> Homepage Content
+                        </Button>
+                        <Button
+                            variant={activeView === 'mail' ? 'secondary' : 'ghost'}
+                           className={cn("justify-start", activeView === 'mail' && "font-bold")}
+                            onClick={() => setActiveView("mail")}
+                        >
+                            <Mail className="mr-2" /> Send Mail
+                        </Button>
+                    </nav>
+                    <div>
+                        {renderContent()}
+                    </div>
+                </div>
               </CardContent>
            </Card>
         </section>
