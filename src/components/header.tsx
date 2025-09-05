@@ -13,6 +13,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/lib/firebase";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -43,6 +47,7 @@ const courseLinks = [
 export function Header() {
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, loading] = useAuthState(auth);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -51,6 +56,40 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const AuthNav = () => {
+    if (loading) {
+      return <Avatar><AvatarFallback>U</AvatarFallback></Avatar>;
+    }
+    if (user) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              <AvatarImage src={user.photoURL || undefined} />
+              <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => auth.signOut()}>
+              Log Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+    return (
+        <div className="flex items-center gap-2">
+            <Button asChild variant="ghost">
+                <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+            </Button>
+        </div>
+    );
+  };
+
 
   const NavLinks = ({ inSheet }: { inSheet?: boolean }) => (
     <nav className={cn(
@@ -107,12 +146,16 @@ export function Header() {
 
         <div className="hidden md:flex items-center gap-6">
             <NavLinks />
-            <Button asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90">
-                <Link href="/donate">Donate</Link>
-            </Button>
+            <div className="flex items-center gap-4">
+              <AuthNav />
+              <Button asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90">
+                  <Link href="/donate">Donate</Link>
+              </Button>
+            </div>
         </div>
 
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-4">
+           <AuthNav />
           <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
