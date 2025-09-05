@@ -384,7 +384,7 @@ const courseContent = [
     ]
   },
   {
-    title: "Module 5: Object-Oriented Programming (OOP)",
+    title: "Module 5: Error Handling & Debugging",
     pages: [
       {
         title: "Lesson 5.1: Types of Errors in Python",
@@ -525,7 +525,88 @@ const courseContent = [
     ]
   },
   {
-    title: "Module 7: Algorithms & Problem Solving",
+    title: "Module 7: File Handling & Persistence",
+    pages: [
+      {
+        title: "Lesson 7.1: Introduction to File Handling",
+        content: [
+          "So far, all the data our programs have used disappears when the program ends. To store data permanently, we need to use files. This is called 'persistence'.",
+          "The basic operations are opening a file, reading from it or writing to it, and then closing it.",
+          "File paths tell the computer where to find a file. A 'relative' path is in relation to your script's location, while an 'absolute' path starts from the root of your hard drive.",
+          { type: 'code', language: 'python', code: "# This creates and opens a new file called 'example.txt' in 'write' mode.\nfile = open('example.txt', 'w')\n\n# Write a string of text to the file.\nfile.write(\"Hello, Uvumbuzi World!\")\n\n# It's crucial to close the file to save the changes.\nfile.close()" }
+        ],
+        researchPrompt: "What is the difference between an absolute path and a relative path in a file system? Provide an example of each."
+      },
+      {
+        title: "Lesson 7.2: File Modes & Safe Handling with 'with'",
+        content: [
+          "Files can be opened in different 'modes':",
+          "**'r'**: Read mode. This is the default. It will give an error if the file doesn't exist.",
+          "**'w'**: Write mode. Creates a new file if it doesn't exist, but **overwrites** the file if it does.",
+          "**'a'**: Append mode. Adds new content to the end of an existing file without deleting its contents.",
+          "**'r+'**: Read and Write mode.",
+          "Forgetting to close a file can cause problems. Python's `with` statement (a context manager) handles this automatically, ensuring the file is closed even if errors occur.",
+          { type: 'code', language: 'python', code: "# The 'with' statement is the recommended way to handle files.\n# It automatically closes the file for you.\nwith open('log.txt', 'a') as file:\n    file.write(\"New log entry added.\\n\")" }
+        ],
+        researchPrompt: "What other kinds of resources can be managed with context managers in Python, besides files?"
+      },
+      {
+        title: "Lesson 7.3: Reading from Files",
+        content: [
+          "There are several ways to read content from a file.",
+          "`.read()`: Reads the entire file content into a single string. Be careful with very large files!",
+          "`.readline()`: Reads just one line from the file.",
+          "`.readlines()`: Reads all lines into a list of strings.",
+          "The best practice for reading a text file is to loop directly over the file object. This is memory-efficient because it reads the file line by line.",
+          { type: 'code', language: 'python', code: "try:\n    with open('data.txt', 'r') as file:\n        for line in file:\n            # .strip() removes any leading/trailing whitespace, including the newline character\n            print(line.strip())\nexcept FileNotFoundError:\n    print(\"The file 'data.txt' was not found.\")" }
+        ],
+        researchPrompt: "How would you read only the first 50 characters of a file?"
+      },
+      {
+        title: "Lesson 7.4: Writing and Appending to Files",
+        content: [
+          "Writing to files is just as straightforward. Remember the difference between `'w'` (write/overwrite) and `'a'` (append).",
+          "The `.write()` method writes a single string to the file. If you want to write multiple lines, you must include the newline character `\\n` yourself.",
+          "The `.writelines()` method can take a list of strings and write them to the file. It does *not* add newline characters automatically.",
+          { type: 'code', language: 'python', code: "notes = [\n    \"This is the first note.\\n\",\n    \"This is the second note.\\n\",\n    \"And a third one!\\n\"\n]\n\nwith open('notes.txt', 'w') as file:\n    file.writelines(notes)" }
+        ],
+        researchPrompt: "Imagine you are writing a log file for an application. Would you more likely use 'w' or 'a' mode? Why?"
+      },
+      {
+        title: "Lesson 7.5: Working with CSV Files",
+        content: [
+          "CSV (Comma-Separated Values) is a very common format for storing tabular data, like in a spreadsheet. Python's built-in `csv` module makes working with these files easy.",
+          "A `csv.reader` lets you loop over rows in a CSV file, where each row is a list of strings.",
+          "A `csv.writer` lets you write rows to a CSV file. The `writerow()` method takes a list and writes it as a comma-separated line.",
+          { type: 'code', language: 'python', code: "import csv\n\n# Writing to a CSV file\nwith open('contacts.csv', 'w', newline='') as file:\n    writer = csv.writer(file)\n    writer.writerow(['Name', 'Email', 'Phone'])\n    writer.writerow(['Alice', 'alice@email.com', '111-2222'])\n    writer.writerow(['Bob', 'bob@email.com', '333-4444'])\n\n# Reading from a CSV file\nwith open('contacts.csv', 'r') as file:\n    reader = csv.reader(file)\n    for row in reader:\n        print(row)" }
+        ],
+        researchPrompt: "What does the `newline=''` argument do when opening a CSV file for writing, and why is it important?"
+      },
+      {
+        title: "Lesson 7.6: Using JSON for Structured Data",
+        content: [
+          "JSON (JavaScript Object Notation) is the standard format for sending data over the web and is perfect for storing Python dictionaries and lists in a readable way.",
+          "The `json` module allows for 'serialization' (converting Python objects to a JSON string) and 'deserialization' (converting a JSON string back into Python objects).",
+          "`json.dump()`: Writes a Python object (like a dict or list) to a file in JSON format.",
+          "`json.load()`: Reads a JSON file and parses it back into a Python object.",
+          { type: 'code', language: 'python', code: "import json\n\nstudent_data = {\n    'name': 'Charlie',\n    'id': 12345,\n    'courses': ['Math', 'History']\n}\n\n# Save the dictionary to a file as JSON\nwith open('student.json', 'w') as file:\n    json.dump(student_data, file, indent=4)\n\n# Load the JSON data back from the file\nwith open('student.json', 'r') as file:\n    loaded_data = json.load(file)\n    print(f\"Welcome back, {loaded_data['name']}\")" }
+        ],
+        researchPrompt: "What does the `indent` parameter do in `json.dump()`, and why does it make JSON files easier for humans to read?"
+      },
+      {
+        title: "Lesson 7.7: Mini Project - Persistent To-Do List",
+        content: [
+          "Let's build a command-line to-do list that remembers your tasks even after you close it. This project combines file handling with the data structures you've already learned.",
+          "The program will load a list of tasks from a JSON file when it starts, allow the user to add or remove tasks from the list, and then save the updated list back to the JSON file before it exits.",
+          "This small project is a huge step towards building real, useful applications.",
+          { type: 'code', language: 'python', code: "import json\n\nTASKS_FILE = \"tasks.json\"\n\ndef load_tasks():\n    try:\n        with open(TASKS_FILE, 'r') as f:\n            return json.load(f)\n    except FileNotFoundError:\n        return []\n\ndef save_tasks(tasks):\n    with open(TASKS_FILE, 'w') as f:\n        json.dump(tasks, f, indent=4)\n\n# --- Main Program Logic (Simplified) ---\ntasks = load_tasks()\n# (Here you would add logic to show a menu, add/remove tasks, etc.)\nsave_tasks(tasks)\nprint(\"Tasks saved!\")" }
+        ],
+        researchPrompt: "How could you extend this to-do list project to mark tasks as 'complete' instead of just removing them?"
+      }
+    ]
+  },
+  {
+    title: "Module 8: Algorithms & Problem Solving",
     pages: [
       {
         title: "Searching and Sorting Algorithms",
