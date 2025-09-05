@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogCancel } from "@/components/ui/alert-dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle, Ban } from "lucide-react";
 import Link from "next/link";
 import { NavigationBlocker } from "@/components/navigation-blocker";
 
@@ -99,6 +99,7 @@ export default function CodingQuizPage() {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isDisqualified, setIsDisqualified] = useState(false);
     const [showSubmitWarning, setShowSubmitWarning] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -110,14 +111,26 @@ export default function CodingQuizPage() {
     useEffect(() => {
         setIsMounted(true);
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-             if (!isSubmitted) {
+             if (!isSubmitted && !isDisqualified) {
                 e.preventDefault();
                 e.returnValue = 'Are you sure you want to leave? Your exam progress will be lost.';
             }
         };
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden' && !isSubmitted && !isDisqualified) {
+                setIsDisqualified(true);
+            }
+        };
+
         window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [isSubmitted]);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [isSubmitted, isDisqualified]);
 
     const allFields = useWatch({ control: form.control });
     
@@ -136,6 +149,10 @@ export default function CodingQuizPage() {
     async function onSubmit(data: ExamFormValues) {
         if (!user) {
             toast({ variant: "destructive", title: "You must be logged in to submit." });
+            return;
+        }
+        if (isDisqualified) {
+            toast({ variant: "destructive", title: "Submission Blocked", description: "Your exam has been disqualified." });
             return;
         }
         setIsSubmitting(true);
@@ -167,6 +184,32 @@ export default function CodingQuizPage() {
             </div>
         );
     }
+
+    if (isDisqualified) {
+        return (
+             <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1 flex items-center justify-center">
+                    <Card className="w-full max-w-2xl text-center p-8 bg-destructive/10 border-destructive">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-3xl text-destructive-foreground flex items-center justify-center gap-4">
+                                <Ban size={32} /> Exam Disqualified
+                            </CardTitle>
+                            <CardDescription className="text-base pt-4 text-destructive-foreground/90">
+                                Your exam attempt has been voided because you navigated away from the exam page. To ensure fairness, all candidates must remain on the page for the duration of the test.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Button asChild>
+                                <Link href="/">Return to Homepage</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </main>
+                <Footer />
+            </div>
+        )
+    }
     
     if (isSubmitted) {
         return (
@@ -194,7 +237,7 @@ export default function CodingQuizPage() {
     
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <NavigationBlocker shouldBlock={!isSubmitted} />
+            <NavigationBlocker shouldBlock={!isSubmitted && !isDisqualified} />
             <Header />
             <main className="flex-1 py-12">
                 <section className="container max-w-4xl mx-auto">
@@ -222,6 +265,7 @@ export default function CodingQuizPage() {
                                                                     placeholder={isCode ? "Write your code and explanation here..." : "Write your answer here..."}
                                                                     className={`min-h-[150px] text-base ${isCode ? 'font-mono' : ''}`}
                                                                     {...field}
+                                                                    disabled={isDisqualified}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />
@@ -236,7 +280,7 @@ export default function CodingQuizPage() {
                                         <Button
                                             type="button"
                                             onClick={() => setShowSubmitWarning(true)}
-                                            disabled={!isFormComplete() || isSubmitting}
+                                            disabled={!isFormComplete() || isSubmitting || isDisqualified}
                                             size="lg"
                                         >
                                             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
