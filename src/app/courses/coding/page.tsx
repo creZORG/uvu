@@ -13,9 +13,10 @@ import { doc, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Trophy, AlertTriangle } from "lucide-react";
 import { CodeSnippet } from "@/components/code-snippet";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const courseContent = [
   {
@@ -893,7 +894,7 @@ export default function CodingPage() {
   const [showIntroModal, setShowIntroModal] = useState(false);
   const [showModuleModal, setShowModuleModal] = useState(false);
   const [showResetWarning, setShowResetWarning] = useState(false);
-  const [isQuizUnlocked, setIsQuizUnlocked] = useState(false);
+  const [showFinalQuizModal, setShowFinalQuizModal] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
 
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
@@ -943,8 +944,8 @@ export default function CodingPage() {
     } else {
         const pagesCompleted = courseContent.slice(0, currentModuleIndex).reduce((acc, module) => acc + module.pages.length, 0) + currentPageIndex + 1;
         const progressPercentage = (pagesCompleted / totalPages) * 100;
-        if (progressPercentage >= 100 && !isQuizUnlocked) {
-            setIsQuizUnlocked(true);
+        if (progressPercentage >= 100) {
+            setShowFinalQuizModal(true);
         }
     }
   };
@@ -1074,15 +1075,17 @@ export default function CodingPage() {
                             {currentModule.quiz.map((q, i) => <li key={i}>{q}</li>)}
                         </ul>
                     </div>
-                    <div>
-                        <h3 className="font-semibold mb-2 text-foreground">Next Up: {courseContent[currentModuleIndex + 1]?.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Here's a preview of what you'll learn:
-                        </p>
-                         <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground mt-2">
-                            {courseContent[currentModuleIndex + 1]?.pages.map((p, i) => <li key={i}>{p.title}</li>)}
-                        </ul>
-                    </div>
+                    {courseContent[currentModuleIndex + 1] && (
+                        <div>
+                            <h3 className="font-semibold mb-2 text-foreground">Next Up: {courseContent[currentModuleIndex + 1]?.title}</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Here's a preview of what you'll learn:
+                            </p>
+                            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground mt-2">
+                                {courseContent[currentModuleIndex + 1]?.pages.map((p, i) => <li key={i}>{p.title}</li>)}
+                            </ul>
+                        </div>
+                    )}
                 </div>
 
                 <AlertDialogFooter>
@@ -1093,26 +1096,33 @@ export default function CodingPage() {
             </AlertDialogContent>
         </AlertDialog>
 
-       <AlertDialog open={isQuizUnlocked} onOpenChange={setIsQuizUnlocked}>
-        <AlertDialogContent>
+       <AlertDialog open={showFinalQuizModal} onOpenChange={setShowFinalQuizModal}>
+        <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-headline text-2xl flex items-center gap-2">
-                <CheckCircle className="text-primary"/> Congratulations!
+                <CheckCircle className="text-primary"/> Congratulations! You've Completed the Course!
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-lg pt-2">
-              You have completed the course and unlocked the final quiz.
+            <AlertDialogDescription className="text-base pt-2">
+                You are now ready to take the final exam to earn your Uvumbuzi certificate. Please read the instructions below very carefully.
             </AlertDialogDescription>
           </AlertDialogHeader>
-           <div className="text-sm space-y-2">
-                <p>Please read these instructions carefully before you begin:</p>
-                <ul className="list-disc list-inside bg-destructive/10 text-destructive-foreground p-4 rounded-md">
-                    <li>This quiz can only be attempted <strong>once</strong>.</li>
-                    <li>You must score at least <strong>70%</strong> to pass.</li>
-                    <li>Leaving the quiz page after starting will result in disqualification.</li>
-                </ul>
+           <div className="text-sm space-y-4 max-h-[60vh] overflow-y-auto pr-4">
+                <p><strong>Exam Duration:</strong> You will have approximately <strong>2.5 to 3 hours</strong> to complete the exam.</p>
+                <p><strong>Certificate:</strong> Upon successful completion and review, your certificate will be sent to the email address associated with your account: <strong className="text-primary">{user?.email}</strong>. If this is incorrect, please <Link href="/profile" className="underline">update your profile</Link> before starting.</p>
+                
+                <div className="p-4 rounded-md bg-destructive/10 border border-destructive/50 text-destructive-foreground">
+                    <h4 className="font-bold flex items-center gap-2 mb-2"><AlertTriangle/>Important Rules</h4>
+                    <ul className="list-disc list-inside space-y-2">
+                        <li><strong>Human-Marked Exam:</strong> Your submission will be carefully reviewed by a human instructor. AI-generated answers are strictly prohibited and will be detected by our instructors and plagiarism tools, leading to immediate disqualification.</li>
+                        <li><strong>Stable Connection:</strong> Ensure you have a stable internet connection before you begin.</li>
+                        <li><strong>Single Attempt:</strong> This exam can only be attempted once.</li>
+                        <li><strong>Do Not Leave The Page:</strong> Once you start, you must complete the exam in one sitting. Navigating away from the exam page will void your submission and result in disqualification.</li>
+                    </ul>
+                </div>
             </div>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleStartQuiz} size="lg">I Understand, Start Quiz</AlertDialogAction>
+            <AlertDialogCancel>Not Yet</AlertDialogCancel>
+            <AlertDialogAction onClick={handleStartQuiz} size="lg">I Understand, Start Final Exam</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -1177,7 +1187,7 @@ export default function CodingPage() {
                 </Button>
 
                 {isCourseComplete ? (
-                     <Button onClick={() => setIsQuizUnlocked(true)}>
+                     <Button onClick={() => setShowFinalQuizModal(true)}>
                         <CheckCircle className="mr-2"/> Finish Course & Unlock Quiz
                     </Button>
                 ) : (
