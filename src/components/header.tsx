@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ChevronDown, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -23,17 +23,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
 const navLinks = [
+  { href: "/courses", label: "Courses" },
+  { href: "/programs", label: "Programs" },
   { href: "/gallery", label: "Gallery" },
 ];
 
-const programLinks = [
-    { href: "/programs/digital-literacy", label: "Digital Access & Literacy" },
-    { href: "/programs/environmental-stewardship", label: "Environmental Stewardship" },
-    { href: "/programs/vumbuachiqs", label: "Vumbuachiqs" },
-    { href: "/programs/youth-empowerment", label: "Youth Empowerment" },
-    { href: "/programs/women-in-tech", label: "Women in Tech" },
-    { href: "/programs/ucn-radio", label: "UCN Radio" },
-];
 
 export function Header() {
   const [isSheetOpen, setSheetOpen] = useState(false);
@@ -100,9 +94,6 @@ export function Header() {
       "flex gap-6 items-center",
       inSheet ? "flex-col text-lg" : "hidden md:flex"
     )}>
-       <Button variant="ghost" asChild>
-            <Link href="/courses" onClick={() => setSheetOpen(false)}>Courses</Link>
-        </Button>
       {navLinks.map((link) => (
         <Link
           key={link.href}
@@ -113,18 +104,6 @@ export function Header() {
           {link.label}
         </Link>
       ))}
-       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors outline-none">
-            Programs <ChevronDown className="h-4 w-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {programLinks.map((link) => (
-            <DropdownMenuItem key={link.href} asChild>
-              <Link href={link.href}>{link.label}</Link>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
       {userRole === 'admin' && (
            <Link href="/admin" onClick={() => setSheetOpen(false)} className="text-foreground/80 hover:text-foreground transition-colors">Admin</Link>
       )}
