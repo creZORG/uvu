@@ -9,7 +9,7 @@ const firebaseConfig = {
   appId: "1:361125720929:web:3eb22f4460fafbd4500b20",
   storageBucket: "uvumbuzi-digital-hub.appspot.com",
   apiKey: "AIzaSyBcLJKE7kU_d78iIMlyAv-f9GskXRtzQkE",
-  authDomain: "uvumbuzi-digital-hub.firebaseapp.com",
+  authDomain: "uvumbuzicommunity.org",
   messagingSenderId: "361125720929",
 };
 
