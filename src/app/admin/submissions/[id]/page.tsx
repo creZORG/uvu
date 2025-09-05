@@ -9,18 +9,18 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, Award, Mail, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { sendCertificateEmail } from "@/ai/flows/send-certificate-email";
+import { MarkingRubric } from "@/components/marking-rubric";
 
 const examQuestions = {
     "Section A: Programming Fundamentals & Basics": [
@@ -67,9 +67,14 @@ const examQuestions = {
     ]
 };
 
+const allQuestions = Object.values(examQuestions).flat();
+const MAX_SCORE_PER_QUESTION = 5;
+const TOTAL_POSSIBLE_SCORE = allQuestions.length * MAX_SCORE_PER_QUESTION;
+const PASSING_PERCENTAGE = 0.7; // 70%
+
 const markingSchema = z.object({
     feedback: z.string().optional(),
-    status: z.enum(["passed", "failed"]),
+    marks: z.record(z.coerce.number().min(0).max(MAX_SCORE_PER_QUESTION).default(0)),
 });
 
 type MarkingFormValues = z.infer<typeof markingSchema>;
@@ -88,7 +93,15 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
 
   const form = useForm<MarkingFormValues>({
     resolver: zodResolver(markingSchema),
+    defaultValues: {
+      marks: Object.fromEntries(allQuestions.map(q => [q.id, 0]))
+    },
   });
+
+  const marks = form.watch("marks");
+  const totalMarks = Object.values(marks).reduce((sum, mark) => sum + (Number(mark) || 0), 0);
+  const scorePercentage = TOTAL_POSSIBLE_SCORE > 0 ? (totalMarks / TOTAL_POSSIBLE_SCORE) * 100 : 0;
+  const finalStatus = scorePercentage >= PASSING_PERCENTAGE * 100 ? "passed" : "failed";
 
   useEffect(() => {
     if (authLoading) return;
@@ -122,7 +135,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
             setCertificateId(data.certificateId || null);
             form.reset({
                 feedback: data.feedback || "",
-                status: data.status === "passed" || data.status === "failed" ? data.status : undefined,
+                marks: data.marks || Object.fromEntries(allQuestions.map(q => [q.id, 0])),
             });
         } else {
           toast({ variant: "destructive", title: "Submission not found" });
@@ -141,12 +154,18 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     setIsSubmitting(true);
     try {
         const docRef = doc(db, "examSubmissions", params.id);
-        await updateDoc(docRef, {
-            ...data,
-            markedAt: new Date(),
-        });
+        const submissionData = {
+          ...data,
+          totalMarks,
+          scorePercentage,
+          status: finalStatus,
+          markedAt: new Date(),
+        };
+
+        await updateDoc(docRef, submissionData);
+
         toast({ title: "Marking Saved", description: "The submission has been updated." });
-        setSubmission({ ...submission, ...data }); // update local state
+        setSubmission({ ...submission, ...submissionData }); // update local state
     } catch (error) {
         console.error(error);
         toast({ variant: "destructive", title: "Error saving marks" });
@@ -156,10 +175,9 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
   };
 
   const handleGenerateAndSendCertificate = async () => {
-    if (!submission) return;
+    if (!submission || finalStatus !== 'passed') return;
     setIsProcessing(true);
     try {
-        // 1. Get Student's Name
         const userProfileRef = doc(db, "userProfiles", submission.userId);
         const userProfileSnap = await getDoc(userProfileRef);
         if (!userProfileSnap.exists()) {
@@ -167,7 +185,6 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
         }
         const studentName = userProfileSnap.data().fullName;
 
-        // 2. Create Certificate Document
         const certRef = doc(collection(db, "certificates"));
         await setDoc(certRef, {
             studentName: studentName,
@@ -175,16 +192,15 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
             courseName: "General Coding Course",
             issuedAt: serverTimestamp(),
             submissionId: params.id,
+            finalScore: scorePercentage.toFixed(2),
         });
 
-        // 3. Update Submission with Certificate ID
         const submissionRef = doc(db, "examSubmissions", params.id);
         await updateDoc(submissionRef, { certificateId: certRef.id });
 
         setCertificateId(certRef.id);
         toast({ title: "Certificate Generated!", description: "The certificate record has been created." });
 
-        // 4. Send Email via Genkit Flow
         const certificateUrl = `${window.location.origin}/certificate/${certRef.id}`;
         const emailResult = await sendCertificateEmail({
             studentName,
@@ -267,81 +283,97 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                     </Button>
                 </div>
               ) : (
-                <div className="space-y-12">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
                     {Object.entries(examQuestions).map(([sectionTitle, questions]) => (
                         <div key={sectionTitle} className="space-y-6">
                             <h2 className="font-headline text-2xl font-semibold border-b pb-2">{sectionTitle}</h2>
                             {questions.map(({id, question, isCode}) => (
-                                <div key={id} className="p-4 border rounded-lg bg-background/50">
-                                    <h3 className="font-semibold text-lg mb-2">{question}</h3>
+                                <div key={id} className="p-4 border rounded-lg bg-background/50 space-y-4">
+                                    <h3 className="font-semibold text-lg">{question}</h3>
                                     <p className={`whitespace-pre-wrap p-4 rounded-md bg-muted ${isCode ? 'font-mono text-sm' : 'text-base'}`}>
                                         {submission.answers[id]}
                                     </p>
+                                    <FormField
+                                        control={form.control}
+                                        name={`marks.${id}`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Score (0-5)</FormLabel>
+                                                <FormControl>
+                                                  <Controller
+                                                      control={form.control}
+                                                      name={`marks.${id}`}
+                                                      render={({ field: controllerField }) => (
+                                                        <MarkingRubric
+                                                          score={controllerField.value}
+                                                          onScoreChange={controllerField.onChange}
+                                                        />
+                                                      )}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                             ))}
                         </div>
                     ))}
 
-                    <div className="pt-8 border-t">
-                        <h2 className="font-headline text-2xl mb-4">Marking & Feedback</h2>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="status"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Outcome</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value} value={submission.status === 'passed' || submission.status === 'failed' ? submission.status : undefined}>
-                                                <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select final status" />
-                                                </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="passed">Passed</SelectItem>
-                                                    <SelectItem value="failed">Failed</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="feedback"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Overall Feedback (Optional)</FormLabel>
-                                            <FormControl>
-                                                <Textarea placeholder="Provide overall feedback for the student..." {...field} className="min-h-[120px]" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <div className="flex flex-wrap gap-4 items-center">
-                                    <Button type="submit" disabled={isSubmitting || isProcessing} size="lg">
-                                        {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
-                                        Save Marking
+                    <div className="pt-8 border-t sticky bottom-0 bg-background/95 py-6">
+                        <h2 className="font-headline text-2xl mb-4">Marking Summary</h2>
+                        <div className="flex justify-between items-center p-4 rounded-lg bg-muted mb-6">
+                          <div>
+                            <p className="text-muted-foreground">Total Score</p>
+                            <p className="font-bold text-2xl">{totalMarks} / {TOTAL_POSSIBLE_SCORE}</p>
+                          </div>
+                           <div>
+                            <p className="text-muted-foreground">Percentage</p>
+                            <p className="font-bold text-2xl">{scorePercentage.toFixed(2)}%</p>
+                          </div>
+                           <div>
+                            <p className="text-muted-foreground">Final Status</p>
+                            <Badge variant={finalStatus === 'passed' ? 'default' : 'destructive'} className="text-2xl px-4 py-1">
+                              {finalStatus}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <FormField
+                            control={form.control}
+                            name="feedback"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Overall Feedback (Optional)</FormLabel>
+                                    <FormControl>
+                                        <Textarea placeholder="Provide overall feedback for the student..." {...field} className="min-h-[120px]" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <div className="flex flex-wrap gap-4 items-center mt-6">
+                            <Button type="submit" disabled={isSubmitting || isProcessing} size="lg">
+                                {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+                                Save Marking
+                            </Button>
+                            {finalStatus === 'passed' && (
+                                certificateId ? (
+                                    <Button asChild variant="outline" size="lg">
+                                        <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
                                     </Button>
-                                    {submission.status === 'passed' && (
-                                        certificateId ? (
-                                            <Button asChild variant="outline" size="lg">
-                                                <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
-                                            </Button>
-                                        ) : (
-                                            <Button type="button" onClick={handleGenerateAndSendCertificate} disabled={isProcessing} size="lg" variant="secondary">
-                                                {isProcessing ? <Loader2 className="animate-spin mr-2"/> : <><Award className="mr-2"/><Mail className="mr-2"/></>}
-                                                Generate & Email Certificate
-                                            </Button>
-                                        )
-                                    )}
-                                </div>
-                            </form>
-                        </Form>
+                                ) : (
+                                    <Button type="button" onClick={handleGenerateAndSendCertificate} disabled={isProcessing} size="lg" variant="secondary">
+                                        {isProcessing ? <Loader2 className="animate-spin mr-2"/> : <><Award className="mr-2"/><Mail className="mr-2"/></>}
+                                        Generate & Email Certificate
+                                    </Button>
+                                )
+                            )}
+                        </div>
                     </div>
-                </div>
+                  </form>
+                </Form>
               )}
             </CardContent>
           </Card>
@@ -351,3 +383,4 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+

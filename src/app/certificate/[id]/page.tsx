@@ -17,9 +17,10 @@ type CertificateData = {
     issuedAt: {
         toDate: () => Date;
     };
+    finalScore: string;
 };
 
-export default function CertificatePage({ params }: { params: { id: string } }) {
+export default function CertificatePage({ params }: { params: { id:string } }) {
     const [certificate, setCertificate] = useState<CertificateData | null>(null);
     const [loading, setLoading] = useState(true);
     const certificateRef = useRef<HTMLDivElement>(null);
@@ -72,10 +73,12 @@ export default function CertificatePage({ params }: { params: { id: string } }) 
     return (
         <div className="bg-gray-100 min-h-screen py-12 px-4 flex flex-col items-center justify-center font-serif">
             <div className="w-full max-w-4xl">
-                 <div ref={certificateRef} className="bg-white p-8 shadow-2xl w-full aspect-[1.414/1] border-[10px] border-primary relative">
+                 <div ref={certificateRef} className="bg-white p-8 shadow-2xl w-full aspect-[1.414/1] border-[10px] border-primary relative print:shadow-none print:border-none">
                     <div className="absolute inset-0 border-2 border-accent m-2 pointer-events-none"></div>
+                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10">
+                        <UcnLogo className="h-96 w-96"/>
+                    </div>
                     <div className="relative flex flex-col h-full items-center text-center text-gray-800">
-                        {/* Header */}
                         <div className="flex items-center justify-between w-full">
                            <UcnLogo className="h-20 w-20" />
                            <div className="text-center">
@@ -85,23 +88,23 @@ export default function CertificatePage({ params }: { params: { id: string } }) 
                            <Award className="h-20 w-20 text-accent" />
                         </div>
 
-                        {/* Title */}
-                        <div className="my-12">
+                        <div className="my-8">
+                            <p className="text-xl tracking-wider uppercase text-muted-foreground">Certificate of Completion</p>
+                        </div>
+                        
+                        <div className="my-2">
                             <p className="text-xl tracking-wider">This certifies that</p>
                             <h2 className="text-6xl font-extrabold text-primary font-headline my-4 tracking-wide">{certificate.studentName}</h2>
                             <p className="text-xl tracking-wider">has successfully completed the course</p>
                         </div>
                         
-                        {/* Course Name */}
                         <h3 className="text-4xl font-bold font-headline">{certificate.courseName}</h3>
 
-                        {/* Description */}
-                        <p className="mt-8 text-base max-w-2xl">
-                           This course covered comprehensive concepts including programming fundamentals, data structures, object-oriented programming, error handling, file I/O, API interaction, and database management.
+                        <p className="mt-4 text-base max-w-2xl">
+                           with a final score of <span className="font-bold">{certificate.finalScore}%</span>, demonstrating proficiency in programming fundamentals, data structures, error handling, and database management.
                         </p>
                         
 
-                        {/* Footer with Signatures and Date */}
                         <div className="mt-auto w-full flex justify-between items-end text-base">
                             <div className="text-center">
                                 <p className="border-b-2 border-gray-400 pb-1 px-8 italic">Signature</p>
@@ -117,14 +120,13 @@ export default function CertificatePage({ params }: { params: { id: string } }) 
                             </div>
                         </div>
 
-                        {/* Certificate ID */}
                         <div className="absolute bottom-2 left-2 text-xs text-gray-400">
                             Certificate ID: {params.id}
                         </div>
                     </div>
                 </div>
             </div>
-             <Button onClick={handlePrint} className="mt-8 font-sans">
+             <Button onClick={handlePrint} className="mt-8 font-sans print:hidden">
                 <Download className="mr-2"/> Download / Print Certificate
             </Button>
         </div>
