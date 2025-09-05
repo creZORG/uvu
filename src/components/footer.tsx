@@ -1,8 +1,16 @@
+
+"use client";
+
 import Link from "next/link";
 import { UcnLogo } from "./icons";
 import { Twitter, Facebook, Linkedin, Instagram } from "lucide-react";
+import { useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <footer className="bg-primary/5 border-t border-primary/10">
       <div className="container px-4 md:px-6 py-12">
@@ -43,10 +51,39 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="border-t border-primary/10 mt-8 pt-8 text-center text-muted-foreground">
+        <div className="border-t border-primary/10 mt-8 pt-8 text-center text-muted-foreground space-y-4">
           <p>&copy; {new Date().getFullYear()} Uvumbuzi Community Network. All Rights Reserved.</p>
+           <div className="flex justify-center">
+            <button 
+              onClick={() => setIsModalOpen(true)} 
+              className={cn(
+                  "group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gray-800 px-4 py-2 font-mono font-medium tracking-tighter text-white"
+              )}
+              style={{ boxShadow: "inset 0 0 1.5rem rgba(139, 92, 246, 0.5)"}}
+            >
+                <span className="absolute top-0 right-0 -mt-1 -mr-1 h-8 w-8 transform translate-x-1 translate-y-1 bg-primary opacity-10 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:translate-y-0"></span>
+                <span className="relative z-10">Powered by RancidPool</span>
+            </button>
+          </div>
         </div>
       </div>
+
+       <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-headline text-2xl">Powered by RancidPool</AlertDialogTitle>
+            <AlertDialogDescription className="text-base pt-2">
+              This website was built by a member of RancidPool, a team of experienced developers leveraging AI and AI agents to build, deploy, and scale applications faster and more affordably.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction asChild>
+                <a href="https://rancidpool.com/case-studies" target="_blank" rel="noopener noreferrer">View Project Case Study</a>
+            </AlertDialogAction>
+            <AlertDialogAction onClick={() => setIsModalOpen(false)} variant="ghost">Close</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </footer>
   );
 }
