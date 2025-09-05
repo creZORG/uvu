@@ -3,9 +3,38 @@ import './globals.css';
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 
+const siteTitle = "Uvumbuzi Digital Hub";
+const siteDescription = "Empowering Communities Through Digital Innovation";
+const siteUrl = "https://uvumbuzi.com"; // Replace with your actual domain
+const siteImage = "https://i.postimg.cc/rsNCN5Lp/Whats-App-Image-2025-09-02-at-07-08-16-b89d0adf.jpg";
+
 export const metadata: Metadata = {
-  title: 'Uvumbuzi Digital Hub',
-  description: 'Empowering Communities Through Digital Innovation',
+  title: siteTitle,
+  description: siteDescription,
+  icons: {
+    icon: siteImage,
+  },
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl,
+    images: [
+      {
+        url: siteImage,
+        width: 1200,
+        height: 630,
+        alt: siteTitle,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+   twitter: {
+    card: 'summary_large_image',
+    title: siteTitle,
+    description: siteDescription,
+    images: [siteImage],
+  },
 };
 
 export default function RootLayout({
