@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { CodeSnippet } from "@/components/code-snippet";
 
 const courseContent = [
   {
@@ -53,8 +54,9 @@ const courseContent = [
             title: "Lesson 0.4: Overview of Programming Languages",
             content: [
                 "There are many different programming languages, each with its own strengths. Think of them as different tools for different jobs.",
-                "Python is known for being beginner-friendly and is widely used for web development, data analysis, and AI.",
+                { type: "code", language: "python", code: 'print("Hello, from Python!")' },
                 "JavaScript is the language of the web, used to make websites interactive.",
+                { type: "code", language: "javascript", code: 'console.log("Hello, from JavaScript!");' },
                 "Other languages like C++, Java, and SQL are used for things like high-performance games, large-scale enterprise applications, and managing databases, respectively."
             ],
             researchPrompt: "Besides Python and JavaScript, find two other programming languages and what they are commonly used for."
@@ -103,7 +105,7 @@ const courseContent = [
         content: [
             "A variable is a container for storing data. Data comes in different types, like integers (numbers), floats (decimals), strings (text), and booleans (true/false).",
             "You can get input from a user (e.g., asking for their name) and print output to the screen (e.g., saying 'Hello' to them).",
-            "Example (Python): `name = input('Enter your name: ')` followed by `print('Hello, ' + name)`.",
+            { type: "code", language: "python", code: "name = input('Enter your name: ')\nprint('Hello, ' + name)"}
         ],
         researchPrompt: "What is 'type casting'? For example, converting a string of numbers into an actual integer."
       },
@@ -126,9 +128,9 @@ const courseContent = [
             title: "Collections of Data: Lists and Tuples",
             content: [
                 "Lists (or Arrays) are ordered, changeable collections of items. They are perfect for when you need to store multiple values that you might need to modify later.",
-                "Example (Python): `my_fruits = ['apple', 'banana', 'cherry']`",
+                { type: "code", language: "python", code: "my_fruits = ['apple', 'banana', 'cherry']"},
                 "Tuples are ordered, but unchangeable collections. Once a tuple is created, you cannot add, remove, or change its items. This makes them fast and safe for data that shouldn't change.",
-                 "Example (Python): `point = (10, 20)`",
+                { type: "code", language: "python", code: "point = (10, 20)"},
             ],
             researchPrompt: "What is the key difference in performance between a list and a tuple in Python?"
         },
@@ -137,7 +139,7 @@ const courseContent = [
             content: [
                 "Sets are unordered, unindexed collections of unique items. They are useful for membership testing and removing duplicate entries.",
                 "Dictionaries (or hashmaps) are unordered collections of key-value pairs. They are optimized for retrieving a value when you know the key.",
-                "Example (Python): `student = {'name': 'John Doe', 'age': 25, 'course': 'Coding'}`",
+                { type: "code", language: "python", code: "student = {'name': 'John Doe', 'age': 25, 'course': 'Coding'}"},
                 "JSON (JavaScript Object Notation) is a popular data format that looks very similar to Python dictionaries.",
             ],
             researchPrompt: "Find an example of a JSON object. How does its structure compare to a Python dictionary?"
@@ -394,11 +396,17 @@ export default function CodingPage() {
                 <CardTitle className="font-headline text-2xl">{currentPage.title}</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 space-y-6">
-                  <ul className="list-disc list-inside space-y-2 text-lg">
-                    {currentPage.content.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
+                  <div className="space-y-4 text-lg">
+                    {currentPage.content.map((item, index) => {
+                       if (typeof item === 'string') {
+                        return <p key={index}>{item}</p>;
+                       }
+                       if (item.type === 'code') {
+                        return <CodeSnippet key={index} language={item.language} code={item.code} />;
+                       }
+                       return null;
+                    })}
+                  </div>
                    <p className="pt-4 text-primary/80 italic">
                         <strong>Research Task:</strong> {currentPage.researchPrompt}
                     </p>
@@ -427,3 +435,5 @@ export default function CodingPage() {
     </div>
   );
 }
+
+    
