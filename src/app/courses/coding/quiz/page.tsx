@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -94,7 +94,7 @@ const examQuestions = {
     ]
 };
 
-const EXAM_DURATION = 3 * 60 * 60; // 3 hours in seconds
+const EXAM_DURATION = 1.5 * 60 * 60; // 1.5 hours in seconds
 
 export default function CodingQuizPage() {
     const [user, loading] = useAuthState(auth);
@@ -107,15 +107,54 @@ export default function CodingQuizPage() {
     const [showSubmitWarning, setShowSubmitWarning] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(EXAM_DURATION);
+    const [isLoadingStatus, setIsLoadingStatus] = useState(true);
 
     const form = useForm<ExamFormValues>({
         resolver: zodResolver(examSchema),
         defaultValues: Object.fromEntries(Object.values(examQuestions).flat().map(q => [q.id, ""]))
     });
+
+    const disqualify = async (reason: string) => {
+      setDisqualificationReason(reason);
+      setIsDisqualified(true);
+      if (user) {
+        await setDoc(doc(db, "examSubmissions", user.uid), {
+          userId: user.uid,
+          userEmail: user.email,
+          quiz: "coding-final-exam",
+          answers: { "status": "disqualified", "reason": reason },
+          submittedAt: serverTimestamp(),
+          status: "disqualified",
+        });
+      }
+    };
     
     useEffect(() => {
+        if (!loading && user) {
+            const checkExamStatus = async () => {
+                const examDocRef = doc(db, "examSubmissions", user.uid);
+                const docSnap = await getDoc(examDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.status === 'submitted') {
+                        setIsSubmitted(true);
+                    } else if (data.status === 'disqualified') {
+                        setDisqualificationReason(data.answers?.reason || "You have been disqualified from this exam.");
+                        setIsDisqualified(true);
+                    }
+                }
+                setIsLoadingStatus(false);
+            };
+            checkExamStatus();
+        } else if (!loading && !user) {
+            router.push("/auth");
+        }
+    }, [user, loading, router]);
+
+
+    useEffect(() => {
         setIsMounted(true);
-        if (isSubmitted || isDisqualified) return;
+        if (isSubmitted || isDisqualified || isLoadingStatus) return;
 
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             e.preventDefault();
@@ -124,8 +163,7 @@ export default function CodingQuizPage() {
 
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden') {
-                setDisqualificationReason("You navigated away from the exam page.");
-                setIsDisqualified(true);
+                disqualify("You navigated away from the exam page.");
             }
         };
 
@@ -136,8 +174,7 @@ export default function CodingQuizPage() {
             setTimeLeft((prevTime) => {
                 if (prevTime <= 1) {
                     clearInterval(timerInterval);
-                    setDisqualificationReason("The time for the exam has expired.");
-                    setIsDisqualified(true);
+                    disqualify("The time for the exam has expired.");
                     return 0;
                 }
                 return prevTime - 1;
@@ -149,7 +186,7 @@ export default function CodingQuizPage() {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             clearInterval(timerInterval);
         };
-    }, [isSubmitted, isDisqualified]);
+    }, [isSubmitted, isDisqualified, isLoadingStatus]);
 
     const allFields = useWatch({ control: form.control });
     
@@ -167,10 +204,6 @@ export default function CodingQuizPage() {
         const s = (seconds % 60).toString().padStart(2, '0');
         return `${h}:${m}:${s}`;
     };
-
-    if (!loading && !user && isMounted) {
-        router.push("/auth");
-    }
 
     async function onSubmit(data: ExamFormValues) {
         if (!user) {
@@ -203,7 +236,7 @@ export default function CodingQuizPage() {
         }
     }
     
-    if (!isMounted) {
+    if (isLoadingStatus || !isMounted) {
        return (
             <div className="flex flex-col min-h-screen items-center justify-center bg-background">
                 <Loader2 className="h-8 w-8 animate-spin" />
