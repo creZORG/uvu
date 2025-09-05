@@ -1,8 +1,64 @@
+
+"use client";
+
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/lib/firebase";
+import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function CodingPage() {
+  const [user, loading] = useAuthState(auth);
+
+  const topics = [
+    {
+      title: "Introduction to Programming",
+      subtopics: ["What is code?", "Basic syntax and variables", "Data types"],
+    },
+    {
+      title: "Control Structures",
+      subtopics: ["If/else statements", "Loops (for, while)", "Switch cases"],
+    },
+    {
+      title: "Functions",
+      subtopics: ["Defining functions", "Parameters and arguments", "Return values"],
+    },
+    {
+      title: "Data Structures",
+      subtopics: ["Arrays and lists", "Objects and dictionaries", "Basic algorithms"],
+    },
+  ];
+
+  const renderStartButton = () => {
+    if (loading) {
+      return <Button size="lg" disabled>Loading...</Button>;
+    }
+    if (user) {
+      return (
+        <Button asChild size="lg">
+          <Link href="/courses/coding/quiz">Start Quiz</Link>
+        </Button>
+      );
+    }
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button size="lg" disabled>
+              Start Quiz
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Please log in to start the quiz.</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -11,28 +67,32 @@ export default function CodingPage() {
           <div className="container px-4 md:px-6">
             <div className="text-center mb-12">
               <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                Coding Courses
+                Coding Quiz
               </h1>
               <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                Start your journey into the world of software development.
+                Test your knowledge of fundamental programming concepts.
               </p>
             </div>
             <Card className="max-w-4xl mx-auto">
               <CardHeader>
-                <CardTitle>Introduction to Coding</CardTitle>
-                <CardDescription>This video provides a great starting point for anyone new to programming, covering the basic concepts you'll need to get started.</CardDescription>
+                <CardTitle>Quiz Topics</CardTitle>
+                <CardDescription>This quiz covers the following topics and subtopics:</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="aspect-w-16 aspect-h-9">
-                  <iframe 
-                    src="https://www.youtube.com/embed/ZgBCv7c4TWc" 
-                    title="YouTube video player" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                    className="w-full h-full rounded-lg"
-                    style={{ aspectRatio: "16 / 9" }}
-                  ></iframe>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {topics.map((topic) => (
+                    <div key={topic.title} className="p-4 border rounded-lg">
+                      <h3 className="font-semibold text-lg mb-2">{topic.title}</h3>
+                      <ul className="list-disc list-inside text-muted-foreground">
+                        {topic.subtopics.map((subtopic) => (
+                          <li key={subtopic}>{subtopic}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-center pt-6">
+                  {renderStartButton()}
                 </div>
               </CardContent>
             </Card>
