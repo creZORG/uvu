@@ -2,8 +2,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, onSnapshot, query, orderBy, doc, getDoc } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,8 +27,30 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [user, authLoading] = useAuthState(auth);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+        router.push("/auth");
+        return;
+    }
+
+    const checkRole = async () => {
+        const userDoc = await getDoc(doc(db, "userProfiles", user.uid));
+        if (userDoc.exists() && userDoc.data().role === "admin") {
+            setIsAuthorized(true);
+        } else {
+            router.push("/");
+        }
+    };
+    checkRole();
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!isAuthorized) return;
+
     const q = query(collection(db, "examSubmissions"), orderBy("submittedAt", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const subs: Submission[] = [];
@@ -39,7 +62,7 @@ export default function AdminPage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [isAuthorized]);
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -56,11 +79,13 @@ export default function AdminPage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading || !isAuthorized) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="mt-4 text-muted-foreground">Loading submissions...</p>
+        <p className="mt-4 text-muted-foreground">
+          {isAuthorized ? 'Loading submissions...' : 'Verifying access...'}
+        </p>
       </div>
     );
   }

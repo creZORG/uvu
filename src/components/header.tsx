@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ChevronDown, Menu } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -17,7 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
@@ -27,7 +28,6 @@ const navLinks = [
   { href: "/courses", label: "Courses" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
-  { href: "/admin", label: "Admin" },
 ];
 
 const programLinks = [
@@ -43,14 +43,29 @@ export function Header() {
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [user, loading] = useAuthState(auth);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
+
+    const fetchUserRole = async () => {
+        if (user) {
+            const userDoc = await getDoc(doc(db, "userProfiles", user.uid));
+            if (userDoc.exists()) {
+                setUserRole(userDoc.data().role);
+            }
+        }
+    };
+
+    if (!loading && user) {
+        fetchUserRole();
+    }
+
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [user, loading]);
 
   const AuthNav = () => {
     if (loading) {
@@ -99,7 +114,7 @@ export function Header() {
           {link.label}
         </Link>
       ))}
-      <DropdownMenu>
+       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors outline-none">
             Programs <ChevronDown className="h-4 w-4" />
         </DropdownMenuTrigger>
@@ -111,6 +126,9 @@ export function Header() {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      {userRole === 'admin' && (
+           <Link href="/admin" onClick={() => setSheetOpen(false)} className="text-foreground/80 hover:text-foreground transition-colors">Admin</Link>
+      )}
     </nav>
   );
 

@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,12 +78,34 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [user, authLoading] = useAuthState(auth);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   const form = useForm<MarkingFormValues>({
     resolver: zodResolver(markingSchema),
   });
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+        router.push("/auth");
+        return;
+    }
+
+    const checkRole = async () => {
+        const userDoc = await getDoc(doc(db, "userProfiles", user.uid));
+        if (userDoc.exists() && userDoc.data().role === "admin") {
+            setIsAuthorized(true);
+        } else {
+            router.push("/");
+        }
+    };
+    checkRole();
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!isAuthorized) return;
+
     const fetchSubmission = async () => {
       if (!params.id) return;
       try {
@@ -106,7 +129,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
       }
     };
     fetchSubmission();
-  }, [params.id, toast, form]);
+  }, [params.id, toast, form, isAuthorized]);
 
   const onSubmit = async (data: MarkingFormValues) => {
     setIsSubmitting(true);
@@ -126,10 +149,13 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     }
   }
 
-  if (loading) {
+  if (authLoading || loading || !isAuthorized) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin" />
+        <p className="mt-4 text-muted-foreground">
+          {isAuthorized ? 'Loading submission...' : 'Verifying access...'}
+        </p>
       </div>
     );
   }
