@@ -11,14 +11,22 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Trophy } from "lucide-react";
 import { CodeSnippet } from "@/components/code-snippet";
+import { Badge } from "@/components/ui/badge";
 
 const courseContent = [
   {
     title: "Module 0: Introduction to Programming",
+    quiz: [
+        "What is programming?",
+        "Name two real-world products built using code.",
+        "What’s the difference between an interpreter and a compiler?",
+        "Which language is best for beginners and why?",
+        "Why do you want to learn programming?"
+    ],
     pages: [
         {
             title: "Lesson 0.1: What is Programming?",
@@ -76,6 +84,13 @@ const courseContent = [
   },
   {
     title: "Module 1: Setting Up Your Environment",
+    quiz: [
+        "What is the terminal used for in programming?",
+        "How do you run a Python file from the terminal?",
+        "What is the difference between Git and GitHub?",
+        "What does 'git commit' do?",
+        "Why is VS Code recommended for beginners?"
+    ],
     pages: [
         {
             title: "Lesson 1.1: Installing Python",
@@ -142,6 +157,13 @@ const courseContent = [
   },
   {
     title: "Module 2: Programming Basics (Using Python)",
+    quiz: [
+        "What’s the difference between a list and a tuple?",
+        "How do you remove duplicates from a list using a set?",
+        "How do you add a new key-value pair to a dictionary?",
+        "Write a loop that prints each value in a dictionary.",
+        "When would you use a list of dictionaries?"
+    ],
     pages: [
       {
         title: "Lesson 2.1: Your First Python Program",
@@ -223,6 +245,13 @@ const courseContent = [
   },
   {
     title: "Module 3: Data Structures",
+    quiz: [
+        "What’s the difference between a list and a tuple?",
+        "How do you remove duplicates from a list using a set?",
+        "How do you add a new key-value pair to a dictionary?",
+        "Write a loop that prints each value in a dictionary.",
+        "When would you use a list of dictionaries?"
+    ],
     pages: [
         {
             title: "Lesson 3.1: Lists - The Most Useful Data Structure",
@@ -305,6 +334,13 @@ const courseContent = [
   },
   {
     title: "Module 4: Functions and Modules",
+    quiz: [
+        "What is the difference between print() and return in a function?",
+        "Write a function that multiplies two numbers and returns the result.",
+        "What happens when a variable is defined inside a function?",
+        "How do you import a function from another file?",
+        "What is the purpose of __name__ == '__main__'?"
+    ],
     pages: [
         {
             title: "Lesson 4.1: What Are Functions and Why Use Them?",
@@ -385,6 +421,13 @@ const courseContent = [
   },
   {
     title: "Module 5: Error Handling & Debugging",
+    quiz: [
+        "What’s the difference between a syntax error and a logic error?",
+        "What happens if you don’t handle a ZeroDivisionError?",
+        "Write a try/except block that catches invalid input when asking for a number.",
+        "What does 'finally' do in a try/except block?",
+        "How do you raise your own ValueError?"
+    ],
     pages: [
       {
         title: "Lesson 5.1: Types of Errors in Python",
@@ -446,6 +489,13 @@ const courseContent = [
   },
   {
     title: "Module 6: Object-Oriented Programming (OOP)",
+    quiz: [
+        "What is the purpose of __init__ in a class?",
+        "What does 'self' refer to?",
+        "What is the difference between a class and an object?",
+        "How does inheritance help reduce code duplication?",
+        "What does encapsulation protect against?"
+    ],
     pages: [
       {
         title: "Lesson 6.1: Introduction to OOP",
@@ -526,6 +576,13 @@ const courseContent = [
   },
   {
     title: "Module 7: File Handling & Persistence",
+    quiz: [
+        "What are the main file modes and their differences?",
+        "Why is the 'with' statement preferred for file handling?",
+        "How do you read a file line by line?",
+        "What is the difference between CSV and JSON files?",
+        "Write code to save a Python dictionary to a JSON file."
+    ],
     pages: [
       {
         title: "Lesson 7.1: Introduction to File Handling",
@@ -607,6 +664,13 @@ const courseContent = [
   },
   {
     title: "Module 8: Working with APIs & Web Data",
+    quiz: [
+        "What does API stand for and what does it do?",
+        "What HTTP method do we mainly use to get data from an API?",
+        "How do you convert an API response to a Python dictionary?",
+        "What should your program do if the API returns status code 404?",
+        "Write Python code to make a GET request and print the JSON data."
+    ],
     pages: [
       {
         title: "Lesson 8.1: Introduction to APIs",
@@ -652,6 +716,13 @@ const courseContent = [
   },
   {
     title: "Module 9: Testing, Debugging & Code Quality",
+    quiz: [
+        "What are the different types of testing?",
+        "What is the purpose of a linter?",
+        "What is the 'unittest' module used for?",
+        "Explain the concept of Continuous Integration (CI).",
+        "What is refactoring?"
+    ],
     pages: [
         {
             title: "Lesson 9.1: Introduction to Testing",
@@ -696,6 +767,13 @@ const courseContent = [
   },
   {
     title: "Module 10: Introduction to Databases",
+     quiz: [
+        "What is the difference between a relational (SQL) and a non-relational (NoSQL) database?",
+        "What is a 'Primary Key' in a SQL table?",
+        "What are the four 'CRUD' operations in SQL?",
+        "What is SQL Injection and why is it dangerous?",
+        "What does an ORM (Object-Relational Mapper) do?"
+    ],
     pages: [
         {
             title: "Lesson 10.1: What is a Database?",
@@ -747,6 +825,13 @@ const courseContent = [
   },
   {
     title: "Module 11: Career Development & Lifelong Learning",
+    quiz: [
+        "What is the 'STAR' method for answering behavioral interview questions?",
+        "What are MOOCs and can you name two popular platforms?",
+        "Why is an active GitHub profile important for a developer?",
+        "What is one strategy to avoid burnout while learning to code?",
+        "What is one project you would like to build with your new skills?"
+    ],
     pages: [
         {
             title: "Lesson 11.1: Building Your Developer Brand",
@@ -805,8 +890,11 @@ export default function CodingPage() {
   const router = useRouter();
   const { toast } = useToast();
   
-  const [isFirstTime, setIsFirstTime] = useState(false);
+  const [showIntroModal, setShowIntroModal] = useState(false);
+  const [showModuleModal, setShowModuleModal] = useState(false);
+  const [showResetWarning, setShowResetWarning] = useState(false);
   const [isQuizUnlocked, setIsQuizUnlocked] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -817,34 +905,41 @@ export default function CodingPage() {
         router.push('/auth');
         return;
     }
-    const hasVisited = localStorage.getItem('hasVisitedCodingCourse');
-    if (!hasVisited) {
-        setIsFirstTime(true);
-        localStorage.setItem('hasVisitedCodingCourse', 'true');
-    }
-
     const savedProgress = localStorage.getItem(`codingCourseProgress_${user.uid}`);
     if (savedProgress) {
         const { module, page } = JSON.parse(savedProgress);
         setCurrentModuleIndex(module);
         setCurrentPageIndex(page);
     }
+    setShowIntroModal(true);
+    setHasLoaded(true);
   }, [user, loading, router]);
 
 
   useEffect(() => {
-      if(user) {
+      if(user && hasLoaded) {
         const progress = { module: currentModuleIndex, page: currentPageIndex };
         localStorage.setItem(`codingCourseProgress_${user.uid}`, JSON.stringify(progress));
       }
-  }, [currentModuleIndex, currentPageIndex, user]);
+  }, [currentModuleIndex, currentPageIndex, user, hasLoaded]);
+  
+  const handleStartOver = () => {
+    setShowIntroModal(false);
+    setShowResetWarning(true);
+  };
+  
+  const confirmStartOver = () => {
+      setCurrentModuleIndex(0);
+      setCurrentPageIndex(0);
+      setShowResetWarning(false);
+  };
+
 
   const handleNext = () => {
     if (currentPageIndex < courseContent[currentModuleIndex].pages.length - 1) {
       setCurrentPageIndex(currentPageIndex + 1);
     } else if (currentModuleIndex < courseContent.length - 1) {
-      setCurrentModuleIndex(currentModuleIndex + 1);
-      setCurrentPageIndex(0);
+      setShowModuleModal(true);
     } else {
         const pagesCompleted = courseContent.slice(0, currentModuleIndex).reduce((acc, module) => acc + module.pages.length, 0) + currentPageIndex + 1;
         const progressPercentage = (pagesCompleted / totalPages) * 100;
@@ -853,6 +948,12 @@ export default function CodingPage() {
         }
     }
   };
+  
+  const handleStartNextModule = () => {
+      setShowModuleModal(false);
+      setCurrentModuleIndex(currentModuleIndex + 1);
+      setCurrentPageIndex(0);
+  }
 
   const handlePrev = () => {
     if (currentPageIndex > 0) {
@@ -893,6 +994,11 @@ export default function CodingPage() {
       return requiredFields.every(field => profile[field]);
   };
   
+  const handlePillClick = (moduleIndex: number) => {
+      setCurrentModuleIndex(moduleIndex);
+      setCurrentPageIndex(0);
+  };
+
   const currentModule = courseContent[currentModuleIndex];
   const currentPage = currentModule.pages[currentPageIndex];
 
@@ -905,20 +1011,87 @@ export default function CodingPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       
-      <AlertDialog open={isFirstTime} onOpenChange={setIsFirstTime}>
+      {/* Intro Modal */}
+      <AlertDialog open={showIntroModal} onOpenChange={setShowIntroModal}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="font-headline text-2xl">Welcome to the Coding Course!</AlertDialogTitle>
-            <AlertDialogDescription className="text-lg">
-              Pay close attention to each module. Once you complete the course, you will unlock a quiz.
-              This quiz can only be attempted once. Good luck!
+            <AlertDialogDescription className="text-base pt-2">
+                This comprehensive course will take you from a complete beginner to a capable programmer. Here's your learning path:
             </AlertDialogDescription>
+             <div className="max-h-60 overflow-y-auto py-2">
+                <ul className="list-decimal list-inside space-y-1 text-muted-foreground">
+                    {courseContent.map((module, index) => (
+                        <li key={index}>{module.title}</li>
+                    ))}
+                </ul>
+            </div>
+             { (currentModuleIndex > 0 || currentPageIndex > 0) &&
+                <p className="pt-2 text-primary font-semibold">
+                    You left off at: <span className="font-bold">{currentModule.title} - Page {currentPageIndex + 1}</span>
+                </p>
+            }
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setIsFirstTime(false)}>Let's Begin</AlertDialogAction>
+          <AlertDialogFooter className="sm:justify-between">
+            <Button variant="destructive" onClick={handleStartOver}>Start Over</Button>
+            <AlertDialogAction onClick={() => setShowIntroModal(false)}>Continue Learning</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+       {/* Reset Progress Warning Modal */}
+      <AlertDialog open={showResetWarning} onOpenChange={setShowResetWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will reset all your course progress. You will start over from Module 0, page 1. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStartOver}>Yes, Reset My Progress</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Inter-Module Modal */}
+       <AlertDialog open={showModuleModal} onOpenChange={setShowModuleModal}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle className="font-headline text-2xl flex items-center gap-2">
+                        <Trophy className="text-amber-400" /> Well Done!
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-base pt-2">
+                        You've completed <strong>{currentModule.title}</strong>. Take a moment to review these key concepts before moving on.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                
+                <div className="space-y-4">
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">Self-Check Quiz:</h3>
+                        <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground bg-accent/50 p-4 rounded-md">
+                            {currentModule.quiz.map((q, i) => <li key={i}>{q}</li>)}
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">Next Up: {courseContent[currentModuleIndex + 1]?.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                            Here's a preview of what you'll learn:
+                        </p>
+                         <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground mt-2">
+                            {courseContent[currentModuleIndex + 1]?.pages.map((p, i) => <li key={i}>{p.title}</li>)}
+                        </ul>
+                    </div>
+                </div>
+
+                <AlertDialogFooter>
+                    <AlertDialogAction onClick={handleStartNextModule} className="w-full">
+                       <Rocket className="mr-2"/> Start Next Module
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
 
        <AlertDialog open={isQuizUnlocked} onOpenChange={setIsQuizUnlocked}>
         <AlertDialogContent>
@@ -956,7 +1129,20 @@ export default function CodingPage() {
               </p>
             </div>
 
-             <div className="max-w-4xl mx-auto mb-8">
+            <div className="max-w-4xl mx-auto mb-4">
+                 <div className="flex flex-wrap gap-2 mb-4">
+                    {courseContent.slice(0, currentModuleIndex + 1).map((module, index) => (
+                        <Badge 
+                            key={index}
+                            variant={index === currentModuleIndex ? "default" : "secondary"}
+                            className="cursor-pointer"
+                            onClick={() => handlePillClick(index)}
+                        >
+                            Module {index}
+                        </Badge>
+                    ))}
+                </div>
+
                 <div className="flex justify-between mb-2">
                     <span className="text-sm font-medium text-primary">Course Progress</span>
                     <span className="text-sm font-medium text-primary">{Math.round(progressPercentage)}%</span>
