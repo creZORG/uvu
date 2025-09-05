@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Submission = {
   id: string;
@@ -50,10 +48,20 @@ type TeamMember = {
   order: number;
 };
 
-type AdminView = "submissions" | "content" | "mail";
+type Project = {
+  id?: string;
+  title: string;
+  content: string;
+  imageUrls: { url: string }[];
+  createdAt?: any;
+};
+
+
+type AdminView = "submissions" | "content" | "mail" | "projects";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [user, authLoading] = useAuthState(auth);
@@ -62,14 +70,17 @@ export default function AdminPage() {
   const { toast } = useToast();
   
   const [activeView, setActiveView] = useState<AdminView>("submissions");
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const contentForm = useForm<SiteContent>();
   const mailForm = useForm<SendMailInput>();
+  const projectForm = useForm<Project>();
   
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
   const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
   const { fields: teamFields, append: appendTeam, remove: removeTeam } = useFieldArray({ control: contentForm.control, name: "teamMembers" });
   const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({ control: contentForm.control, name: "galleryImages" });
+  const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({ control: projectForm.control, name: "imageUrls" });
 
   useEffect(() => {
     if (authLoading) return;
@@ -109,12 +120,30 @@ export default function AdminPage() {
       setSubmissions(subs);
     });
 
+    const projectsQuery = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+    const projectsUnsubscribe = onSnapshot(projectsQuery, (querySnapshot) => {
+        const projs: Project[] = [];
+        querySnapshot.forEach((doc) => {
+            projs.push({ id: doc.id, ...doc.data() } as Project);
+        });
+        setProjects(projs);
+    });
+
     setLoading(false);
 
     return () => {
         subsUnsubscribe();
+        projectsUnsubscribe();
     };
   }, [isAuthorized, contentForm]);
+
+  useEffect(() => {
+    if (editingProject) {
+        projectForm.reset(editingProject);
+    } else {
+        projectForm.reset({ title: "", content: "", imageUrls: [] });
+    }
+  }, [editingProject, projectForm]);
 
   const onContentSubmit = async (data: SiteContent) => {
     try {
@@ -144,6 +173,32 @@ export default function AdminPage() {
     }
   };
   
+    const onProjectSubmit = async (data: Project) => {
+        try {
+            if (editingProject?.id) {
+                await setDoc(doc(db, "projects", editingProject.id), data, { merge: true });
+                toast({ title: "Project Updated!" });
+            } else {
+                await addDoc(collection(db, "projects"), { ...data, createdAt: new Date() });
+                toast({ title: "Project Created!" });
+            }
+            setEditingProject(null);
+        } catch (error) {
+            console.error("Error saving project:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save project." });
+        }
+    };
+
+    const deleteProject = async (id: string) => {
+        try {
+            await deleteDoc(doc(db, "projects", id));
+            toast({ title: "Project Deleted" });
+        } catch (error) {
+            console.error("Error deleting project:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not delete project." });
+        }
+    };
+
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "submitted": return "secondary";
@@ -269,6 +324,54 @@ export default function AdminPage() {
                     </form>
                 </div>
             )
+        case "projects":
+             return (
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 className="font-headline text-2xl mb-4">{editingProject ? "Edit Project" : "Create New Project"}</h3>
+                        <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-4 p-4 border rounded-lg">
+                            <div><Label>Project Title</Label><Input {...projectForm.register("title")} /></div>
+                            <div><Label>Content / Description</Label><Textarea {...projectForm.register("content")} className="min-h-[200px]" /></div>
+                            
+                            <div className="space-y-2">
+                                <Label>Images</Label>
+                                {imageFields.map((field, index) => (
+                                    <div key={field.id} className="flex gap-2 items-center">
+                                        <Input {...projectForm.register(`imageUrls.${index}.url`)} placeholder="Image URL"/>
+                                        <Button type="button" variant="destructive" size="icon" onClick={() => removeImage(index)}><Trash2 size={16}/></Button>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={() => appendImage({ url: '' })}><PlusCircle className="mr-2"/>Add Image URL</Button>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Button type="submit">
+                                    {editingProject ? "Update Project" : "Create Project"}
+                                </Button>
+                                {editingProject && <Button type="button" variant="ghost" onClick={() => setEditingProject(null)}>Cancel Edit</Button>}
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h3 className="font-headline text-2xl mb-4">Existing Projects</h3>
+                        <div className="space-y-4">
+                            {projects.map(proj => (
+                                <div key={proj.id} className="p-4 border rounded-lg flex justify-between items-center">
+                                    <div>
+                                        <p className="font-bold">{proj.title}</p>
+                                        <p className="text-sm text-muted-foreground">{proj.content.substring(0, 50)}...</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => setEditingProject(proj)}>Edit</Button>
+                                        <Button variant="destructive" size="sm" onClick={() => deleteProject(proj.id!)}>Delete</Button>
+                                    </div>
+                                </div>
+                            ))}
+                            {projects.length === 0 && <p className="text-muted-foreground">No projects created yet.</p>}
+                        </div>
+                    </div>
+                </div>
+            );
         case "mail":
             return (
                  <div className="mt-6 md:mt-0">
@@ -328,6 +431,13 @@ export default function AdminPage() {
                         >
                             <FileText className="mr-2" /> Submissions
                         </Button>
+                         <Button
+                            variant={activeView === 'projects' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'projects' && "font-bold")}
+                            onClick={() => setActiveView("projects")}
+                        >
+                            <FolderKanban className="mr-2" /> Projects
+                        </Button>
                         <Button
                             variant={activeView === 'content' ? 'secondary' : 'ghost'}
                             className={cn("justify-start", activeView === 'content' && "font-bold")}
@@ -355,3 +465,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
