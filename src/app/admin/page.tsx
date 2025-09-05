@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2 } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 
 type Submission = {
   id: string;
@@ -53,9 +54,12 @@ export default function AdminPage() {
   const router = useRouter();
   const [user, authLoading] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isSendingMail, setIsSendingMail] = useState(false);
   const { toast } = useToast();
   
   const contentForm = useForm<HomepageContent>();
+  const mailForm = useForm<SendMailInput>();
+
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
   const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
 
@@ -111,6 +115,24 @@ export default function AdminPage() {
     }
   };
 
+  const onMailSubmit = async (data: SendMailInput) => {
+    setIsSendingMail(true);
+    try {
+        const result = await sendMail(data);
+        if (result.success) {
+            toast({ title: "Email Sent!", description: result.message });
+            mailForm.reset();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        console.error("Error sending mail: ", error);
+        toast({ variant: "destructive", title: "Error", description: String(error) });
+    } finally {
+        setIsSendingMail(false);
+    }
+  };
+
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "submitted": return "secondary";
@@ -140,13 +162,14 @@ export default function AdminPage() {
            <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-4xl">Admin Dashboard</CardTitle>
-                <CardDescription>Review submissions and manage site content.</CardDescription>
+                <CardDescription>Review submissions, manage site content, and send emails.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="submissions">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="submissions">Submissions</TabsTrigger>
                     <TabsTrigger value="homepage">Homepage Content</TabsTrigger>
+                    <TabsTrigger value="mail">Send Mail</TabsTrigger>
                   </TabsList>
                   <TabsContent value="submissions" className="mt-6">
                      <Table>
@@ -214,6 +237,26 @@ export default function AdminPage() {
                       <Button type="submit">Save Homepage Content</Button>
                     </form>
                   </TabsContent>
+                   <TabsContent value="mail" className="mt-6">
+                    <form onSubmit={mailForm.handleSubmit(onMailSubmit)} className="space-y-6">
+                        <div>
+                            <Label htmlFor="mail-to">Recipient Email</Label>
+                            <Input id="mail-to" type="email" placeholder="recipient@example.com" {...mailForm.register("to")} />
+                        </div>
+                        <div>
+                            <Label htmlFor="mail-subject">Subject</Label>
+                            <Input id="mail-subject" placeholder="Email Subject" {...mailForm.register("subject")} />
+                        </div>
+                        <div>
+                            <Label htmlFor="mail-body">Message (HTML is supported)</Label>
+                            <Textarea id="mail-body" placeholder="<h1>Hello!</h1><p>This is your message.</p>" {...mailForm.register("htmlBody")} className="min-h-[250px] font-mono" />
+                        </div>
+                        <Button type="submit" disabled={isSendingMail}>
+                            {isSendingMail ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2"/>}
+                            Send Email
+                        </Button>
+                    </form>
+                   </TabsContent>
                 </Tabs>
               </CardContent>
            </Card>

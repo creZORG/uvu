@@ -146,7 +146,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
             markedAt: new Date(),
         });
         toast({ title: "Marking Saved", description: "The submission has been updated." });
-        router.push("/admin");
+        setSubmission({ ...submission, ...data }); // update local state
     } catch (error) {
         console.error(error);
         toast({ variant: "destructive", title: "Error saving marks" });
@@ -292,7 +292,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Outcome</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} value={submission.status === 'passed' || submission.status === 'failed' ? submission.status : undefined}>
                                                 <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select final status" />
@@ -325,7 +325,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
                                         Save Marking
                                     </Button>
-                                    {form.getValues("status") === 'passed' && (
+                                    {submission.status === 'passed' && (
                                         certificateId ? (
                                             <Button asChild variant="outline" size="lg">
                                                 <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
@@ -351,5 +351,3 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    

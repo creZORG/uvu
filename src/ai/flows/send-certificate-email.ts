@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for sending a certificate email via Zeptomail.
@@ -8,7 +9,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { SendMailClient } from 'zeptomail';
+import { sendMail } from './send-mail-flow';
 
 const SendCertificateEmailSchema = z.object({
   studentName: z.string().describe('The name of the student.'),
@@ -23,33 +24,8 @@ export type SendCertificateEmailInput = z.infer<
 export async function sendCertificateEmail(
   input: SendCertificateEmailInput
 ): Promise<{ success: boolean; message: string }> {
-  return sendCertificateEmailFlow(input);
-}
-
-const sendCertificateEmailFlow = ai.defineFlow(
-  {
-    name: 'sendCertificateEmailFlow',
-    inputSchema: SendCertificateEmailSchema,
-    outputSchema: z.object({
-      success: z.boolean(),
-      message: z.string(),
-    }),
-  },
-  async (input) => {
-    const url = 'api.zeptomail.com/';
-    const token = process.env.ZOHO_ZEPTOMAIL_TOKEN;
-
-    if (!token) {
-      console.error('Zeptomail token not found in environment variables.');
-      return {
-        success: false,
-        message: 'Server configuration error: Missing email token.',
-      };
-    }
-
-    const client = new SendMailClient({ url, token });
-
-    const htmlBody = `
+  const subject = 'Your Uvumbuzi Digital Hub Certificate is Here!';
+  const htmlBody = `
       <div>
         <h2>Congratulations, ${input.studentName}!</h2>
         <p>
@@ -72,31 +48,9 @@ const sendCertificateEmailFlow = ai.defineFlow(
       </div>
     `;
 
-    try {
-      await client.sendMail({
-        bounce_address: 'bounces@uvumbuzihub.com',
-        from: {
-          address: 'certificates@uvumbuzihub.com',
-          name: 'Uvumbuzi Digital Hub',
-        },
-        to: [
-          {
-            email_address: {
-              address: input.studentEmail,
-              name: input.studentName,
-            },
-          },
-        ],
-        subject: 'Your Uvumbuzi Digital Hub Certificate is Here!',
-        htmlbody: htmlBody,
-      });
-      return { success: true, message: 'Email sent successfully.' };
-    } catch (error) {
-      console.error('Zeptomail error:', error);
-      return {
-        success: false,
-        message: `Failed to send email. Reason: ${error}`,
-      };
-    }
-  }
-);
+  return sendMail({
+    to: input.studentEmail,
+    subject: subject,
+    htmlBody: htmlBody,
+  });
+}
