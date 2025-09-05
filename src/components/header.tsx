@@ -20,6 +20,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ThemeToggle } from "./theme-toggle";
 
 
 const navLinks = [
@@ -121,6 +122,7 @@ export function Header() {
                     <Button asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 rounded-full">
                         <Link href="/donate">Donate</Link>
                     </Button>
+                    <ThemeToggle />
                     </div>
                 </div>
 
@@ -135,9 +137,12 @@ export function Header() {
                     <SheetContent side="right" className="w-[80vw] sm:w-[50vw] bg-background">
                     <div className="flex flex-col items-center justify-center h-full gap-8">
                         <NavLinks inSheet />
-                        <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4 rounded-full">
-                        <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
-                        </Button>
+                        <div className="flex items-center gap-4">
+                          <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4 rounded-full">
+                          <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
+                          </Button>
+                          <ThemeToggle />
+                        </div>
                     </div>
                     </SheetContent>
                 </Sheet>
