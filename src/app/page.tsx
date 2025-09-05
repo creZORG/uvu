@@ -64,16 +64,13 @@ export default function Home() {
 
     const fetchContent = async () => {
         try {
-            const docRef = doc(db, "siteContent", "homepage");
+            const docRef = doc(db, "siteContent", "content");
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 if(data.carouselImages) setSliderImages(data.carouselImages);
                 if(data.programs) {
-                    const dynamicPrograms = data.programs.map((p: any) => {
-                        const IconComponent = iconMap[p.icon] || Computer;
-                        return { ...p, icon: <IconComponent className="size-10 text-primary" /> };
-                    });
+                    const dynamicPrograms = data.programs.map((p: any) => ({ ...p, href: `/programs/${p.id}` }));
                     setPrograms(dynamicPrograms);
                 }
             }
@@ -254,7 +251,7 @@ export default function Home() {
                     {programs.map(program => (
                     <Link href={program.href} key={program.title}>
                         <Card className="flex flex-col sm:flex-row items-center p-6 gap-6 hover:shadow-lg transition-shadow h-full">
-                            <div className="flex-shrink-0">{program.icon}</div>
+                            <div className="flex-shrink-0">{iconMap[program.icon as keyof typeof iconMap] || <Computer className="size-10 text-primary" />}</div>
                             <div>
                                 <CardTitle className="font-headline text-xl mb-2">{program.title}</CardTitle>
                                 <CardDescription>{program.description}</CardDescription>
@@ -278,7 +275,7 @@ export default function Home() {
             </div>
             <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
               {partnerLogos.map((logo, index) => (
-                <div key={index} className="relative h-20 w-40 grayscale hover:grayscale-0 transition-all duration-300">
+                <div key={index} className="relative h-20 w-40 transition-all duration-300">
                   <Image
                     src={logo.src}
                     alt={logo.alt}
