@@ -18,7 +18,6 @@ import Autoplay from "embla-carousel-autoplay";
 import { Loader2 } from 'lucide-react';
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, onSnapshot, orderBy, query, limit } from "firebase/firestore";
-import { HomeTour } from "@/components/home-tour";
 
 
 const defaultSliderImages = [
@@ -46,7 +45,6 @@ type Project = {
 };
 
 export default function Home() {
-  const [runTour, setRunTour] = useState(false);
   const [loadingContent, setLoadingContent] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [sliderImages, setSliderImages] = useState(defaultSliderImages);
@@ -54,12 +52,6 @@ export default function Home() {
 
 
   useEffect(() => {
-    // We need to check this in useEffect to ensure it runs on the client
-    const hasSeenIntro = localStorage.getItem("hasSeenCourseIntro");
-    if (!hasSeenIntro) {
-      setRunTour(true);
-    }
-
     const fetchContent = async () => {
         try {
             const docRef = doc(db, "siteContent", "content");
@@ -89,11 +81,6 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  const handleTourCompletion = () => {
-    localStorage.setItem("hasSeenCourseIntro", "true");
-    setRunTour(false);
-  };
-
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
   const missionVisionContent = `Vision: To empower underserved communities through inclusive access to digital innovation, sustainable development, and lifelong learning, fostering a resilient and connected society. Mission: To create inclusive platforms that promote digital literacy, environmental stewardship, and social innovation by establishing ICT hubs, supporting e-waste recycling initiatives, and equipping youth and women with practical skills for sustainable development. Our Approach: UCN works with schools, community-based organizations, and local governments to co-create solutions that respond to real challenges faced by our communities.`;
   
@@ -109,7 +96,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <HomeTour run={runTour} onComplete={handleTourCompletion} />
       <Header />
 
       <main className="flex-1">
