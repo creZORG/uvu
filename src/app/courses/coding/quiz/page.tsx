@@ -17,9 +17,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogCancel } from "@/components/ui/alert-dialog";
-import { Loader2, AlertTriangle, Ban } from "lucide-react";
+import { Loader2, AlertTriangle, Ban, Clock } from "lucide-react";
 import Link from "next/link";
 import { NavigationBlocker } from "@/components/navigation-blocker";
+import { Badge } from "@/components/ui/badge";
 
 const examSchema = z.object({
     q1: z.string().min(10, "Please provide a more detailed answer."),
@@ -93,6 +94,8 @@ const examQuestions = {
     ]
 };
 
+const EXAM_DURATION = 3 * 60 * 60; // 3 hours in seconds
+
 export default function CodingQuizPage() {
     const [user, loading] = useAuthState(auth);
     const router = useRouter();
@@ -100,8 +103,10 @@ export default function CodingQuizPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isDisqualified, setIsDisqualified] = useState(false);
+    const [disqualificationReason, setDisqualificationReason] = useState("");
     const [showSubmitWarning, setShowSubmitWarning] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(EXAM_DURATION);
 
     const form = useForm<ExamFormValues>({
         resolver: zodResolver(examSchema),
@@ -110,15 +115,16 @@ export default function CodingQuizPage() {
     
     useEffect(() => {
         setIsMounted(true);
+        if (isSubmitted || isDisqualified) return;
+
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-             if (!isSubmitted && !isDisqualified) {
-                e.preventDefault();
-                e.returnValue = 'Are you sure you want to leave? Your exam progress will be lost.';
-            }
+            e.preventDefault();
+            e.returnValue = 'Are you sure you want to leave? Your exam progress will be lost.';
         };
 
         const handleVisibilityChange = () => {
-            if (document.visibilityState === 'hidden' && !isSubmitted && !isDisqualified) {
+            if (document.visibilityState === 'hidden') {
+                setDisqualificationReason("You navigated away from the exam page.");
                 setIsDisqualified(true);
             }
         };
@@ -126,9 +132,22 @@ export default function CodingQuizPage() {
         window.addEventListener('beforeunload', handleBeforeUnload);
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
+        const timerInterval = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                if (prevTime <= 1) {
+                    clearInterval(timerInterval);
+                    setDisqualificationReason("The time for the exam has expired.");
+                    setIsDisqualified(true);
+                    return 0;
+                }
+                return prevTime - 1;
+            });
+        }, 1000);
+
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
+            clearInterval(timerInterval);
         };
     }, [isSubmitted, isDisqualified]);
 
@@ -140,6 +159,13 @@ export default function CodingQuizPage() {
             const value = allFields[q.id as keyof ExamFormValues];
             return typeof value === 'string' && value.trim().length > 0;
         });
+    };
+
+    const formatTime = (seconds: number) => {
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${h}:${m}:${s}`;
     };
 
     if (!loading && !user && isMounted) {
@@ -193,10 +219,14 @@ export default function CodingQuizPage() {
                     <Card className="w-full max-w-2xl text-center p-8 bg-destructive/10 border-destructive">
                         <CardHeader>
                             <CardTitle className="font-headline text-3xl text-destructive-foreground flex items-center justify-center gap-4">
-                                <Ban size={32} /> Exam Disqualified
+                                <Ban size={32} /> Exam Voided
                             </CardTitle>
                             <CardDescription className="text-base pt-4 text-destructive-foreground/90">
-                                Your exam attempt has been voided because you navigated away from the exam page. To ensure fairness, all candidates must remain on the page for the duration of the test.
+                                Your exam attempt has been voided.
+                                <br/>
+                                <strong>Reason:</strong> {disqualificationReason}
+                                <br/><br/>
+                                To ensure fairness, all candidates must adhere to the exam rules.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -242,11 +272,17 @@ export default function CodingQuizPage() {
             <main className="flex-1 py-12">
                 <section className="container max-w-4xl mx-auto">
                     <Card>
-                        <CardHeader className="text-center">
+                        <CardHeader className="text-center border-b pb-6">
                             <CardTitle className="font-headline text-4xl">Final Exam – General Coding Course</CardTitle>
-                            <CardDescription className="text-lg">Answer all questions to the best of your ability. Good luck!</CardDescription>
+                             <div className="flex justify-center items-center gap-4 mt-4">
+                                <Badge variant="secondary" className="text-lg px-4 py-2">
+                                    <Clock className="mr-2 h-5 w-5"/>
+                                    Time Left: {formatTime(timeLeft)}
+                                </Badge>
+                             </div>
+                            <CardDescription className="text-lg pt-4">Answer all questions to the best of your ability. Good luck!</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="pt-6">
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
                                     {Object.entries(examQuestions).map(([sectionTitle, questions]) => (
@@ -259,7 +295,7 @@ export default function CodingQuizPage() {
                                                     name={id as keyof ExamFormValues}
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel className="text-lg font-medium">Question {index + 1}: {question}</FormLabel>
+                                                            <FormLabel className="text-lg font-medium">Question {Object.values(examQuestions).flat().findIndex(q => q.id === id) + 1}: {question}</FormLabel>
                                                             <FormControl>
                                                                 <Textarea
                                                                     placeholder={isCode ? "Write your code and explanation here..." : "Write your answer here..."}
@@ -311,3 +347,5 @@ export default function CodingQuizPage() {
         </div>
     );
 }
+
+    
