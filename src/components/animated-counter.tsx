@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -49,3 +50,5 @@ export function AnimatedCounter({ value }: { value: number }) {
 
   return <span ref={ref}>{count.toLocaleString()}</span>;
 }
+
+    
