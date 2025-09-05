@@ -23,11 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/#about", label: "About" },
-  { href: "/courses", label: "Courses" },
   { href: "/gallery", label: "Gallery" },
-  { href: "/contact", label: "Contact" },
 ];
 
 const programLinks = [
@@ -104,6 +100,9 @@ export function Header() {
       "flex gap-6 items-center",
       inSheet ? "flex-col text-lg" : "hidden md:flex"
     )}>
+       <Button variant="ghost" asChild>
+            <Link href="/courses" onClick={() => setSheetOpen(false)}>Courses</Link>
+        </Button>
       {navLinks.map((link) => (
         <Link
           key={link.href}
