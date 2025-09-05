@@ -52,9 +52,9 @@ const sendMailFlow = ai.defineFlow(
 
     try {
       await client.sendMail({
-        bounce_address: 'bounces@uvumbuzihub.com',
+        bounce_address: 'bounces@uvumbuzicommunity.org',
         from: {
-          address: 'support@uvumbuzihub.com',
+          address: 'noreply@uvumbuzicommunity.org',
           name: 'Uvumbuzi Digital Hub',
         },
         to: [
