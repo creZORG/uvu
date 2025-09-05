@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { NavigationBlocker } from "@/components/navigation-blocker";
 
 const examSchema = z.object({
     q1: z.string().min(10, "Please provide a more detailed answer."),
@@ -98,7 +99,7 @@ export default function CodingQuizPage() {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+    const [showSubmitWarning, setShowSubmitWarning] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     const form = useForm<ExamFormValues>({
@@ -106,20 +107,22 @@ export default function CodingQuizPage() {
         defaultValues: Object.fromEntries(Object.values(examQuestions).flat().map(q => [q.id, ""]))
     });
     
-    // Prevent leaving the page
     useEffect(() => {
         setIsMounted(true);
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            e.preventDefault();
-            e.returnValue = '';
+             if (!isSubmitted) {
+                e.preventDefault();
+                e.returnValue = 'Are you sure you want to leave? Your exam progress will be lost.';
+            }
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, []);
+    }, [isSubmitted]);
 
     const allFields = useWatch({ control: form.control });
     
     const isFormComplete = () => {
+        if(!allFields) return false;
         return Object.values(examQuestions).flat().every(q => {
             const value = allFields[q.id as keyof ExamFormValues];
             return typeof value === 'string' && value.trim().length > 0;
@@ -191,6 +194,7 @@ export default function CodingQuizPage() {
     
     return (
         <div className="flex flex-col min-h-screen bg-background">
+            <NavigationBlocker shouldBlock={!isSubmitted} />
             <Header />
             <main className="flex-1 py-12">
                 <section className="container max-w-4xl mx-auto">
@@ -231,7 +235,7 @@ export default function CodingQuizPage() {
                                     <div className="flex justify-end pt-6">
                                         <Button
                                             type="button"
-                                            onClick={() => setShowLeaveWarning(true)}
+                                            onClick={() => setShowSubmitWarning(true)}
                                             disabled={!isFormComplete() || isSubmitting}
                                             size="lg"
                                         >
@@ -244,7 +248,7 @@ export default function CodingQuizPage() {
                         </CardContent>
                     </Card>
                 </section>
-                <AlertDialog open={showLeaveWarning} onOpenChange={setShowLeaveWarning}>
+                <AlertDialog open={showSubmitWarning} onOpenChange={setShowSubmitWarning}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -263,4 +267,3 @@ export default function CodingQuizPage() {
         </div>
     );
 }
-
