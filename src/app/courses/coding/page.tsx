@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
@@ -906,22 +906,40 @@ export default function CodingPage() {
         router.push('/auth');
         return;
     }
-    const savedProgress = localStorage.getItem(`codingCourseProgress_${user.uid}`);
-    if (savedProgress) {
-        const { module, page } = JSON.parse(savedProgress);
-        setCurrentModuleIndex(module);
-        setCurrentPageIndex(page);
-    }
-    setShowIntroModal(true);
-    setHasLoaded(true);
+
+    const fetchProgress = async () => {
+        const docRef = doc(db, "userProfiles", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const profileData = docSnap.data();
+            if (profileData.codingCourseProgress) {
+                const { module, page } = profileData.codingCourseProgress;
+                setCurrentModuleIndex(module);
+                setCurrentPageIndex(page);
+            }
+        }
+        setShowIntroModal(true);
+        setHasLoaded(true);
+    };
+
+    fetchProgress();
   }, [user, loading, router]);
 
 
   useEffect(() => {
-      if(user && hasLoaded) {
-        const progress = { module: currentModuleIndex, page: currentPageIndex };
-        localStorage.setItem(`codingCourseProgress_${user.uid}`, JSON.stringify(progress));
-      }
+    const saveProgress = async () => {
+        if(user && hasLoaded) {
+            const docRef = doc(db, "userProfiles", user.uid);
+            const progress = { module: currentModuleIndex, page: currentPageIndex };
+            try {
+                // Use setDoc with merge:true to create or update the field
+                await setDoc(docRef, { codingCourseProgress: progress }, { merge: true });
+            } catch (error) {
+                console.error("Error saving progress: ", error);
+            }
+        }
+    };
+    saveProgress();
   }, [currentModuleIndex, currentPageIndex, user, hasLoaded]);
   
   const handleStartOver = () => {
