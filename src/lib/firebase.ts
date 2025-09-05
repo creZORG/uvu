@@ -7,9 +7,9 @@ import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
   projectId: "uvumbuzi-digital-hub",
   appId: "1:361125720929:web:3eb22f4460fafbd4500b20",
-  storageBucket: "uvumbuzi-digital-hub.firebasestorage.app",
+  storageBucket: "uvumbuzi-digital-hub.appspot.com",
   apiKey: "AIzaSyBcLJKE7kU_d78iIMlyAv-f9GskXRtzQkE",
-  authDomain: "uvumbuzicommunity.org",
+  authDomain: "uvumbuzi-digital-hub.firebaseapp.com",
   messagingSenderId: "361125720929",
 };
 
