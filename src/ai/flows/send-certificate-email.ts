@@ -74,6 +74,7 @@ const sendCertificateEmailFlow = ai.defineFlow(
 
     try {
       await client.sendMail({
+        bounce_address: 'bounces@uvumbuzihub.com',
         from: {
           address: 'certificates@uvumbuzihub.com',
           name: 'Uvumbuzi Digital Hub',
