@@ -23,9 +23,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
 const navLinks = [
-  { href: "/courses", label: "Courses" },
-  { href: "/programs", label: "Programs" },
-  { href: "/gallery", label: "Gallery" },
+  { href: "/courses", label: "Courses", animated: true },
+  { href: "/programs", label: "Programs", animated: true },
+  { href: "/gallery", label: "Gallery", animated: false },
 ];
 
 
@@ -91,7 +91,10 @@ export function Header() {
           key={link.href}
           href={link.href}
           onClick={() => setSheetOpen(false)}
-          className="text-foreground/80 hover:text-foreground transition-colors"
+          className={cn(
+            "text-foreground/80 hover:text-foreground transition-colors px-3 py-1 rounded-md",
+            link.animated && "animate-shine"
+          )}
         >
           {link.label}
         </Link>
