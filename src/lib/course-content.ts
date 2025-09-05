@@ -167,7 +167,7 @@ export const courseContent = [
           "Floats (float): For numbers with decimals, like 3.14 or -0.5.",
           "Booleans (bool): Can only be `True` or `False`. Used for logic.",
           "Sometimes you need to convert data from one type to another. This is called 'type casting'.",
-          { type: "code", language: "python", code: "name = \"Alex\"         # A string\\nage = 25             # An integer\\nheight = 5.9         # A float\\nis_student = True   # a boolean\\n\\n# Converting a string input to an integer\\nage_string = \"30\"\\nage_number = int(age_string)"}
+          { type: "code", language: "python", code: "name = \"Alex\"         # A string\nage = 25             # An integer\nheight = 5.9         # A float\nis_student = True   # a boolean\n\n# Converting a string input to an integer\nage_string = \"30\"\nage_number = int(age_string)"}
         ],
         researchPrompt: "What happens if you try to add a string to an integer, like `'Hello' + 5`? Why does Python throw an error?"
       },
@@ -177,7 +177,7 @@ export const courseContent = [
               "Interactive programs need to get input from the user. Python's `input()` function makes this easy.",
               "The `input()` function pauses your program and waits for the user to type something and press Enter.",
               "Important: The `input()` function always returns the user's input as a string, even if they type numbers. You must use type casting (`int()` or `float()`) if you want to use their input for math.",
-              { type: "code", language: "python", code: "# Ask for the user's name\\nname = input(\"What is your name? \")\\n\\n# Ask for their age and convert it to an integer\\nage = int(input(\"How old are you? \"))\\n\\nprint(f\"Hello, {name}! You will be {age + 1} on your next birthday.\")"}
+              { type: "code", language: "python", code: "# Ask for the user's name\nname = input(\"What is your name? \")\n\n# Ask for their age and convert it to an integer\nage = int(input(\"How old are you? \"))\n\nprint(f\"Hello, {name}! You will be {age + 1} on your next birthday.\")"}
           ],
           researchPrompt: "What is an f-string in Python (like `f\"{name}\"`) and how is it different from regular string concatenation with the `+` sign?"
       },
@@ -188,7 +188,7 @@ export const courseContent = [
               "Arithmetic Operators: `+` (add), `-` (subtract), `*` (multiply), `/` (divide), `**` (exponent), `%` (modulo/remainder).",
               "Comparison Operators: `==` (equal to), `!=` (not equal to), `<` (less than), `>` (greater than), `<=` (less than or equal to), `>=` (greater than or equal to). These always result in a Boolean (`True` or `False`).",
               "Logical Operators: `and` (both must be true), `or` (at least one must be true), `not` (inverts the boolean).",
-              { type: "code", language: "python", code: "x = 15\\ny = 4\\n\\n# Arithmetic\\nprint(x / y)  # 3.75 (true division)\\nprint(x % y)  # 3 (remainder)\\n\\n# Comparison\\nprint(x > 10) # True\\n\\n# Logical\\nprint(x > 10 and y < 5) # True"}
+              { type: "code", language: "python", code: "x = 15\ny = 4\n\n# Arithmetic\nprint(x / y)  # 3.75 (true division)\nprint(x % y)  # 3 (remainder)\n\n# Comparison\nprint(x > 10) # True\n\n# Logical\nprint(x > 10 and y < 5) # True"}
           ],
           researchPrompt: "What is the difference between the `/` operator and the `//` operator in Python? Provide an example."
       },
@@ -198,7 +198,7 @@ export const courseContent = [
               "Conditional statements allow your program to make decisions and run different code blocks based on whether a condition is true or false.",
               "The structure starts with an `if`, followed by any number of `elif` (else if) blocks, and ends with an optional `else` block that runs if no other conditions were met.",
               "Indentation is critical! The code that belongs to an `if`, `elif`, or `else` block must be indented underneath it.",
-              { type: "code", language: "python", code: "score = int(input(\"Enter your score: \"))\\n\\nif score >= 90:\\n    print(\"Grade: A\")\\nelif score >= 80:\\n    print(\"Grade: B\")\\nelif score >= 70:\\n    print(\"Grade: C\")\\nelse:\\n    print(\"You need to improve.\")"}
+              { type: "code", language: "python", code: "score = int(input(\"Enter your score: \"))\n\nif score >= 90:\n    print(\"Grade: A\")\nelif score >= 80:\n    print(\"Grade: B\")\nelif score >= 70:\n    print(\"Grade: C\")\nelse:\n    print(\"You need to improve.\")"}
           ],
           researchPrompt: "What is a 'nested' if statement? Write a simple example where one if statement is inside another."
       },
@@ -209,7 +209,7 @@ export const courseContent = [
               "`while` loop: This loop will continue to run as long as its condition remains `True`. It's great for when you don't know how many times you need to loop.",
               "`for` loop: This loop iterates over a sequence (like a list, a string, or a range of numbers) and runs the code block once for each item in the sequence.",
               "You can control loops with `break` (to exit the loop immediately) and `continue` (to skip the current iteration and go to the next).",
-              { type: "code", language: "python", code: "# A for loop using range()\\nfor i in range(5):\\n    print(f\"Hello number {i + 1}\")\\n\\n# A while loop for counting down\\ncount = 3\\nwhile count > 0:\\n    print(count)\\n    count = count - 1\\nprint(\"Blast off!\")"}
+              { type: "code", language: "python", code: "# A for loop using range()\nfor i in range(5):\n    print(f\"Hello number {i + 1}\")\n\n# A while loop for counting down\ncount = 3\nwhile count > 0:\n    print(count)\n    count = count - 1\nprint(\"Blast off!\")"}
           ],
           researchPrompt: "What is an 'infinite loop' and how can you accidentally create one with a `while` loop? Why are they a problem?"
       },
@@ -219,7 +219,7 @@ export const courseContent = [
               "It's time to put everything together! This simple game is a classic first project for new programmers because it uses all the basic concepts we've just learned.",
               "We'll need to use the `random` module, which is a built-in Python library that can generate random numbers.",
               "The logic will involve: generating a secret number, using a `while` loop to keep the game going, getting user input, and using `if/elif/else` to give the user hints.",
-              { type: "code", language: "python", code: "import random\\n\\nsecret_number = random.randint(1, 10)\\nguess = 0\\n\\nwhile guess != secret_number:\\n    guess = int(input(\"Guess a number between 1 and 10: \"))\\n\\n    if guess < secret_number:\\n        print(\"Too low, try again!\")\\n    elif guess > secret_number:\\n        print(\"Too high, try again!\")\\n\\nprint(\"Congratulations! You guessed it!\")"}
+              { type: "code", language: "python", code: "import random\n\nsecret_number = random.randint(1, 10)\nguess = 0\n\nwhile guess != secret_number:\n    guess = int(input(\"Guess a number between 1 and 10: \"))\n\n    if guess < secret_number:\n        print(\"Too low, try again!\")\n    elif guess > secret_number:\n        print(\"Too high, try again!\")\n\nprint(\"Congratulations! You guessed it!\")"}
           ],
           researchPrompt: "How could you modify this game to limit the user to only 3 guesses? (Hint: You'll need another variable to track the number of attempts)."
       }
@@ -243,7 +243,7 @@ export const courseContent = [
                 "You can access items by their position (index), starting from 0. `fruits[0]` gives you the first item.",
                 "Slicing lets you get a sub-section of the list, like `fruits[1:3]`.",
                 "Common list methods include `.append()` to add an item to the end, `.remove()` to delete a specific item, and `.pop()` to remove an item by its index.",
-                { type: "code", language: "python", code: "fruits = [\"apple\", \"banana\", \"cherry\"]\\nprint(fruits[1])         # Accesses 'banana'\\n\\nfruits.append(\"orange\")\\nprint(fruits)            # Output: ['apple', 'banana', 'cherry', 'orange']\\n\\nfruits.remove(\"apple\")\\nprint(fruits)            # Output: ['banana', 'cherry', 'orange']"}
+                { type: "code", language: "python", code: "fruits = [\"apple\", \"banana\", \"cherry\"]\nprint(fruits[1])         # Accesses 'banana'\n\nfruits.append(\"orange\")\nprint(fruits)            # Output: ['apple', 'banana', 'cherry', 'orange']\n\nfruits.remove(\"apple\")\nprint(fruits)            # Output: ['banana', 'cherry', 'orange']"}
             ],
             researchPrompt: "What is the difference between the `append()` and `extend()` list methods in Python? Provide an example."
         },
@@ -254,7 +254,7 @@ export const courseContent = [
                 "They are created using parentheses `()`.",
                 "Tuples are often used for data that shouldn't change, like geographical coordinates (latitude, longitude) or RGB color codes.",
                 "'Tuple unpacking' is a powerful feature where you can assign the items of a tuple to multiple variables at once.",
-                { type: "code", language: "python", code: "# A tuple for coordinates\\nlocation = (12.345, 56.789)\\n\\n# Unpacking the tuple\\nlatitude, longitude = location\\n\\nprint(f\"Latitude: {latitude}\")\\nprint(f\"Longitude: {longitude}\")" }
+                { type: "code", language: "python", code: "# A tuple for coordinates\nlocation = (12.345, 56.789)\n\n# Unpacking the tuple\nlatitude, longitude = location\n\nprint(f\"Latitude: {latitude}\")\nprint(f\"Longitude: {longitude}\")" }
             ],
             researchPrompt: "Why would a tuple be more memory-efficient than a list in Python?"
         },
@@ -265,7 +265,7 @@ export const courseContent = [
                 "Sets are created with curly braces `{}` or the `set()` function.",
                 "Because they are unordered, you cannot access items using an index.",
                 "Key operations include `.add()` to add an item, `.remove()` to take one away, `.union()` (`|`) to combine two sets, and `.intersection()` (`&`) to find common items.",
-                { type: "code", language: "python", code: "numbers = [1, 2, 2, 3, 4, 4, 4]\\nunique_numbers = set(numbers)\\nprint(unique_numbers)  # Output: {1, 2, 3, 4}\\n\\nset_a = {1, 2, 3}\\nset_b = {3, 4, 5}\\n\\nprint(set_a.intersection(set_b)) # Output: {3}" }
+                { type: "code", language: "python", code: "numbers = [1, 2, 2, 3, 4, 4, 4]\nunique_numbers = set(numbers)\nprint(unique_numbers)  # Output: {1, 2, 3, 4}\n\nset_a = {1, 2, 3}\nset_b = {3, 4, 5}\n\nprint(set_a.intersection(set_b)) # Output: {3}" }
             ],
             researchPrompt: "What is the time complexity for checking if an item exists in a Python set versus a list? Why is one faster?"
         },
@@ -276,7 +276,7 @@ export const courseContent = [
                 "Dictionaries are created with curly braces `{}` and colons `:` to separate keys and values.",
                 "You can retrieve a value by referencing its key: `person['name']`. Using the `.get()` method is safer as it won't cause an error if the key doesn't exist.",
                 "You can loop through a dictionary's keys, values, or both (using `.items()`).",
-                { type: "code", language: "python", code: "student = {\\n    \"name\": \"Maria Jones\",\\n    \"course\": \"Digital Literacy\",\\n    \"progress\": 85\\n}\\n\\n# Accessing a value\\nprint(f\"{student['name']} has made {student['progress']}% progress.\")\\n\\n# Adding a new key-value pair\\nstudent['location'] = \"Nakuru\"\\nprint(student)" }
+                { type: "code", language: "python", code: "student = {\n    \"name\": \"Maria Jones\",\n    \"course\": \"Digital Literacy\",\n    \"progress\": 85\n}\n\n# Accessing a value\nprint(f\"{student['name']} has made {student['progress']}% progress.\")\n\n# Adding a new key-value pair\nstudent['location'] = \"Nakuru\"\nprint(student)" }
             ],
             researchPrompt: "What are the rules for dictionary keys in Python? Can a list be used as a key? Why or why not?"
         },
@@ -287,7 +287,7 @@ export const courseContent = [
                 "A list of dictionaries is one of the most common patterns. It's perfect for representing a collection of similar items, where each item has multiple properties (e.g., a list of users).",
                 "You can also have a dictionary where the values are lists, which is great for grouping items under a category (e.g., a dictionary of `students` with a list of `grades` for each).",
                 "To access nested data, you chain the accessors together.",
-                { type: "code", language: "python", code: "# A list of dictionaries\\nusers = [\\n    {'id': 1, 'name': 'John', 'role': 'Admin'},\\n    {'id': 2, 'name': 'Jane', 'role': 'Editor'}\\n]\\n\\n# Accessing nested data\\nprint(users[0]['name']) # Output: John\\n\\n# A dictionary of lists\\ncourse_roster = {\\n    'math': ['Alice', 'Bob'],\\n    'history': ['Charlie', 'David']\\n}\\n\\nprint(course_roster['math'][1]) # Output: Bob"}
+                { type: "code", language: "python", code: "# A list of dictionaries\nusers = [\n    {'id': 1, 'name': 'John', 'role': 'Admin'},\n    {'id': 2, 'name': 'Jane', 'role': 'Editor'}\n]\n\n# Accessing nested data\nprint(users[0]['name']) # Output: John\n\n# A dictionary of lists\ncourse_roster = {\n    'math': ['Alice', 'Bob'],\n    'history': ['Charlie', 'David']\n}\n\nprint(course_roster['math'][1]) # Output: Bob"}
             ],
             researchPrompt: "Find an example of a JSON object online (e.g., from a public API). How does its structure relate to Python's lists and dictionaries?"
         },
@@ -308,7 +308,7 @@ export const courseContent = [
                 "Let's combine everything from this module to build a practical tool: a student gradebook manager.",
                 "This project will use a dictionary to store student names as keys. The value for each student will be a list of their grades.",
                 "We'll build functions to add a new student, add a grade to an existing student, and calculate the average grade for a student.",
-                { type: "code", language: "python", code: "gradebook = {}\\n\\ndef add_student(name):\\n    gradebook[name] = []\\n    print(f\"Student {name} added.\")\\n\\ndef add_grade(name, grade):\\n    if name in gradebook:\\n        gradebook[name].append(grade)\\n        print(f\"Added grade {grade} for {name}.\")\\n    else:\\n        print(f\"Student {name} not found.\")\\n\\ndef get_average(name):\\n    if name in gradebook and gradebook[name]:\\n        grades = gradebook[name]\\n        average = sum(grades) / len(grades)\\n        return average\\n    return 0\\n\\n# --- Example Usage ---\\nadd_student(\"Alice\")\\nadd_grade(\"Alice\", 90)\\nadd_grade(\"Alice\", 85)\\nprint(f\"Alice's average: {get_average('Alice')}\")" }
+                { type: "code", language: "python", code: "gradebook = {}\n\ndef add_student(name):\n    gradebook[name] = []\n    print(f\"Student {name} added.\")\n\ndef add_grade(name, grade):\n    if name in gradebook:\n        gradebook[name].append(grade)\n        print(f\"Added grade {grade} for {name}.\")\n    else:\n        print(f\"Student {name} not found.\")\n\ndef get_average(name):\n    if name in gradebook and gradebook[name]:\n        grades = gradebook[name]\n        average = sum(grades) / len(grades)\n        return average\n    return 0\n\n# --- Example Usage ---\nadd_student(\"Alice\")\nadd_grade(\"Alice\", 90)\nadd_grade(\"Alice\", 85)\nprint(f\"Alice's average: {get_average('Alice')}\")" }
             ],
             researchPrompt: "How could you modify this gradebook to also store the subject for each grade? (Hint: Think about changing the structure of the list that holds the grades)."
         }
@@ -330,7 +330,7 @@ export const courseContent = [
                 "Functions are named blocks of reusable code that perform a specific task. They are the building blocks of any well-structured program.",
                 "The main reason to use functions is the DRY principle: Don't Repeat Yourself. If you find yourself writing the same piece of code over and over, it's a sign you need a function.",
                 "Functions also help organize your code into logical, readable chunks. Instead of one giant script, you have a collection of smaller, manageable pieces.",
-                { type: "code", language: "python", code: "# Without a function\\nprint(\"Hello!\")\\nprint(\"Welcome to the program.\")\\n\\n# Later in the code...\\nprint(\"Hello!\")\\nprint(\"Welcome to the program.\")\\n\\n# With a function\\ndef greet():\\n    print(\"Hello!\")\\n    print(\"Welcome to the program.\")\\n\\ngreet() # Call the function\\ngreet() # Call it again" }
+                { type: "code", language: "python", code: "# Without a function\nprint(\"Hello!\")\nprint(\"Welcome to the program.\")\n\n# Later in the code...\nprint(\"Hello!\")\nprint(\"Welcome to the program.\")\n\n# With a function\ndef greet():\n    print(\"Hello!\")\n    print(\"Welcome to the program.\")\n\ngreet() # Call the function\ngreet() # Call it again" }
             ],
             researchPrompt: "What is the difference between defining a function and calling a function? Why is this distinction important?"
         },
@@ -341,7 +341,7 @@ export const courseContent = [
                 "An 'argument' is the actual value you provide for a parameter when you call the function.",
                 "You can define default values for parameters, which are used if no argument is provided.",
                 "Python allows for both positional arguments (matched by order) and keyword arguments (matched by name), which can make your function calls clearer.",
-                { type: "code", language: "python", code: "# 'name' is a parameter with a default value\\ndef greet(name=\"User\"):\\n    print(f\"Hello, {name}!\")\\n\\n# 'Alice' is a positional argument\\ngreet(\"Alice\")\\n\\n# This call uses the default value\\ngreet()\\n\\n# 'name=\"Bob\"' is a keyword argument\\ngreet(name=\"Bob\")" }
+                { type: "code", language: "python", code: "# 'name' is a parameter with a default value\ndef greet(name=\"User\"):\n    print(f\"Hello, {name}!\")\n\n# 'Alice' is a positional argument\ngreet(\"Alice\")\n\n# This call uses the default value\ngreet()\n\n# 'name=\"Bob\"' is a keyword argument\ngreet(name=\"Bob\")" }
             ],
             researchPrompt: "What is the difference between a positional argument and a keyword argument? When might you prefer to use one over the other?"
         },
@@ -352,7 +352,7 @@ export const courseContent = [
                 "`print()` simply displays a value on the screen, but `return` gives the value back to the program so it can be stored in a variable or used in another calculation.",
                 "A function stops executing as soon as it hits a `return` statement.",
                 "If a function doesn't have a `return` statement, it implicitly returns `None`.",
-                { type: "code", language: "python", code: "# This function prints, but doesn't return a useful value\\ndef print_sum(x, y):\\n    print(x + y)\\n\\n# This function returns the result\\ndef calculate_sum(x, y):\\n    return x + y\\n\\nresult = calculate_sum(5, 10)\\nprint(f\"The calculated result is: {result}\")" }
+                { type: "code", language: "python", code: "# This function prints, but doesn't return a useful value\ndef print_sum(x, y):\n    print(x + y)\n\n# This function returns the result\ndef calculate_sum(x, y):\n    return x + y\n\nresult = calculate_sum(5, 10)\nprint(f\"The calculated result is: {result}\")" }
             ],
             researchPrompt: "Can a function return multiple values? If so, how does Python handle this?"
         },
@@ -363,7 +363,7 @@ export const courseContent = [
                 "Variables defined inside a function have a **local scope**. They only exist within that function and are destroyed when the function finishes.",
                 "Variables defined outside of any function have a **global scope**. They can be accessed from anywhere in your script, including inside functions.",
                 "It's generally bad practice to modify global variables from within a function. It can make your code confusing and hard to debug.",
-                { type: "code", language: "python", code: "global_variable = \"I am outside\"\\n\\ndef my_function():\\n    local_variable = \"I am inside\"\\n    print(local_variable)      # Works fine\\n    print(global_variable)     # Can access global variables\\n\\nmy_function()\\n\\n# This would cause an error because local_variable doesn't exist here\\n# print(local_variable)" }
+                { type: "code", language: "python", code: "global_variable = \"I am outside\"\n\ndef my_function():\n    local_variable = \"I am inside\"\n    print(local_variable)      # Works fine\n    print(global_variable)     # Can access global variables\n\nmy_function()\n\n# This would cause an error because local_variable doesn't exist here\n# print(local_variable)" }
             ],
             researchPrompt: "What is the `global` keyword in Python used for, and why should it generally be avoided?"
         },
@@ -374,7 +374,7 @@ export const courseContent = [
                 "To use a module, you must first `import` it. This makes all the functions from that module available to your script.",
                 "The `math` module provides functions for advanced math operations (like square roots).",
                 "The `random` module lets you generate random numbers, choose random items, and shuffle lists.",
-                { type: "code", language: "python", code: "import math\\n\\n# Calculate the square root\\nprint(math.sqrt(25)) # Output: 5.0\\n\\nimport random\\n\\n# Generate a random integer between 1 and 100\\nprint(random.randint(1, 100))\\n\\n# Pick a random fruit from a list\\nfruits = ['apple', 'banana', 'cherry']\\nprint(random.choice(fruits))" }
+                { type: "code", language: "python", code: "import math\n\n# Calculate the square root\nprint(math.sqrt(25)) # Output: 5.0\n\nimport random\n\n# Generate a random integer between 1 and 100\nprint(random.randint(1, 100))\n\n# Pick a random fruit from a list\nfruits = ['apple', 'banana', 'cherry']\nprint(random.choice(fruits))" }
             ],
             researchPrompt: "Explore the Python documentation for the `datetime` module. How would you use it to print the current date and time?"
         },
@@ -385,7 +385,7 @@ export const courseContent = [
                 "You can import your own modules just like you import built-in ones. This allows you to create reusable 'helper' functions.",
                 "A common pattern is to have a `main.py` file that controls the program's flow and imports functions from other files like `utils.py` or `helpers.py`.",
                 "The `if __name__ == '__main__':` block is special. Code inside this block will only run when the file is executed directly, not when it's imported as a module into another file.",
-                { type: "code", language: "python", code: "# In a file named 'helpers.py':\\ndef add(a, b):\\n    return a + b\\n\\n# In a file named 'main.py':\\nimport helpers\\n\\nresult = helpers.add(10, 20)\\nprint(result) # Output: 30" }
+                { type: "code", language: "python", code: "# In a file named 'helpers.py':\ndef add(a, b):\n    return a + b\n\n# In a file named 'main.py':\nimport helpers\n\nresult = helpers.add(10, 20)\nprint(result) # Output: 30" }
             ],
             researchPrompt: "What is the purpose of the `if __name__ == '__main__':` block? Why is it considered a best practice in Python scripts?"
         },
@@ -395,7 +395,7 @@ export const courseContent = [
                 "Let's build a simple command-line personal assistant to practice using functions and modules.",
                 "The goal is to separate our logic into different files. One file will handle the core logic, and the other will run the program.",
                 "This project demonstrates how to build a clean, organized, and scalable program.",
-                { type: "code", language: "python", code: "# In 'assistant_functions.py':\\nimport datetime\\n\\ndef get_greeting(name):\\n    return f'Hello, {name}!'\\n\\ndef get_current_time():\\n    return datetime.datetime.now().strftime('%H:%M')\\n\\n# In 'main.py':\\nimport assistant_functions as assistant\\n\\nuser_name = \"Uvumbuzi Learner\"\\nprint(assistant.get_greeting(user_name))\\nprint(f'The current time is {assistant.get_current_time()}')" }
+                { type: "code", language: "python", code: "# In 'assistant_functions.py':\nimport datetime\n\ndef get_greeting(name):\n    return f'Hello, {name}!'\n\ndef get_current_time():\n    return datetime.datetime.now().strftime('%H:%M')\n\n# In 'main.py':\nimport assistant_functions as assistant\n\nuser_name = \"Uvumbuzi Learner\"\nprint(assistant.get_greeting(user_name))\nprint(f'The current time is {assistant.get_current_time()}')" }
             ],
             researchPrompt: "How could you add a new function to your assistant that gives a random fact or quote? (Hint: You'll need the `random` module)."
         }
@@ -416,11 +416,11 @@ export const courseContent = [
         content: [
           "Understanding the different kinds of errors is the first step to becoming a great debugger. In Python, errors primarily fall into three categories.",
           "**Syntax Errors:** These are mistakes in the structure of your code. The program won't even start running. Think of them as grammatical errors, like a missing colon or a misspelled keyword.",
-          { type: 'code', language: 'python', code: '# A syntax error: missing colon\\ndef my_function()\\n    print(\"Hello\")' },
+          { type: 'code', language: 'python', code: '# A syntax error: missing colon\ndef my_function()\n    print(\"Hello\")' },
           "**Runtime Errors (Exceptions):** These errors occur while the program is running. The syntax is correct, but something unexpected happens, like trying to divide a number by zero or accessing a file that doesn't exist.",
-          { type: 'code', language: 'python', code: '# A runtime error: division by zero\\nprint(10 / 0)' },
+          { type: 'code', language: 'python', code: '# A runtime error: division by zero\nprint(10 / 0)' },
           "**Logic Errors:** This is the trickiest type of error. The code runs without crashing, but it produces the wrong result. The computer is doing exactly what you told it to, but what you told it to do was wrong.",
-          { type: 'code', language: 'python', code: '# A logic error: calculates area instead of perimeter\\nlength = 5\\nwidth = 4\\nperimeter = length * width # Should be 2 * (length + width)\\nprint(f\"Perimeter: {perimeter}\")' }
+          { type: 'code', language: 'python', code: '# A logic error: calculates area instead of perimeter\nlength = 5\nwidth = 4\nperimeter = length * width # Should be 2 * (length + width)\nprint(f\"Perimeter: {perimeter}\")' }
         ],
         researchPrompt: "What is a 'Traceback' in Python? Find an example of an error message and identify the file name, line number, and error type."
       },
@@ -432,7 +432,7 @@ export const courseContent = [
           "If an error occurs, the code inside the corresponding `except` block is executed. This allows you to give the user a helpful message instead of showing them a scary error traceback.",
           "You can have multiple `except` blocks to handle different types of specific errors.",
           "The `else` block runs only if no errors were found in the `try` block. The `finally` block runs no matter what, whether an error occurred or not. It's often used for cleanup operations.",
-          { type: 'code', language: 'python', code: 'try:\\n    age = int(input(\"Enter your age: \"))\\n    risk_factor = 100 / age\\nexcept ValueError:\\n    print(\"That was not a valid number. Please enter only digits.\")\\nexcept ZeroDivisionError:\\n    print(\"Your age cannot be zero.\")\\nelse:\\n    print(f\"Your calculated risk factor is {risk_factor}\")\\nfinally:\\n    print(\"Thank you for using the risk calculator.\")' },
+          { type: 'code', language: 'python', code: 'try:\n    age = int(input(\"Enter your age: \"))\n    risk_factor = 100 / age\nexcept ValueError:\n    print(\"That was not a valid number. Please enter only digits.\")\nexcept ZeroDivisionError:\n    print(\"Your age cannot be zero.\")\nelse:\n    print(f\"Your calculated risk factor is {risk_factor}\")\nfinally:\n    print(\"Thank you for using the risk calculator.\")' },
         ],
         researchPrompt: "Is it a good idea to use a bare `except:` block without specifying an error type (like `except Exception:`)? What are the pros and cons of doing this?"
       },
@@ -443,7 +443,7 @@ export const courseContent = [
           "By placing `print()` statements at different points in your code, you can trace the flow of execution and inspect the values of variables at each step. This helps you pinpoint exactly where things went wrong.",
           "Another useful tool is the `id()` function, which returns the unique memory address of an object. This can help you see if two variables are pointing to the exact same object in memory.",
           "Modern IDEs like VS Code have powerful built-in debuggers that allow you to set 'breakpoints'. A breakpoint pauses your program's execution at a specific line, letting you inspect the state of all variables at that moment.",
-          { type: 'code', language: 'python', code: 'def calculate_average(grades):\\n    total = 0\\n    print(f\"--- Starting calculation with grades: {grades} ---\")\\n    for grade in grades:\\n        total += grade\\n        print(f\"Added {grade}, current total is {total}\")\\n    average = total / len(grades)\\n    print(f\"--- Final average: {average} ---\")\\n    return average\\n\\ncalculate_average([85, 90, 72])' }
+          { type: 'code', language: 'python', code: 'def calculate_average(grades):\n    total = 0\n    print(f\"--- Starting calculation with grades: {grades} ---\")\n    for grade in grades:\n        total += grade\n        print(f\"Added {grade}, current total is {total}\")\n    average = total / len(grades)\n    print(f\"--- Final average: {average} ---\")\n    return average\n\ncalculate_average([85, 90, 72])' }
         ],
         researchPrompt: "What is 'Rubber Duck Debugging'? Explain the concept and why it can be an effective problem-solving technique."
       },
@@ -453,7 +453,7 @@ export const courseContent = [
           "Sometimes, you need to create your own errors. The `raise` keyword allows you to stop your program's execution intentionally if a certain condition isn't met. This is a way of enforcing rules within your program.",
           "For example, if a function requires a positive number as input, you can `raise` a `ValueError` if a negative number is provided. This makes your functions more robust and prevents logic errors down the line.",
           "It's good practice to raise errors when an input or state would lead to an impossible or incorrect outcome.",
-          { type: 'code', language: 'python', code: 'def set_age(age):\\n    if age < 0:\\n        raise ValueError(\"Age cannot be negative.\")\\n    if age > 120:\\n        raise ValueError(\"Age seems unlikely, please check the input.\")\\n    print(f\"Age set to {age}\")\\n\\ntry:\\n    set_age(-10)\\nexcept ValueError as e:\\n    print(f\"Error: {e}\")' }
+          { type: 'code', language: 'python', code: 'def set_age(age):\n    if age < 0:\n        raise ValueError(\"Age cannot be negative.\")\n    if age > 120:\n        raise ValueError(\"Age seems unlikely, please check the input.\")\n    print(f\"Age set to {age}\")\n\ntry:\n    set_age(-10)\nexcept ValueError as e:\n    print(f\"Error: {e}\")' }
         ],
         researchPrompt: "How can you create your own custom exception class in Python by inheriting from the base `Exception` class? Provide a simple example."
       },
@@ -463,7 +463,7 @@ export const courseContent = [
           "Let's build a robust system that won't crash, no matter what the user types. This project will combine everything we've learned about error handling.",
           "The goal is to create a loop that repeatedly asks the user for input until it's valid. We'll validate their name (must be a certain length) and their age (must be a positive number).",
           "This demonstrates a real-world coding skill: writing defensive code that anticipates user mistakes.",
-          { type: 'code', language: 'python', code: 'while True:\\n    try:\\n        name = input(\"Enter your name: \")\\n        if len(name) < 3:\\n            raise ValueError(\"Name must be at least 3 characters.\")\\n        \\n        age = int(input(\"Enter your age: \"))\\n        if age <= 0:\\n            raise ValueError(\"Age must be a positive number.\")\\n        \\n        print(f\"\\nProfile Created!\\nName: {name}\\nAge: {age}\")\\n        break # Exit the loop if all input is valid\\n\\n    except ValueError as e:\\n        print(f\"Invalid input: {e}. Please try again.\\n\")' }
+          { type: 'code', language: 'python', code: 'while True:\n    try:\n        name = input(\"Enter your name: \")\n        if len(name) < 3:\n            raise ValueError(\"Name must be at least 3 characters.\")\n        \n        age = int(input(\"Enter your age: \"))\n        if age <= 0:\n            raise ValueError(\"Age must be a positive number.\")\n        \n        print(f\"\\nProfile Created!\\nName: {name}\\nAge: {age}\")\n        break # Exit the loop if all input is valid\n\n    except ValueError as e:\n        print(f\"Invalid input: {e}. Please try again.\\n\")' }
         ],
         researchPrompt: "What is 'input sanitization' and why is it important for security, especially when building web applications?"
       }
@@ -487,7 +487,7 @@ export const courseContent = [
           "The two core concepts are:",
           "**Class:** A blueprint for creating objects. For example, a `Dog` class would define the properties (like `name`, `age`) and behaviors (like `bark()`) that all dogs have.",
           "**Object (or Instance):** A specific item created from a class. For example, `my_dog = Dog(\"Buddy\", 3)` creates an actual dog object based on the `Dog` blueprint.",
-          { type: 'code', language: 'python', code: 'class Dog:\\n    # This is the constructor method\\n    def __init__(self, name, age):\\n        self.name = name  # This is an attribute\\n        self.age = age    # This is an attribute\\n\\n    # This is a method\\n    def bark(self):\\n        print(f\"{self.name} says woof!\")\\n\\n# Creating an object (instance) from the class\\ndog1 = Dog(\"Buddy\", 3)\\n\\n# Calling a method on the object\\ndog1.bark() # Output: Buddy says woof!' }
+          { type: 'code', language: 'python', code: 'class Dog:\n    # This is the constructor method\n    def __init__(self, name, age):\n        self.name = name  # This is an attribute\n        self.age = age    # This is an attribute\n\n    # This is a method\n    def bark(self):\n        print(f\"{self.name} says woof!\")\n\n# Creating an object (instance) from the class\ndog1 = Dog(\"Buddy\", 3)\n\n# Calling a method on the object\ndog1.bark() # Output: Buddy says woof!' }
         ],
         researchPrompt: "What is 'procedural programming' and how does it differ from Object-Oriented Programming?"
       },
@@ -497,7 +497,7 @@ export const courseContent = [
           "The `__init__()` method is a special method in Python classes, often called the 'constructor'. It's automatically called whenever you create a new object from a class.",
           "Its job is to initialize the object's attributes (the data it will hold). This ensures that every object starts with a valid state.",
           "The `self` parameter is a reference to the specific instance of the class being created. It allows you to set attributes on that particular object, like `self.name = name`.",
-          { type: 'code', language: 'python', code: 'class Car:\\n    # The __init__ method is the constructor\\n    def __init__(self, brand, year, color):\\n        print(\"A new car object is being created!\")\\n        self.brand = brand\\n        self.year = year\\n        self.color = color\\n        self.is_running = False # Default attribute\\n\\n    def start_engine(self):\\n        self.is_running = True\\n        print(f\"The {self.color} {self.brand}\\\'s engine is running.\")\\n\\n# When you create this object, __init__ is called automatically\\nmy_car = Car(\"Toyota\", 2022, \"Red\")\\n\\n# Accessing attributes\\nprint(f\"My car is a {my_car.year} {my_car.brand}.\")' }
+          { type: 'code', language: 'python', code: 'class Car:\n    # The __init__ method is the constructor\n    def __init__(self, brand, year, color):\n        print(\"A new car object is being created!\")\n        self.brand = brand\n        self.year = year\n        self.color = color\n        self.is_running = False # Default attribute\n\n    def start_engine(self):\n        self.is_running = True\n        print(f\"The {self.color} {self.brand}\\\'s engine is running.\")\n\n# When you create this object, __init__ is called automatically\nmy_car = Car(\"Toyota\", 2022, \"Red\")\n\n# Accessing attributes\nprint(f\"My car is a {my_car.year} {my_car.brand}.\")' }
         ],
         researchPrompt: "Can a class have more than one `__init__` method in Python? Why or why not?"
       },
@@ -507,7 +507,7 @@ export const courseContent = [
           "Encapsulation is the principle of bundling data (attributes) and the methods that operate on that data within a single unit (a class). A key part of this is controlling access to the internal data to prevent accidental modification.",
           "In Python, we use a naming convention to indicate that an attribute should be considered 'private'. A single underscore (`_`) is a hint for other developers, while a double underscore (`__`) 'mangles' the name, making it harder to access from outside the class.",
           "To provide controlled access, we use 'getter' methods to retrieve the value and 'setter' methods to change it. This allows us to add validation or logic before changing the data.",
-          { type: 'code', language: 'python', code: 'class BankAccount:\\n    def __init__(self, initial_balance):\\n        # Double underscore makes this attribute harder to access directly\\n        self.__balance = initial_balance\\n\\n    # A \\\'getter\\\' method to safely retrieve the balance\\n    def get_balance(self):\\n        return self.__balance\\n\\n    # A \\\'setter\\\' method with validation logic\\n    def deposit(self, amount):\\n        if amount > 0:\\n            self.__balance += amount\\n            print(f\"Deposited ${amount}. New balance: ${self.__balance}\")\\n        else:\\n            print(\"Deposit amount must be be positive.\")\\n\\naccount = BankAccount(100)\\n\\n# Good practice: use the getter method\\nprint(f\"Current balance: ${account.get_balance()}\")\\n\\n# Bad practice: trying to access directly (will cause an error)\\n# print(account.__balance)' }
+          { type: 'code', language: 'python', code: 'class BankAccount:\n    def __init__(self, initial_balance):\n        # Double underscore makes this attribute harder to access directly\n        self.__balance = initial_balance\n\n    # A \'getter\' method to safely retrieve the balance\n    def get_balance(self):\n        return self.__balance\n\n    # A \'setter\' method with validation logic\n    def deposit(self, amount):\n        if amount > 0:\n            self.__balance += amount\n            print(f"Deposited ${amount}. New balance: ${self.__balance}")\n        else:\n            print("Deposit amount must be be positive.")\n\naccount = BankAccount(100)\n\n# Good practice: use the getter method\nprint(f"Current balance: ${account.get_balance()}")\n\n# Bad practice: trying to access directly (will cause an error)\n# print(account.__balance)' }
         ],
         researchPrompt: "What is 'name mangling' in Python and how does it work with double underscore attributes?"
       },
@@ -518,7 +518,7 @@ export const courseContent = [
           "This promotes code reuse and helps create a logical hierarchy. For example, `Dog` and `Cat` classes could both inherit from an `Animal` class.",
           "The child class can use all of the parent's functionality, and it can also add its own new methods or 'override' parent methods to provide more specific behavior.",
           "The `super()` function is used to call a method from the parent class, which is often useful in the child's `__init__` method.",
-          { type: 'code', language: 'python', code: 'class Animal: # Parent class\\n    def __init__(self, name):\\n        self.name = name\\n\\n    def speak(self):\\n        raise NotImplementedError(\"Subclass must implement this method\")\\n\\nclass Dog(Animal): # Child class\\n    def speak(self):\\n        return f\"{self.name} says Woof!\"\\n\\nclass Cat(Animal): # Child class\\n    def speak(self):\\n        return f\"{self.name} says Meow!\"\\n\\ndog = Dog(\"Rex\")\\ncat = Cat(\"Whiskers\")\\n\\nprint(dog.speak()) # Output: Rex says Woof!\\nprint(cat.speak()) # Output: Whiskers says Meow!' }
+          { type: 'code', language: 'python', code: 'class Animal: # Parent class\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        raise NotImplementedError("Subclass must implement this method")\n\nclass Dog(Animal): # Child class\n    def speak(self):\n        return f\"{self.name} says Woof!\"\n\nclass Cat(Animal): # Child class\n    def speak(self):\n        return f\"{self.name} says Meow!\"\n\ndog = Dog(\"Rex\")\ncat = Cat(\"Whiskers\")\n\nprint(dog.speak()) # Output: Rex says Woof!\nprint(cat.speak()) # Output: Whiskers says Meow!' }
         ],
         researchPrompt: "What is 'multiple inheritance' in Python, and what is one potential problem it can cause (e.g., the 'Diamond Problem')?"
       },
@@ -528,7 +528,7 @@ export const courseContent = [
           "Polymorphism, which means 'many forms', is the ability of different objects to respond to the same method call in different ways.",
           "It's closely related to inheritance. When multiple classes inherit from the same parent and override a method, you can treat objects of these different classes in the same way, and Python will automatically call the correct version of the method.",
           "This makes your code more flexible and decoupled. You can write a function that works with any `Animal` without needing to know if it's a `Dog` or a `Cat`.",
-          { type: 'code', language: 'python', code: 'class Dog:\\n    def speak(self): return \"Woof!\"\\n\\nclass Cat:\\n    def speak(self): return \"Meow!\"\\n\\nclass Duck:\\n    def speak(self): return \"Quack!\"\\n\\n# This function works with any object that has a .speak() method\\ndef make_animal_speak(animal):\\n    print(animal.speak())\\n\\n# Create a list of different animal objects\\nanimals = [Dog(), Cat(), Duck()]\\n\\n# Loop and call the same function on each, getting different results\\nfor animal in animals:\\n    make_animal_speak(animal)' }
+          { type: 'code', language: 'python', code: 'class Dog:\n    def speak(self): return \"Woof!\"\n\nclass Cat:\n    def speak(self): return \"Meow!\"\n\nclass Duck:\n    def speak(self): return \"Quack!\"\n\n# This function works with any object that has a .speak() method\ndef make_animal_speak(animal):\n    print(animal.speak())\n\n# Create a list of different animal objects\nanimals = [Dog(), Cat(), Duck()]\n\n# Loop and call the same function on each, getting different results\nfor animal in animals:\n    make_animal_speak(animal)' }
         ],
         researchPrompt: "What is 'Duck Typing' in Python and how does it relate to the concept of polymorphism?"
       },
@@ -540,7 +540,7 @@ export const courseContent = [
           "`__str__(self)`: Defines what happens when you `print(your_object)`. It should return a user-friendly string.",
           "`__len__(self)`: Defines what `len(your_object)` returns. It should return an integer.",
           "`__repr__(self)`: Defines the 'official' string representation of an object, which should ideally be code that can recreate the object.",
-          { type: 'code', language: 'python', code: 'class Playlist:\\n    def __init__(self, name, songs):\\n        self.name = name\\n        self.songs = songs\\n\\n    # Called by print()\\n    def __str__(self):\\n        return f\"Playlist \\'{self.name}\\' with {len(self.songs)} songs.\"\\n\\n    # Called by len()\\n    def __len__(self):\\n        return len(self.songs)\\n\\nmy_playlist = Playlist(\"Rock Hits\", [\"Song A\", \"Song B\", \"Song C\"])\\n\\nprint(my_playlist)      # Output: Playlist \\'Rock Hits\\' with 3 songs.\\nprint(len(my_playlist)) # Output: 3' }
+          { type: 'code', language: 'python', code: "class Playlist:\n    def __init__(self, name, songs):\n        self.name = name\n        self.songs = songs\n\n    # Called by print()\n    def __str__(self):\n        return f\"Playlist '{self.name}' with {len(self.songs)} songs.\"\n\n    # Called by len()\n    def __len__(self):\n        return len(self.songs)\n\nmy_playlist = Playlist(\"Rock Hits\", [\"Song A\", \"Song B\", \"Song C\"])\n\nprint(my_playlist)      # Output: Playlist 'Rock Hits' with 3 songs.\nprint(len(my_playlist)) # Output: 3" }
         ],
         researchPrompt: "Find two other magic methods besides `__str__` and `__len__`. What do they do and when would you use them?"
       },
@@ -550,7 +550,7 @@ export const courseContent = [
           "Time to combine all the OOP concepts into a practical project. We'll build a simple system to manage students and the courses they are enrolled in.",
           "This project will use multiple classes that interact with each other, demonstrating how OOP helps organize more complex programs.",
           "We'll need a `Student` class to hold student data and a `Course` class to manage a roster of students.",
-          { type: 'code', language: 'python', code: 'class Student:\\n    def __init__(self, name, student_id):\\n        self.name = name\\n        self.student_id = student_id\\n        self.grades = {}\\n\\n    def __str__(self):\\n        return f\"Student: {self.name} (ID: {self.student_id})\"\\n\\n    def add_grade(self, course, grade):\\n        self.grades[course] = grade\\n\\nclass Course:\\n    def __init__(self, name):\\n        self.name = name\\n        self.students = []\\n\\n    def add_student(self, student):\\n        self.students.append(student)\\n        print(f\"{student.name} enrolled in {self.name}.\")\\n\\n# --- Usage ---\\nstudent1 = Student(\"Alice\", \"123\")\\nmath_course = Course(\"Algebra 101\")\\n\\nmath_course.add_student(student1)\\nstudent1.add_grade(\"Algebra 101\", 95)\\n\\nprint(f\"{student1.name}\\\'s grades: {student1.grades}\")' }
+          { type: 'code', language: 'python', code: 'class Student:\n    def __init__(self, name, student_id):\n        self.name = name\n        self.student_id = student_id\n        self.grades = {}\n\n    def __str__(self):\n        return f\"Student: {self.name} (ID: {self.student_id})\"\n\n    def add_grade(self, course, grade):\n        self.grades[course] = grade\n\nclass Course:\n    def __init__(self, name):\n        self.name = name\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n        print(f\"{student.name} enrolled in {self.name}.\")\n\n# --- Usage ---\nstudent1 = Student(\"Alice\", \"123\")\nmath_course = Course(\"Algebra 101\")\n\nmath_course.add_student(student1)\nstudent1.add_grade(\"Algebra 101\", 95)\n\nprint(f\"{student1.name}\\\'s grades: {student1.grades}\")' }
         ],
         researchPrompt: "How could you add a method to the `Course` class to calculate the average grade for all students enrolled in that specific course?"
       }
@@ -572,7 +572,7 @@ export const courseContent = [
           "So far, all the data our programs have used disappears when the program ends. To store data permanently, we need to use files. This is called 'persistence'.",
           "The basic operations are opening a file, reading from it or writing to it, and then closing it.",
           "File paths tell the computer where to find a file. A 'relative' path is in relation to your script's location, while an 'absolute' path starts from the root of your hard drive.",
-          { type: 'code', language: 'python', code: "# This creates and opens a new file called 'example.txt' in 'write' mode.\\nfile = open('example.txt', 'w')\\n\\n# Write a string of text to the file.\\nfile.write(\"Hello, Uvumbuzi World!\")\\n\\n# It's crucial to close the file to save the changes.\\nfile.close()" }
+          { type: 'code', language: 'python', code: "# This creates and opens a new file called 'example.txt' in 'write' mode.\nfile = open('example.txt', 'w')\n\n# Write a string of text to the file.\nfile.write(\"Hello, Uvumbuzi World!\")\n\n# It's crucial to close the file to save the changes.\nfile.close()" }
         ],
         researchPrompt: "What is the difference between an absolute path and a relative path in a file system? Provide an example of each."
       },
@@ -585,7 +585,7 @@ export const courseContent = [
           "**'a'**: Append mode. Adds new content to the end of an existing file without deleting its contents.",
           "**'r+'**: Read and Write mode.",
           "Forgetting to close a file can cause problems. Python's `with` statement (a context manager) handles this automatically, ensuring the file is closed even if errors occur.",
-          { type: 'code', language: 'python', code: "# The 'with' statement is the recommended way to handle files.\\n# It automatically closes the file for you.\\nwith open('log.txt', 'a') as file:\\n    file.write(\"New log entry added.\\n\")" }
+          { type: 'code', language: 'python', code: "# The 'with' statement is the recommended way to handle files.\n# It automatically closes the file for you.\nwith open('log.txt', 'a') as file:\n    file.write(\"New log entry added.\\n\")" }
         ],
         researchPrompt: "What other kinds of resources can be managed with context managers in Python, besides files?"
       },
@@ -597,7 +597,7 @@ export const courseContent = [
           "`.readline()`: Reads just one line from the file.",
           "`.readlines()`: Reads all lines into a list of strings.",
           "The best practice for reading a text file is to loop directly over the file object. This is memory-efficient because it reads the file line by line.",
-          { type: 'code', language: 'python', code: "try:\\n    with open('data.txt', 'r') as file:\\n        for line in file:\\n            # .strip() removes any leading/trailing whitespace, including the newline character\\n            print(line.strip())\\nexcept FileNotFoundError:\\n    print(\"The file 'data.txt' was not found.\")" }
+          { type: 'code', language: 'python', code: "try:\n    with open('data.txt', 'r') as file:\n        for line in file:\n            # .strip() removes any leading/trailing whitespace, including the newline character\n            print(line.strip())\nexcept FileNotFoundError:\n    print(\"The file 'data.txt' was not found.\")" }
         ],
         researchPrompt: "How would you read only the first 50 characters of a file?"
       },
@@ -607,7 +607,7 @@ export const courseContent = [
           "Writing to files is just as straightforward. Remember the difference between `'w'` (write/overwrite) and `'a'` (append).",
           "The `.write()` method writes a single string to the file. If you want to write multiple lines, you must include the newline character `\\n` yourself.",
           "The `.writelines()` method can take a list of strings and write them to the file. It does *not* add newline characters automatically.",
-          { type: 'code', language: 'python', code: "notes = [\\n    \"This is the first note.\\n\",\\n    \"This is the second note.\\n\",\\n    \"And a third one!\\n\"\\n]\\n\\nwith open('notes.txt', 'w') as file:\\n    file.writelines(notes)" }
+          { type: 'code', language: 'python', code: "notes = [\n    \"This is the first note.\\n\",\n    \"This is the second note.\\n\",\n    \"And a third one!\\n\"\n]\n\nwith open('notes.txt', 'w') as file:\n    file.writelines(notes)" }
         ],
         researchPrompt: "Imagine you are writing a log file for an application. Would you more likely use 'w' or 'a' mode? Why?"
       },
@@ -617,7 +617,7 @@ export const courseContent = [
           "CSV (Comma-Separated Values) is a very common format for storing tabular data, like in a spreadsheet. Python's built-in `csv` module makes working with these files easy.",
           "A `csv.reader` lets you loop over rows in a CSV file, where each row is a list of strings.",
           "A `csv.writer` lets you write rows to a CSV file. The `writerow()` method takes a list and writes it as a comma-separated line.",
-          { type: 'code', language: 'python', code: "import csv\\n\\n# Writing to a CSV file\\nwith open('contacts.csv', 'w', newline='') as file:\\n    writer = csv.writer(file)\\n    writer.writerow(['Name', 'Email', 'Phone'])\\n    writer.writerow(['Alice', 'alice@email.com', '111-2222'])\\n    writer.writerow(['Bob', 'bob@email.com', '333-4444'])\\n\\n# Reading from a CSV file\\nwith open('contacts.csv', 'r') as file:\\n    reader = csv.reader(file)\\n    for row in reader:\\n        print(row)" }
+          { type: 'code', language: 'python', code: "import csv\n\n# Writing to a CSV file\nwith open('contacts.csv', 'w', newline='') as file:\n    writer = csv.writer(file)\n    writer.writerow(['Name', 'Email', 'Phone'])\n    writer.writerow(['Alice', 'alice@email.com', '111-2222'])\n    writer.writerow(['Bob', 'bob@email.com', '333-4444'])\n\n# Reading from a CSV file\nwith open('contacts.csv', 'r') as file:\n    reader = csv.reader(file)\n    for row in reader:\n        print(row)" }
         ],
         researchPrompt: "What does the `newline=''` argument do when opening a CSV file for writing, and why is it important?"
       },
@@ -628,7 +628,7 @@ export const courseContent = [
           "The `json` module allows for 'serialization' (converting Python objects to a JSON string) and 'deserialization' (converting a JSON string back into Python objects).",
           "`json.dump()`: Writes a Python object (like a dict or list) to a file in JSON format.",
           "`json.load()`: Reads a JSON file and parses it back into a Python object.",
-          { type: 'code', language: 'python', code: "import json\\n\\nstudent_data = {\\n    'name': 'Charlie',\\n    'id': 12345,\\n    'courses': ['Math', 'History']\\n}\\n\\n# Save the dictionary to a file as JSON\\nwith open('student.json', 'w') as file:\\n    json.dump(student_data, file, indent=4)\\n\\n# Load the JSON data back from the file\\nwith open('student.json', 'r') as file:\\n    loaded_data = json.load(file)\\n    print(f\"Welcome back, {loaded_data['name']}\")" }
+          { type: 'code', language: 'python', code: "import json\n\nstudent_data = {\n    'name': 'Charlie',\n    'id': 12345,\n    'courses': ['Math', 'History']\n}\n\n# Save the dictionary to a file as JSON\nwith open('student.json', 'w') as file:\n    json.dump(student_data, file, indent=4)\n\n# Load the JSON data back from the file\nwith open('student.json', 'r') as file:\n    loaded_data = json.load(file)\n    print(f\"Welcome back, {loaded_data['name']}\")" }
         ],
         researchPrompt: "What does the `indent` parameter do in `json.dump()`, and why does it make JSON files easier for humans to read?"
       },
@@ -638,7 +638,7 @@ export const courseContent = [
           "Let's build a command-line to-do list that remembers your tasks even after you close it. This project combines file handling with the data structures you've already learned.",
           "The program will load a list of tasks from a JSON file when it starts, allow the user to add or remove tasks from the list, and then save the updated list back to the JSON file before it exits.",
           "This small project is a huge step towards building real, useful applications.",
-          { type: 'code', language: 'python', code: "import json\\n\\nTASKS_FILE = \"tasks.json\"\\n\\ndef load_tasks():\\n    try:\\n        with open(TASKS_FILE, 'r') as f:\\n            return json.load(f)\\n    except FileNotFoundError:\\n        return []\\n\\ndef save_tasks(tasks):\\n    with open(TASKS_FILE, 'w') as f:\\n        json.dump(tasks, f, indent=4)\\n\\n# --- Main Program Logic (Simplified) ---\\ntasks = load_tasks()\\n# (Here you would add logic to show a menu, add/remove tasks, etc.)\\nsave_tasks(tasks)\\nprint(\"Tasks saved!\")" }
+          { type: 'code', language: 'python', code: "import json\n\nTASKS_FILE = \"tasks.json\"\n\ndef load_tasks():\n    try:\n        with open(TASKS_FILE, 'r') as f:\n            return json.load(f)\n    except FileNotFoundError:\n        return []\n\ndef save_tasks(tasks):\n    with open(TASKS_FILE, 'w') as f:\n        json.dump(tasks, f, indent=4)\n\n# --- Main Program Logic (Simplified) ---\ntasks = load_tasks()\n# (Here you would add logic to show a menu, add/remove tasks, etc.)\nsave_tasks(tasks)\nprint(\"Tasks saved!\")" }
         ],
         researchPrompt: "How could you extend this to-do list project to mark tasks as 'complete' instead of just removing them?"
       }
@@ -660,7 +660,7 @@ export const courseContent = [
             "An API, or Application Programming Interface, is a set of rules that allows different software applications to communicate with each other. Think of it as a waiter in a restaurant: you (your program) give an order (a request) to the waiter (the API), who then brings it to the kitchen (the server). The kitchen prepares your order, and the waiter brings the food (the data) back to you.",
             "We use APIs to get data from external services without needing to know how those services work internally. This could be anything from weather data, stock prices, to user information from a social media site.",
             "Most web APIs work over HTTP, the same protocol your browser uses to load websites. A request to an API is just a specially formatted URL.",
-            { type: 'code', language: 'python', code: "# We use the 'requests' library to make these HTTP calls in Python.\\nimport requests\\n\\n# This is the API endpoint (the URL we send the request to)\\nresponse = requests.get('https://api.agify.io?name=michael')\\n\\n# A status code of 200 means the request was successful!\\nprint(f\"Status Code: {response.status_code}\")\\n\\n# The data is usually returned in a format called JSON.\\nprint(f\"Response JSON: {response.json()}\")" }
+            { type: 'code', language: 'python', code: "# We use the 'requests' library to make these HTTP calls in Python.\nimport requests\n\n# This is the API endpoint (the URL we send the request to)\nresponse = requests.get('https://api.agify.io?name=michael')\n\n# A status code of 200 means the request was successful!\nprint(f\"Status Code: {response.status_code}\")\n\n# The data is usually returned in a format called JSON.\nprint(f\"Response JSON: {response.json()}\")" }
         ],
         researchPrompt: "What does HTTP stand for? Find out what two other common status codes, like 404 and 500, mean."
       },
@@ -670,7 +670,7 @@ export const courseContent = [
             "JSON (JavaScript Object Notation) is the standard format for sending data between web servers and applications. It's lightweight, human-readable, and easy for machines to parse.",
             "When you get a response from an API, the `requests` library has a handy `.json()` method that automatically converts the JSON data into a Python dictionary.",
             "Once it's a dictionary, you can access the data just like any other dictionary in Python, using keys to get the values you need. Sometimes, the data might be nested inside other dictionaries or lists.",
-            { type: 'code', language: 'python', code: "import requests\\n\\nresponse = requests.get('https://api.agify.io?name=susan')\\ndata = response.json()\\n\\n# Now 'data' is a Python dictionary\\nname = data['name']\\nage = data['age']\\ncount = data['count']\\n\\nprint(f\"{name.title()} is a name with an estimated age of {age}.\")\\nprint(f\"This estimate is based on {count} records.\")" }
+            { type: 'code', language: 'python', code: "import requests\n\nresponse = requests.get('https://api.agify.io?name=susan')\ndata = response.json()\n\n# Now 'data' is a Python dictionary\nname = data['name']\nage = data['age']\ncount = data['count']\n\nprint(f\"{name.title()} is a name with an estimated age of {age}.\")\nprint(f\"This estimate is based on {count} records.\")" }
         ],
         researchPrompt: "Find a public API online (like the JSONPlaceholder API) and look at its structure. How is it similar to or different from the Python dictionaries you've learned about?"
       },
@@ -680,7 +680,7 @@ export const courseContent = [
             "Not all API calls will be successful. The server might be down, you might have made a mistake in your request, or you might have exceeded the allowed number of requests (a 'rate limit'). A robust program must handle these situations gracefully.",
             "The first step is always to check the `status_code` of the response. A code of `200` means everything is OK. Any other code, like `404` (Not Found) or `401` (Unauthorized), indicates an error.",
             "You should wrap your API calls in a `try...except` block to catch potential network errors, like if you're not connected to the internet. Then, use an `if` statement to check the status code before you try to parse the JSON.",
-            { type: 'code', language: 'python', code: "import requests\\n\\n# This will cause a 404 error because the endpoint doesn't exist\\nresponse = requests.get('https://api.example.com/nonexistent') \\n\\nif response.status_code == 200:\\n    # This part will only run if the request was successful\\n    print(\"Success!\")\\n    print(response.json())\\nelse:\\n    # This part runs if there was an error\\n    print(f\"Failed to retrieve data. Status code: {response.status_code}\")" }
+            { type: 'code', language: 'python', code: "import requests\n\n# This will cause a 404 error because the endpoint doesn't exist\nresponse = requests.get('https://api.example.com/nonexistent') \n\nif response.status_code == 200:\n    # This part will only run if the request was successful\n    print(\"Success!\")\n    print(response.json())\nelse:\n    # This part runs if there was an error\n    print(f\"Failed to retrieve data. Status code: {response.status_code}\")" }
         ],
         researchPrompt: "What is an 'API key'? Why do many APIs require you to use one in your requests?"
       },
@@ -690,7 +690,7 @@ export const courseContent = [
             "Let's use everything we've learned to build a useful, real-world application: a command-line weather dashboard.",
             "This project will involve prompting the user for a city, making a call to a free weather API to get live data, and then displaying that information in a clean, readable format.",
             "This is a great exercise because it combines user input, functions, API requests, JSON parsing, and error handling—all key skills for any programmer.",
-            { type: 'code', language: 'python', code: "# Note: You'll need to sign up for a free API key from a weather service\\n# like OpenWeatherMap for this to work.\\n\\nimport requests\\n\\nAPI_KEY = \"your_api_key_here\"\\nBASE_URL = \"https://api.openweathermap.org/data/2.5/weather\"\\n\\ncity = input(\"Enter a city name: \")\\nrequest_url = f\"{BASE_URL}?q={city}&appid={API_KEY}&units=metric\"\\n\\nresponse = requests.get(request_url)\\n\\nif response.status_code == 200:\\n    data = response.json()\\n    weather = data['weather'][0]['description']\\n    temp = data['main']['temp']\\n    print(f\"Weather in {city.title()}: {weather}\")\\n    print(f\"Temperature: {temp}°C\")\\nelse:\\n    print(\"An error occurred.\")" }
+            { type: 'code', language: 'python', code: "# Note: You'll need to sign up for a free API key from a weather service\n# like OpenWeatherMap for this to work.\n\nimport requests\n\nAPI_KEY = \"your_api_key_here\"\nBASE_URL = \"https://api.openweathermap.org/data/2.5/weather\"\n\ncity = input(\"Enter a city name: \")\nrequest_url = f\"{BASE_URL}?q={city}&appid={API_KEY}&units=metric\"\n\nresponse = requests.get(request_url)\n\nif response.status_code == 200:\n    data = response.json()\n    weather = data['weather'][0]['description']\n    temp = data['main']['temp']\n    print(f\"Weather in {city.title()}: {weather}\")\n    print(f\"Temperature: {temp}°C\")\nelse:\n    print(\"An error occurred.\")" }
         ],
         researchPrompt: "How could you extend this weather app to show a 5-day forecast instead of just the current weather? (Hint: The API documentation will likely show a different 'endpoint' for forecast data)."
       }
@@ -712,7 +712,7 @@ export const courseContent = [
                 "Writing code is only half the battle; ensuring it works correctly is just as important. Testing is the process of verifying that your code does what you expect it to do.",
                 "**Unit Tests** check small, isolated pieces of code, like a single function. **Integration Tests** check if different parts of your code work together correctly. **System Tests** check the entire application from end to end.",
                 "Python's built-in `unittest` module is a great place to start writing simple tests to confirm your functions behave as expected.",
-                { type: "code", language: "python", code: "import unittest\\n\\ndef add(a, b):\\n    return a + b\\n\\nclass TestAddFunction(unittest.TestCase):\\n    def test_add_positive_numbers(self):\\n        self.assertEqual(add(2, 3), 5)\\n\\n    def test_add_negative_numbers(self):\\n        self.assertEqual(add(-1, -1), -2)\\n\\nif __name__ == '__main__':\\n    unittest.main()" }
+                { type: "code", language: "python", code: "import unittest\n\ndef add(a, b):\n    return a + b\n\nclass TestAddFunction(unittest.TestCase):\n    def test_add_positive_numbers(self):\n        self.assertEqual(add(2, 3), 5)\n\n    def test_add_negative_numbers(self):\n        self.assertEqual(add(-1, -1), -2)\n\nif __name__ == '__main__':\n    unittest.main()" }
             ],
             researchPrompt: "What is Test-Driven Development (TDD)? How does it change the way programmers write code?"
         },
@@ -722,7 +722,7 @@ export const courseContent = [
                 "Bugs are an inevitable part of programming. A debugger is a tool that lets you run your code step-by-step and inspect the state of your variables at each point.",
                 "The simplest form of debugging is `print()` debugging, where you print variable values to understand the program's flow.",
                 "A more powerful tool is an interactive debugger, like Python's built-in `pdb` (Python Debugger). It lets you pause execution, inspect variables, and execute code line by line.",
-                { type: "code", language: "python", code: "import pdb\\n\\ndef my_function(x, y):\\n    result = x + y\\n    pdb.set_trace() # Execution will pause here\\n    result = result * 2\\n    return result\\n\\nmy_function(3, 4)" }
+                { type: "code", language: "python", code: "import pdb\n\ndef my_function(x, y):\n    result = x + y\n    pdb.set_trace() # Execution will pause here\n    result = result * 2\n    return result\n\nmy_function(3, 4)" }
             ],
             researchPrompt: "What is a 'breakpoint' in the context of an IDE's debugger (like in VS Code)? How does it make debugging easier than using `pdb.set_trace()`?"
         },
@@ -773,7 +773,7 @@ export const courseContent = [
                 "**SQL (Structured Query Language)** is the standard language for interacting with relational databases.",
                 "The four fundamental operations are known as **CRUD**: Create (`INSERT`), Read (`SELECT`), Update (`UPDATE`), and Delete (`DELETE`).",
                 "**SQLite** is a lightweight, serverless, self-contained database that is perfect for learning and for use in smaller applications. Python has a built-in module called `sqlite3` for working with it.",
-                { type: "code", language: "python", code: "import sqlite3\\n\\n# Connect to a database (or create it if it doesn't exist)\\nconn = sqlite3.connect('example.db')\\n\\n# Create a cursor object to execute SQL commands\\ncursor = conn.cursor()\\n\\n# Create a table\\ncursor.execute('''\\nCREATE TABLE IF NOT EXISTS users (\\n    id INTEGER PRIMARY KEY,\\n    name TEXT NOT NULL,\\n    email TEXT NOT NULL UNIQUE\\n)\\n''')\\n\\n# Commit the changes and close the connection\\nconn.commit()\\nconn.close()" }
+                { type: "code", language: "python", code: "import sqlite3\n\n# Connect to a database (or create it if it doesn't exist)\nconn = sqlite3.connect('example.db')\n\n# Create a cursor object to execute SQL commands\ncursor = conn.cursor()\n\n# Create a table\ncursor.execute('''\nCREATE TABLE IF NOT EXISTS users (\n    id INTEGER PRIMARY KEY,\n    name TEXT NOT NULL,\n    email TEXT NOT NULL UNIQUE\n)\n''')\n\n# Commit the changes and close the connection\nconn.commit()\nconn.close()" }
             ],
             researchPrompt: "What is a 'Primary Key' in a SQL table and why is it important?"
         },
@@ -785,7 +785,7 @@ export const courseContent = [
                 "**Read (Select):** Retrieves rows from a table. You can fetch one (`fetchone()`) or all (`fetchall()`).",
                 "**Update:** Modifies existing rows in a table.",
                 "**Delete:** Removes rows from a table.",
-                { type: "code", language: "python", code: "import sqlite3\\nconn = sqlite3.connect('example.db')\\ncursor = conn.cursor()\\n\\n# CREATE\\ncursor.execute(\"INSERT INTO users (name, email) VALUES (?, ?)\", ('Alice', 'alice@example.com'))\\nconn.commit()\\n\\n# READ\\ncursor.execute(\"SELECT * FROM users WHERE name = ?\", ('Alice',))\\nuser = cursor.fetchone()\\nprint(user)\\n\\n# UPDATE\\ncursor.execute(\"UPDATE users SET email = ? WHERE name = ?\", ('new.email@example.com', 'Alice'))\\nconn.commit()\\n\\n# DELETE\\ncursor.execute(\"DELETE FROM users WHERE name = ?\", ('Alice',))\\nconn.commit()\\n\\nconn.close()" }
+                { type: "code", language: "python", code: "import sqlite3\nconn = sqlite3.connect('example.db')\ncursor = conn.cursor()\n\n# CREATE\ncursor.execute(\"INSERT INTO users (name, email) VALUES (?, ?)\", ('Alice', 'alice@example.com'))\nconn.commit()\n\n# READ\ncursor.execute(\"SELECT * FROM users WHERE name = ?\", ('Alice',))\nuser = cursor.fetchone()\nprint(user)\n\n# UPDATE\ncursor.execute(\"UPDATE users SET email = ? WHERE name = ?\", ('new.email@example.com', 'Alice'))\nconn.commit()\n\n# DELETE\ncursor.execute(\"DELETE FROM users WHERE name = ?\", ('Alice',))\nconn.commit()\n\nconn.close()" }
             ],
             researchPrompt: "What is 'SQL Injection' and why is it important to use parameterized queries (using `?` placeholders) instead of f-strings to build SQL commands?"
         },
