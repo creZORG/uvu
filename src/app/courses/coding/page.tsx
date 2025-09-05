@@ -387,49 +387,60 @@ const courseContent = [
     title: "Module 5: Object-Oriented Programming (OOP)",
     pages: [
       {
-        title: "Defining and Using Functions",
+        title: "Lesson 5.1: Types of Errors in Python",
         content: [
-          "A function is a reusable block of code that performs a specific task. They help keep your code organized and prevent repetition (DRY - Don't Repeat Yourself).",
-          "You define a function with the `def` keyword in Python, give it a name, and specify what code it should run.",
-          "Parameters are variables listed inside the parentheses in the function definition, which act as placeholders for the data you'll pass in.",
-          "The `return` statement is used to send a value back from the function.",
+          "Understanding the different kinds of errors is the first step to becoming a great debugger. In Python, errors primarily fall into three categories.",
+          "**Syntax Errors:** These are mistakes in the structure of your code. The program won't even start running. Think of them as grammatical errors, like a missing colon or a misspelled keyword.",
+          { type: 'code', language: 'python', code: '# A syntax error: missing colon\ndef my_function()\n    print("Hello")' },
+          "**Runtime Errors (Exceptions):** These errors occur while the program is running. The syntax is correct, but something unexpected happens, like trying to divide a number by zero or accessing a file that doesn't exist.",
+          { type: 'code', language: 'python', code: '# A runtime error: division by zero\nprint(10 / 0)' },
+          "**Logic Errors:** This is the trickiest type of error. The code runs without crashing, but it produces the wrong result. The computer is doing exactly what you told it to, but what you told it to do was wrong.",
+          { type: 'code', language: 'python', code: '# A logic error: calculates area instead of perimeter\nlength = 5\nwidth = 4\nperimeter = length * width # Should be 2 * (length + width)\nprint(f"Perimeter: {perimeter}")' }
         ],
-        researchPrompt: "What is the difference between a parameter and an argument in the context of a function?"
+        researchPrompt: "What is a 'Traceback' in Python? Find an example of an error message and identify the file name, line number, and error type."
       },
       {
-        title: "Scope and Modules",
+        title: "Lesson 5.2: Handling Errors with Try and Except",
         content: [
-          "Scope determines the visibility of a variable. Variables defined inside a function are in the local scope and can only be used within that function.",
-          "Variables defined outside of any function are in the global scope.",
-          "A module is simply a file containing Python code. You can import functions from other modules to use in your own code, which is a powerful way to organize large projects.",
-          "Python has many built-in modules (like `math` or `random`) that provide useful functions."
+          "You can't prevent every possible error, but you can stop them from crashing your program. The `try...except` block is Python's way of handling errors gracefully.",
+          "You place the code that might cause an error inside the `try` block.",
+          "If an error occurs, the code inside the corresponding `except` block is executed. This allows you to give the user a helpful message instead of showing them a scary error traceback.",
+          "You can have multiple `except` blocks to handle different types of specific errors.",
+          "The `else` block runs only if no errors were found in the `try` block. The `finally` block runs no matter what, whether an error occurred or not. It's often used for cleanup operations.",
+          { type: 'code', language: 'python', code: 'try:\n    age = int(input("Enter your age: "))\n    risk_factor = 100 / age\nexcept ValueError:\n    print("That was not a valid number. Please enter only digits.")\nexcept ZeroDivisionError:\n    print("Your age cannot be zero.")\nelse:\n    print(f"Your calculated risk factor is {risk_factor}")\nfinally:\n    print("Thank you for using the risk calculator.")' },
         ],
-        researchPrompt: "How can you prevent 'namespace pollution' when importing modules in Python?"
-      }
-    ]
-  },
-   {
-    title: "Module 5: Object-Oriented Programming (OOP)",
-    pages: [
-      {
-        title: "Classes and Objects",
-        content: [
-          "OOP is a programming paradigm based on the concept of 'objects', which can contain data (attributes) and code (methods).",
-          "A Class is a blueprint for creating objects. For example, you could have a `Dog` class.",
-          "An Object is an instance of a class. `my_dog = Dog()` would create an object (an instance) of the `Dog` class.",
-          "The `__init__` method is a special method that runs automatically when a new object is created, used for initializing its attributes (e.g., `name`, `age`).",
-        ],
-        researchPrompt: "What does the `self` parameter in a class method refer to?"
+        researchPrompt: "Is it a good idea to use a bare `except:` block without specifying an error type (like `except Exception:`)? What are the pros and cons of doing this?"
       },
       {
-        title: "Core OOP Principles",
+        title: "Lesson 5.3: Debugging Techniques",
         content: [
-          "Inheritance allows a new class (child) to inherit attributes and methods from an existing class (parent).",
-          "Polymorphism means 'many forms', and it allows us to perform a single action in different ways (e.g., different animal classes can have their own `make_sound` method).",
-          "Encapsulation is the bundling of data (attributes) and the methods that operate on the data into a single unit (a class). It restricts direct access to some of an object's components.",
-          "Abstraction means hiding complex implementation details and showing only the necessary features of the object.",
+          "Debugging is the art and science of finding and fixing bugs. The most common and straightforward technique, especially for beginners, is using `print()` statements.",
+          "By placing `print()` statements at different points in your code, you can trace the flow of execution and inspect the values of variables at each step. This helps you pinpoint exactly where things went wrong.",
+          "Another useful tool is the `id()` function, which returns the unique memory address of an object. This can help you see if two variables are pointing to the exact same object in memory.",
+          "Modern IDEs like VS Code have powerful built-in debuggers that allow you to set 'breakpoints'. A breakpoint pauses your program's execution at a specific line, letting you inspect the state of all variables at that moment.",
+          { type: 'code', language: 'python', code: 'def calculate_average(grades):\n    total = 0\n    print(f"--- Starting calculation with grades: {grades} ---")\n    for grade in grades:\n        total += grade\n        print(f"Added {grade}, current total is {total}")\n    average = total / len(grades)\n    print(f"--- Final average: {average} ---")\n    return average\n\ncalculate_average([85, 90, 72])' }
         ],
-        researchPrompt: "Find a real-world analogy for explaining Inheritance in OOP."
+        researchPrompt: "What is 'Rubber Duck Debugging'? Explain the concept and why it can be an effective problem-solving technique."
+      },
+      {
+        title: "Lesson 5.4: Raising Your Own Errors",
+        content: [
+          "Sometimes, you need to create your own errors. The `raise` keyword allows you to stop your program's execution intentionally if a certain condition isn't met. This is a way of enforcing rules within your program.",
+          "For example, if a function requires a positive number as input, you can `raise` a `ValueError` if a negative number is provided. This makes your functions more robust and prevents logic errors down the line.",
+          "It's good practice to raise errors when an input or state would lead to an impossible or incorrect outcome.",
+          { type: 'code', language: 'python', code: 'def set_age(age):\n    if age < 0:\n        raise ValueError("Age cannot be negative.")\n    if age > 120:\n        raise ValueError("Age seems unlikely, please check the input.")\n    print(f"Age set to {age}")\n\ntry:\n    set_age(-10)\nexcept ValueError as e:\n    print(f"Error: {e}")' }
+        ],
+        researchPrompt: "How can you create your own custom exception class in Python by inheriting from the base `Exception` class? Provide a simple example."
+      },
+      {
+        title: "Lesson 5.5: Project - Error-Proof Input System",
+        content: [
+          "Let's build a robust system that won't crash, no matter what the user types. This project will combine everything we've learned about error handling.",
+          "The goal is to create a loop that repeatedly asks the user for input until it's valid. We'll validate their name (must be a certain length) and their age (must be a positive number).",
+          "This demonstrates a real-world coding skill: writing defensive code that anticipates user mistakes.",
+          { type: 'code', language: 'python', code: 'while True:\n    try:\n        name = input("Enter your name: ")\n        if len(name) < 3:\n            raise ValueError("Name must be at least 3 characters.")\n        \n        age = int(input("Enter your age: "))\n        if age <= 0:\n            raise ValueError("Age must be a positive number.")\n        \n        print(f"\\nProfile Created!\\nName: {name}\\nAge: {age}")\n        break # Exit the loop if all input is valid\n\n    except ValueError as e:\n        print(f"Invalid input: {e}. Please try again.\\n")' }
+        ],
+        researchPrompt: "What is 'input sanitization' and why is it important for security, especially when building web applications?"
       }
     ]
   },
@@ -672,3 +683,5 @@ export default function CodingPage() {
     </div>
   );
 }
+
+    
