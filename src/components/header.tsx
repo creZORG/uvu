@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/#about", label: "About" },
+  { href: "/courses", label: "Courses" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];
@@ -36,16 +37,6 @@ const programLinks = [
     { href: "/programs/women-in-tech", label: "Women in Tech" },
     { href: "/programs/ucn-radio", label: "UCN Radio" },
 ];
-
-const courseLinks = [
-    { href: "/courses/coding", label: "Coding" },
-    { href: "/courses/web-design", label: "Web Design" },
-    { href: "/courses/cctv-installation", label: "CCTV Installation" },
-    { href: "/courses/robotics", label: "Robotics" },
-    { href: "/courses/ai", label: "AI" },
-    { href: "/courses/graphics-design", label: "Graphics Design" },
-];
-
 
 export function Header() {
   const [isSheetOpen, setSheetOpen] = useState(false);
@@ -113,18 +104,6 @@ export function Header() {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {programLinks.map((link) => (
-            <DropdownMenuItem key={link.href} asChild>
-              <Link href={link.href}>{link.label}</Link>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors outline-none">
-            Courses <ChevronDown className="h-4 w-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {courseLinks.map((link) => (
             <DropdownMenuItem key={link.href} asChild>
               <Link href={link.href}>{link.label}</Link>
             </DropdownMenuItem>
