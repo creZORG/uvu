@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Header } from "@/components/header";
@@ -16,9 +16,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Award } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const examQuestions = {
     "Section A: Programming Fundamentals & Basics": [
@@ -76,10 +77,12 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
   const [submission, setSubmission] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const [user, authLoading] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [certificateId, setCertificateId] = useState<string | null>(null);
 
   const form = useForm<MarkingFormValues>({
     resolver: zodResolver(markingSchema),
@@ -114,6 +117,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
         if (docSnap.exists()) {
             const data = docSnap.data();
             setSubmission(data);
+            setCertificateId(data.certificateId || null);
             form.reset({
                 feedback: data.feedback || "",
                 status: data.status === "passed" || data.status === "failed" ? data.status : undefined,
@@ -147,7 +151,41 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     } finally {
         setIsSubmitting(false);
     }
-  }
+  };
+
+  const handleGenerateCertificate = async () => {
+    if (!submission) return;
+    setIsGeneratingCert(true);
+    try {
+        const userProfileRef = doc(db, "userProfiles", submission.userId);
+        const userProfileSnap = await getDoc(userProfileRef);
+        if (!userProfileSnap.exists()) {
+            throw new Error("Student profile not found.");
+        }
+        const studentName = userProfileSnap.data().fullName;
+
+        const certRef = doc(collection(db, "certificates"));
+        await setDoc(certRef, {
+            studentName: studentName,
+            studentEmail: submission.userEmail,
+            courseName: "General Coding Course",
+            issuedAt: serverTimestamp(),
+            submissionId: params.id,
+        });
+
+        const submissionRef = doc(db, "examSubmissions", params.id);
+        await updateDoc(submissionRef, { certificateId: certRef.id });
+
+        setCertificateId(certRef.id);
+        toast({ title: "Certificate Generated!", description: "The certificate is now available." });
+    } catch (error) {
+        console.error(error);
+        toast({ variant: "destructive", title: "Error Generating Certificate", description: String(error) });
+    } finally {
+        setIsGeneratingCert(false);
+    }
+  };
+
 
   if (authLoading || loading || !isAuthorized) {
     return (
@@ -241,10 +279,24 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" disabled={isSubmitting} size="lg">
-                                    {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
-                                    Save Marking
-                                </Button>
+                                <div className="flex flex-wrap gap-4 items-center">
+                                    <Button type="submit" disabled={isSubmitting} size="lg">
+                                        {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+                                        Save Marking
+                                    </Button>
+                                    {form.getValues("status") === 'passed' && (
+                                        certificateId ? (
+                                            <Button asChild variant="outline" size="lg">
+                                                <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
+                                            </Button>
+                                        ) : (
+                                            <Button type="button" onClick={handleGenerateCertificate} disabled={isGeneratingCert} size="lg" variant="secondary">
+                                                {isGeneratingCert ? <Loader2 className="animate-spin mr-2"/> : <Award className="mr-2"/>}
+                                                Generate Certificate
+                                            </Button>
+                                        )
+                                    )}
+                                </div>
                             </form>
                         </Form>
                     </div>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { Code, Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, TrendingUp } from "lucide-react";
+import { Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, TrendingUp, Code, Bot, BrainCircuit, PenTool, Video, Palette } from "lucide-react";
 import { Footer } from "@/components/footer";
 import {
   Carousel,
@@ -16,17 +16,74 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
+
+const defaultSliderImages = [
+  {
+    src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070",
+    alt: "Community members learning together",
+    "data-ai-hint": "community learning"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070",
+    alt: "Collaborative tech environment",
+    "data-ai-hint": "tech collaboration"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?q=80&w=2070",
+    alt: "Innovative electronics workshop",
+    "data-ai-hint": "electronics workshop"
+  },
+];
+
+const defaultPrograms = [
+    { href: "/programs/digital-literacy", icon: <Computer className="size-10 text-primary" />, title: "Digital Access & Literacy", description: "We provide affordable internet connectivity and Wi-Fi hotspots to schools, market centers, health facilities, and households. These hotspots improve access to education, business opportunities, healthcare, and daily communication." },
+    { href: "/programs/environmental-stewardship", icon: <Recycle className="size-10 text-primary" />, title: "Environmental Stewardship", description: "Our community e-waste recycling and awareness campaigns create green jobs for youth in recycling and renewable energy. We also establish solar-powered ICT centers for sustainable access." },
+    { href: "/programs/vumbuachiqs", icon: <Code className="size-10 text-primary" />, title: "Vumbuachiqs - Girls in Technology", description: "Our flagship program empowering girls and young women in technology through hands-on training in coding, robotics, and digital creativity. We provide mentorship, safe learning spaces, and STEM career guidance." },
+    { href: "/programs/youth-empowerment", icon: <TrendingUp className="size-10 text-primary" />, title: "Youth Empowerment", description: "We equip young people with leadership, entrepreneurship, and life-skills training. Our innovation labs support youth-driven problem solving and provide access to digital tools for market and financial inclusion." },
+];
+
+const iconMap: { [key: string]: React.ElementType } = {
+    Computer, Recycle, Code, TrendingUp, Bot, BrainCircuit, PenTool, Video, Palette
+};
 
 export default function Home() {
   const [showIntroModal, setShowIntroModal] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(true);
+  const [sliderImages, setSliderImages] = useState(defaultSliderImages);
+  const [programs, setPrograms] = useState(defaultPrograms);
 
   useEffect(() => {
     const hasSeenIntro = localStorage.getItem("hasSeenCourseIntro");
     if (!hasSeenIntro) {
       setShowIntroModal(true);
     }
+
+    const fetchContent = async () => {
+        try {
+            const docRef = doc(db, "siteContent", "homepage");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if(data.carouselImages) setSliderImages(data.carouselImages);
+                if(data.programs) {
+                    const dynamicPrograms = data.programs.map((p: any) => {
+                        const IconComponent = iconMap[p.icon] || Computer;
+                        return { ...p, icon: <IconComponent className="size-10 text-primary" /> };
+                    });
+                    setPrograms(dynamicPrograms);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching homepage content:", error);
+        } finally {
+            setLoadingContent(false);
+        }
+    };
+    fetchContent();
   }, []);
 
   const handleModalAction = () => {
@@ -37,24 +94,6 @@ export default function Home() {
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
   const missionVisionContent = `Vision: To empower underserved communities through inclusive access to digital innovation, sustainable development, and lifelong learning, fostering a resilient and connected society. Mission: To create inclusive platforms that promote digital literacy, environmental stewardship, and social innovation by establishing ICT hubs, supporting e-waste recycling initiatives, and equipping youth and women with practical skills for sustainable development. Our Approach: UCN works with schools, community-based organizations, and local governments to co-create solutions that respond to real challenges faced by our communities.`;
   
-  const sliderImages = [
-      {
-        src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070",
-        alt: "Community members learning together",
-        "data-ai-hint": "community learning"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070",
-        alt: "Collaborative tech environment",
-        "data-ai-hint": "tech collaboration"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?q=80&w=2070",
-        alt: "Innovative electronics workshop",
-        "data-ai-hint": "electronics workshop"
-      },
-    ];
-
   const partnerLogos = [
     { src: "https://i.postimg.cc/k22RKmX9/Whats-App-Image-2025-09-03-at-00-21-08-46a2e09a.jpg", alt: "Partner Logo 1" },
     { src: "https://i.postimg.cc/RNsnWFmX/Whats-App-Image-2025-09-03-at-00-22-49-4862a8d6.jpg", alt: "Partner Logo 2" },
@@ -91,37 +130,43 @@ export default function Home() {
 
       <main className="flex-1">
         <section id="home" className="relative h-[60vh] md:h-[80vh] w-full text-center text-white flex items-center justify-center">
-            <Carousel
-                className="absolute inset-0 w-full h-full"
-                plugins={[
-                Autoplay({
-                    delay: 3000,
-                    stopOnInteraction: false,
-                    stopOnMouseEnter: true,
-                }),
-                ]}
-            >
-                <CarouselContent>
-                {sliderImages.map((image) => (
-                    <CarouselItem key={image.src}>
-                    <div className="relative h-[60vh] md:h-[80vh] w-full">
-                         <div
-                            className="absolute inset-0 bg-black/40 z-10"
-                            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-                         />
-                        <Image
-                            src={image.src}
-                            alt={image.alt}
-                            fill
-                            className="object-cover"
-                            priority
-                            data-ai-hint={image['data-ai-hint']}
-                        />
-                    </div>
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-            </Carousel>
+            {loadingContent ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-secondary">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+            ) : (
+                <Carousel
+                    className="absolute inset-0 w-full h-full"
+                    plugins={[
+                    Autoplay({
+                        delay: 3000,
+                        stopOnInteraction: false,
+                        stopOnMouseEnter: true,
+                    }),
+                    ]}
+                >
+                    <CarouselContent>
+                    {sliderImages.map((image) => (
+                        <CarouselItem key={image.src}>
+                        <div className="relative h-[60vh] md:h-[80vh] w-full">
+                            <div
+                                className="absolute inset-0 bg-black/40 z-10"
+                                style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                            />
+                            <Image
+                                src={image.src}
+                                alt={image.alt}
+                                fill
+                                className="object-cover"
+                                priority
+                                data-ai-hint={image['data-ai-hint']}
+                            />
+                        </div>
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                </Carousel>
+            )}
             
             <div className="container px-4 md:px-6 z-10 relative">
                 <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-4">
@@ -202,25 +247,24 @@ export default function Home() {
                     Initiatives driving change in our communities.
                 </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-8">
-                {[
-                    { href: "/programs/digital-literacy", icon: <Computer className="size-10 text-primary" />, title: "Digital Access & Literacy", description: "We provide affordable internet connectivity and Wi-Fi hotspots to schools, market centers, health facilities, and households. These hotspots improve access to education, business opportunities, healthcare, and daily communication." },
-                    { href: "/programs/environmental-stewardship", icon: <Recycle className="size-10 text-primary" />, title: "Environmental Stewardship", description: "Our community e-waste recycling and awareness campaigns create green jobs for youth in recycling and renewable energy. We also establish solar-powered ICT centers for sustainable access." },
-                    { href: "/programs/vumbuachiqs", icon: <Code className="size-10 text-primary" />, title: "Vumbuachiqs - Girls in Technology", description: "Our flagship program empowering girls and young women in technology through hands-on training in coding, robotics, and digital creativity. We provide mentorship, safe learning spaces, and STEM career guidance." },
-                    { href: "/programs/youth-empowerment", icon: <TrendingUp className="size-10 text-primary" />, title: "Youth Empowerment", description: "We equip young people with leadership, entrepreneurship, and life-skills training. Our innovation labs support youth-driven problem solving and provide access to digital tools for market and financial inclusion." },
-                ].map(program => (
-                  <Link href={program.href} key={program.title}>
-                    <Card className="flex flex-col sm:flex-row items-center p-6 gap-6 hover:shadow-lg transition-shadow h-full">
-                        <div className="flex-shrink-0">{program.icon}</div>
-                        <div>
-                            <CardTitle className="font-headline text-xl mb-2">{program.title}</CardTitle>
-                            <CardDescription>{program.description}</CardDescription>
-                             <Button variant="link" className="p-0 mt-2 text-primary">Learn More &rarr;</Button>
-                        </div>
-                    </Card>
-                   </Link>
-                ))}
-            </div>
+            {loadingContent ? (
+                <div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin"/></div>
+            ) : (
+                <div className="grid md:grid-cols-2 gap-8">
+                    {programs.map(program => (
+                    <Link href={program.href} key={program.title}>
+                        <Card className="flex flex-col sm:flex-row items-center p-6 gap-6 hover:shadow-lg transition-shadow h-full">
+                            <div className="flex-shrink-0">{program.icon}</div>
+                            <div>
+                                <CardTitle className="font-headline text-xl mb-2">{program.title}</CardTitle>
+                                <CardDescription>{program.description}</CardDescription>
+                                <Button variant="link" className="p-0 mt-2 text-primary">Learn More &rarr;</Button>
+                            </div>
+                        </Card>
+                    </Link>
+                    ))}
+                </div>
+            )}
           </div>
         </section>
 
@@ -252,5 +296,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
