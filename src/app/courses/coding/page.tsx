@@ -225,28 +225,85 @@ const courseContent = [
     title: "Module 3: Data Structures",
     pages: [
         {
-            title: "Collections of Data: Lists and Tuples",
+            title: "Lesson 3.1: Lists - The Most Useful Data Structure",
             content: [
-                "Lists (or Arrays) are ordered, changeable collections of items. They are perfect for when you need to store multiple values that you might need to modify later.",
-                { type: "code", language: "python", code: "my_fruits = ['apple', 'banana', 'cherry']"},
-                "Tuples are ordered, but unchangeable collections. Once a tuple is created, you cannot add, remove, or change its items. This makes them fast and safe for data that shouldn't change.",
-                { type: "code", language: "python", code: "point = (10, 20)"},
+                "A list is an ordered and changeable collection of items, perfect for storing multiple values that you might need to modify. Think of it like a shopping list.",
+                "You create lists using square brackets `[]`.",
+                "You can access items by their position (index), starting from 0. `fruits[0]` gives you the first item.",
+                "Slicing lets you get a sub-section of the list, like `fruits[1:3]`.",
+                "Common list methods include `.append()` to add an item to the end, `.remove()` to delete a specific item, and `.pop()` to remove an item by its index.",
+                { type: "code", language: "python", code: "fruits = [\"apple\", \"banana\", \"cherry\"]\nprint(fruits[1])         # Accesses 'banana'\n\nfruits.append(\"orange\")\nprint(fruits)            # Output: ['apple', 'banana', 'cherry', 'orange']\n\nfruits.remove(\"apple\")\nprint(fruits)            # Output: ['banana', 'cherry', 'orange']"}
             ],
-            researchPrompt: "What is the key difference in performance between a list and a tuple in Python?"
+            researchPrompt: "What is the difference between the `append()` and `extend()` list methods in Python? Provide an example."
         },
         {
-            title: "Collections of Data: Sets and Dictionaries",
+            title: "Lesson 3.2: Tuples - Fixed Data Collections",
             content: [
-                "Sets are unordered, unindexed collections of unique items. They are useful for membership testing and removing duplicate entries.",
-                "Dictionaries (or hashmaps) are unordered collections of key-value pairs. They are optimized for retrieving a value when you know the key.",
-                { type: "code", language: "python", code: "student = {'name': 'John Doe', 'age': 25, 'course': 'Coding'}"},
-                "JSON (JavaScript Object Notation) is a popular data format that looks very similar to Python dictionaries.",
+                "A tuple is like a list, but it's *immutable*, meaning once you create it, you cannot change it. This makes your data safer and your program faster.",
+                "They are created using parentheses `()`.",
+                "Tuples are often used for data that shouldn't change, like geographical coordinates (latitude, longitude) or RGB color codes.",
+                "'Tuple unpacking' is a powerful feature where you can assign the items of a tuple to multiple variables at once.",
+                { type: "code", language: "python", code: "# A tuple for coordinates\nlocation = (12.345, 56.789)\n\n# Unpacking the tuple\nlatitude, longitude = location\n\nprint(f\"Latitude: {latitude}\")\nprint(f\"Longitude: {longitude}\")" }
             ],
-            researchPrompt: "Find an example of a JSON object. How does its structure compare to a Python dictionary?"
+            researchPrompt: "Why would a tuple be more memory-efficient than a list in Python?"
+        },
+        {
+            title: "Lesson 3.3: Sets - Unique, Unordered Collections",
+            content: [
+                "A set is an unordered collection of *unique* items. It's great for two main purposes: removing duplicates from a list and performing mathematical set operations.",
+                "Sets are created with curly braces `{}` or the `set()` function.",
+                "Because they are unordered, you cannot access items using an index.",
+                "Key operations include `.add()` to add an item, `.remove()` to take one away, `.union()` (`|`) to combine two sets, and `.intersection()` (`&`) to find common items.",
+                { type: "code", language: "python", code: "numbers = [1, 2, 2, 3, 4, 4, 4]\nunique_numbers = set(numbers)\nprint(unique_numbers)  # Output: {1, 2, 3, 4}\n\nset_a = {1, 2, 3}\nset_b = {3, 4, 5}\n\nprint(set_a.intersection(set_b)) # Output: {3}" }
+            ],
+            researchPrompt: "What is the time complexity for checking if an item exists in a Python set versus a list? Why is one faster?"
+        },
+        {
+            title: "Lesson 3.4: Dictionaries - Key-Value Pairs",
+            content: [
+                "A dictionary is a collection of key-value pairs. Instead of using a numeric index, you use a unique 'key' to access its corresponding 'value'. Think of it as a real-world dictionary where you look up a word (the key) to find its definition (the value).",
+                "Dictionaries are created with curly braces `{}` and colons `:` to separate keys and values.",
+                "You can retrieve a value by referencing its key: `person['name']`. Using the `.get()` method is safer as it won't cause an error if the key doesn't exist.",
+                "You can loop through a dictionary's keys, values, or both (using `.items()`).",
+                { type: "code", language: "python", code: "student = {\n    \"name\": \"Maria Jones\",\n    \"course\": \"Digital Literacy\",\n    \"progress\": 85\n}\n\n# Accessing a value\nprint(f\"{student['name']} has made {student['progress']}% progress.\")\n\n# Adding a new key-value pair\nstudent['location'] = \"Nakuru\"\nprint(student)" }
+            ],
+            researchPrompt: "What are the rules for dictionary keys in Python? Can a list be used as a key? Why or why not?"
+        },
+        {
+            title: "Lesson 3.5: Nesting & Combining Data Structures",
+            content: [
+                "The real power of data structures comes from combining them. This allows you to model complex, real-world data.",
+                "A list of dictionaries is one of the most common patterns. It's perfect for representing a collection of similar items, where each item has multiple properties (e.g., a list of users).",
+                "You can also have a dictionary where the values are lists, which is great for grouping items under a category (e.g., a dictionary of `students` with a list of `grades` for each).",
+                "To access nested data, you chain the accessors together.",
+                { type: "code", language: "python", code: "# A list of dictionaries\nusers = [\n    {'id': 1, 'name': 'John', 'role': 'Admin'},\n    {'id': 2, 'name': 'Jane', 'role': 'Editor'}\n]\n\n# Accessing nested data\nprint(users[0]['name']) # Output: John\n\n# A dictionary of lists\ncourse_roster = {\n    'math': ['Alice', 'Bob'],\n    'history': ['Charlie', 'David']\n}\n\nprint(course_roster['math'][1]) # Output: Bob"}
+            ],
+            researchPrompt: "Find an example of a JSON object online (e.g., from a public API). How does its structure relate to Python's lists and dictionaries?"
+        },
+        {
+            title: "Lesson 3.6: Problem Solving with Data Structures",
+            content: [
+                "Choosing the right data structure is a key programming skill. Your choice affects how easy your code is to write and how efficiently it runs.",
+                "Use a **List** when the order of items matters and you need to store duplicates (e.g., a to-do list, a history of user actions).",
+                "Use a **Set** when you need to store unique items and quickly check for membership (e.g., storing unique user IDs, lottery numbers).",
+                "Use a **Tuple** when you have a small, fixed collection of related items that should not be changed (e.g., coordinates, RGB colors).",
+                "Use a **Dictionary** when you need to associate data with a specific identifier or label (e.g., user profiles, inventory items with SKUs)."
+            ],
+            researchPrompt: "Imagine you are building a simple social media app. Which data structure would you use to store a user's list of friends, and why?"
+        },
+        {
+            title: "Lesson 3.7: Mini Project - Gradebook Manager",
+            content: [
+                "Let's combine everything from this module to build a practical tool: a student gradebook manager.",
+                "This project will use a dictionary to store student names as keys. The value for each student will be a list of their grades.",
+                "We'll build functions to add a new student, add a grade to an existing student, and calculate the average grade for a student.",
+                { type: "code", language: "python", code: "gradebook = {}\n\ndef add_student(name):\n    gradebook[name] = []\n    print(f\"Student {name} added.\")\n\ndef add_grade(name, grade):\n    if name in gradebook:\n        gradebook[name].append(grade)\n        print(f\"Added grade {grade} for {name}.\")\n    else:\n        print(f\"Student {name} not found.\")\n\ndef get_average(name):\n    if name in gradebook and gradebook[name]:\n        grades = gradebook[name]\n        average = sum(grades) / len(grades)\n        return average\n    return 0\n\n# --- Example Usage ---\nadd_student(\"Alice\")\nadd_grade(\"Alice\", 90)\nadd_grade(\"Alice\", 85)\nprint(f\"Alice's average: {get_average('Alice')}\")" }
+            ],
+            researchPrompt: "How could you modify this gradebook to also store the subject for each grade? (Hint: Think about changing the structure of the list that holds the grades)."
         }
     ]
   },
-   {
+  {
     title: "Module 4: Functions & Modules",
     pages: [
       {
@@ -271,7 +328,7 @@ const courseContent = [
       }
     ]
   },
-  {
+   {
     title: "Module 5: Object-Oriented Programming (OOP)",
     pages: [
       {
