@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, GraduationCap, Users, Wifi } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Heart, GraduationCap, Users, Wifi, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { AnimatedCounter } from "@/components/animated-counter";
@@ -23,11 +23,16 @@ export default function DonatePage() {
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     setCustomAmount(value);
-    setSelectedAmount(Number(value) || null);
   };
+  
+  const handleCustomAmountSubmit = () => {
+    const amount = Number(customAmount);
+    if (amount > 0) {
+      setSelectedAmount(amount);
+    }
+  }
 
   const donationOptions = [100, 500, 1000, 5000, 10000];
-  const isCustomSelected = selectedAmount !== null && !donationOptions.includes(selectedAmount);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -73,8 +78,10 @@ export default function DonatePage() {
                                  value={customAmount}
                                  onChange={handleCustomAmountChange}
                                />
+                               <Button size="lg" onClick={handleCustomAmountSubmit} disabled={!customAmount || Number(customAmount) <= 0}>
+                                  Donate
+                               </Button>
                             </div>
-                             <Button size="lg" className="w-full" disabled>Choose an amount to see instructions</Button>
                         </div>
                        ) : (
                         <div className="space-y-4 text-center bg-accent/50 p-6 rounded-lg">
@@ -98,6 +105,12 @@ export default function DonatePage() {
                         </div>
                        )}
                     </CardContent>
+                     <CardFooter>
+                         <div className="text-center text-sm text-muted-foreground p-4 border-t w-full">
+                            <p className="font-semibold">Need to use a different payment method?</p>
+                            <p>Currently, we accept donations directly via M-Pesa Paybill. For alternative arrangements, please contact us at <strong className="whitespace-nowrap">+254 741 626 496</strong> to coordinate your contribution.</p>
+                        </div>
+                    </CardFooter>
                 </Card>
 
                 <div className="space-y-8">
@@ -132,5 +145,3 @@ export default function DonatePage() {
     </div>
   );
 }
-
-    
