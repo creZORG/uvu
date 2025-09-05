@@ -304,7 +304,87 @@ const courseContent = [
     ]
   },
   {
-    title: "Module 4: Functions & Modules",
+    title: "Module 4: Functions and Modules",
+    pages: [
+        {
+            title: "Lesson 4.1: What Are Functions and Why Use Them?",
+            content: [
+                "Functions are named blocks of reusable code that perform a specific task. They are the building blocks of any well-structured program.",
+                "The main reason to use functions is the DRY principle: Don't Repeat Yourself. If you find yourself writing the same piece of code over and over, it's a sign you need a function.",
+                "Functions also help organize your code into logical, readable chunks. Instead of one giant script, you have a collection of smaller, manageable pieces.",
+                { type: "code", language: "python", code: "# Without a function\nprint(\"Hello!\")\nprint(\"Welcome to the program.\")\n\n# Later in the code...\nprint(\"Hello!\")\nprint(\"Welcome to the program.\")\n\n# With a function\ndef greet():\n    print(\"Hello!\")\n    print(\"Welcome to the program.\")\n\ngreet() # Call the function\ngreet() # Call it again" }
+            ],
+            researchPrompt: "What is the difference between defining a function and calling a function? Why is this distinction important?"
+        },
+        {
+            title: "Lesson 4.2: Parameters and Arguments",
+            content: [
+                "Parameters make functions flexible. They are placeholders for the data you want to pass into the function when you call it.",
+                "An 'argument' is the actual value you provide for a parameter when you call the function.",
+                "You can define default values for parameters, which are used if no argument is provided.",
+                "Python allows for both positional arguments (matched by order) and keyword arguments (matched by name), which can make your function calls clearer.",
+                { type: "code", language: "python", code: "# 'name' is a parameter with a default value\ndef greet(name=\"User\"):\n    print(f\"Hello, {name}!\")\n\n# 'Alice' is a positional argument\ngreet(\"Alice\")\n\n# This call uses the default value\ngreet()\n\n# 'name=\"Bob\"' is a keyword argument\ngreet(name=\"Bob\")" }
+            ],
+            researchPrompt: "What is the difference between a positional argument and a keyword argument? When might you prefer to use one over the other?"
+        },
+        {
+            title: "Lesson 4.3: Return Values",
+            content: [
+                "Functions can process data and send a result back to where they were called. This is done with the `return` keyword.",
+                "`print()` simply displays a value on the screen, but `return` gives the value back to the program so it can be stored in a variable or used in another calculation.",
+                "A function stops executing as soon as it hits a `return` statement.",
+                "If a function doesn't have a `return` statement, it implicitly returns `None`.",
+                { type: "code", language: "python", code: "# This function prints, but doesn't return a useful value\ndef print_sum(x, y):\n    print(x + y)\n\n# This function returns the result\ndef calculate_sum(x, y):\n    return x + y\n\nresult = calculate_sum(5, 10)\nprint(f\"The calculated result is: {result}\")" }
+            ],
+            researchPrompt: "Can a function return multiple values? If so, how does Python handle this?"
+        },
+        {
+            title: "Lesson 4.4: Variable Scope",
+            content: [
+                "Scope refers to the region of your code where a variable can be accessed.",
+                "Variables defined inside a function have a **local scope**. They only exist within that function and are destroyed when the function finishes.",
+                "Variables defined outside of any function have a **global scope**. They can be accessed from anywhere in your script, including inside functions.",
+                "It's generally bad practice to modify global variables from within a function. It can make your code confusing and hard to debug.",
+                { type: "code", language: "python", code: "global_variable = \"I am outside\"\n\ndef my_function():\n    local_variable = \"I am inside\"\n    print(local_variable)      # Works fine\n    print(global_variable)     # Can access global variables\n\nmy_function()\n\n# This would cause an error because local_variable doesn't exist here\n# print(local_variable)" }
+            ],
+            researchPrompt: "What is the `global` keyword in Python used for, and why should it generally be avoided?"
+        },
+        {
+            title: "Lesson 4.5: Using Built-in Modules",
+            content: [
+                "Python comes with a 'Standard Library' full of pre-written modules that contain useful functions and data. You don't have to write everything from scratch!",
+                "To use a module, you must first `import` it. This makes all the functions from that module available to your script.",
+                "The `math` module provides functions for advanced math operations (like square roots).",
+                "The `random` module lets you generate random numbers, choose random items, and shuffle lists.",
+                { type: "code", language: "python", code: "import math\n\n# Calculate the square root\nprint(math.sqrt(25)) # Output: 5.0\n\nimport random\n\n# Generate a random integer between 1 and 100\nprint(random.randint(1, 100))\n\n# Pick a random fruit from a list\nfruits = ['apple', 'banana', 'cherry']\nprint(random.choice(fruits))" }
+            ],
+            researchPrompt: "Explore the Python documentation for the `datetime` module. How would you use it to print the current date and time?"
+        },
+        {
+            title: "Lesson 4.6: Creating Your Own Modules",
+            content: [
+                "As your projects grow, you'll want to split your code into multiple files for better organization. Each Python file (`.py`) is a module.",
+                "You can import your own modules just like you import built-in ones. This allows you to create reusable 'helper' functions.",
+                "A common pattern is to have a `main.py` file that controls the program's flow and imports functions from other files like `utils.py` or `helpers.py`.",
+                "The `if __name__ == '__main__':` block is special. Code inside this block will only run when the file is executed directly, not when it's imported as a module into another file.",
+                { type: "code", language: "python", code: "# In a file named 'helpers.py':\ndef add(a, b):\n    return a + b\n\n# In a file named 'main.py':\nimport helpers\n\nresult = helpers.add(10, 20)\nprint(result) # Output: 30" }
+            ],
+            researchPrompt: "What is the purpose of the `if __name__ == '__main__':` block? Why is it considered a best practice in Python scripts?"
+        },
+        {
+            title: "Lesson 4.7: Mini-Project: Personal Assistant",
+            content: [
+                "Let's build a simple command-line personal assistant to practice using functions and modules.",
+                "The goal is to separate our logic into different files. One file will handle the core logic, and the other will run the program.",
+                "This project demonstrates how to build a clean, organized, and scalable program.",
+                { type: "code", language: "python", code: "# In 'assistant_functions.py':\nimport datetime\n\ndef get_greeting(name):\n    return f'Hello, {name}!'\n\ndef get_current_time():\n    return datetime.datetime.now().strftime('%H:%M')\n\n# In 'main.py':\nimport assistant_functions as assistant\n\nuser_name = \"Uvumbuzi Learner\"\nprint(assistant.get_greeting(user_name))\nprint(f'The current time is {assistant.get_current_time()}')" }
+            ],
+            researchPrompt: "How could you add a new function to your assistant that gives a random fact or quote? (Hint: You'll need the `random` module)."
+        }
+    ]
+  },
+  {
+    title: "Module 5: Object-Oriented Programming (OOP)",
     pages: [
       {
         title: "Defining and Using Functions",
