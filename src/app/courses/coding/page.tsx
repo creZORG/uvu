@@ -651,28 +651,148 @@ const courseContent = [
     ]
   },
   {
-    title: "Module 9: Algorithms & Problem Solving",
+    title: "Module 9: Testing, Debugging & Code Quality",
     pages: [
-      {
-        title: "Searching and Sorting Algorithms",
-        content: [
-          "An algorithm is a step-by-step procedure for solving a problem or accomplishing a task.",
-          "Linear Search checks every element in a list one by one. It's simple but can be slow for large lists.",
-          "Binary Search is a much faster algorithm for finding an item in a *sorted* list by repeatedly dividing the search interval in half.",
-          "Sorting algorithms like Bubble Sort and Insertion Sort are basic methods for arranging items in a specific order.",
-        ],
-        researchPrompt: "Why must a list be sorted for Binary Search to work?"
-      },
-      {
-        title: "Efficiency and Big-O Notation",
-        content: [
-          "When solving problems, the efficiency of your code matters. A more efficient algorithm can solve a problem in seconds that might take an inefficient one years.",
-          "Big-O notation is a way to describe the performance or complexity of an algorithm as the input size grows.",
-          "For example, O(n) (Linear Time) means the runtime grows linearly with the size of the input. O(1) (Constant Time) is extremely fast, as the runtime is independent of input size.",
-          "Understanding Big-O helps you choose the right algorithm for the job.",
-        ],
-        researchPrompt: "What is the Big-O complexity of a Binary Search?"
-      }
+        {
+            title: "Lesson 9.1: Introduction to Testing",
+            content: [
+                "Writing code is only half the battle; ensuring it works correctly is just as important. Testing is the process of verifying that your code does what you expect it to do.",
+                "**Unit Tests** check small, isolated pieces of code, like a single function. **Integration Tests** check if different parts of your code work together correctly. **System Tests** check the entire application from end to end.",
+                "Python's built-in `unittest` module is a great place to start writing simple tests to confirm your functions behave as expected.",
+                { type: "code", language: "python", code: "import unittest\n\ndef add(a, b):\n    return a + b\n\nclass TestAddFunction(unittest.TestCase):\n    def test_add_positive_numbers(self):\n        self.assertEqual(add(2, 3), 5)\n\n    def test_add_negative_numbers(self):\n        self.assertEqual(add(-1, -1), -2)\n\nif __name__ == '__main__':\n    unittest.main()" }
+            ],
+            researchPrompt: "What is Test-Driven Development (TDD)? How does it change the way programmers write code?"
+        },
+        {
+            title: "Lesson 9.2: Debugging Techniques",
+            content: [
+                "Bugs are an inevitable part of programming. A debugger is a tool that lets you run your code step-by-step and inspect the state of your variables at each point.",
+                "The simplest form of debugging is `print()` debugging, where you print variable values to understand the program's flow.",
+                "A more powerful tool is an interactive debugger, like Python's built-in `pdb` (Python Debugger). It lets you pause execution, inspect variables, and execute code line by line.",
+                { type: "code", language: "python", code: "import pdb\n\ndef my_function(x, y):\n    result = x + y\n    pdb.set_trace() # Execution will pause here\n    result = result * 2\n    return result\n\nmy_function(3, 4)" }
+            ],
+            researchPrompt: "What is a 'breakpoint' in the context of an IDE's debugger (like in VS Code)? How does it make debugging easier than using `pdb.set_trace()`?"
+        },
+        {
+            title: "Lesson 9.3: Improving Code Quality with Linters",
+            content: [
+                "Code quality isn't just about whether the code works; it's also about how readable, maintainable, and consistent it is.",
+                "**PEP 8** is the official style guide for Python code. It provides conventions for naming variables, line length, comments, and more, to ensure consistency across projects.",
+                "A **linter** is a tool that automatically checks your code for style guide violations and potential errors. Popular Python linters include `flake8` and `pylint`.",
+                "**Refactoring** is the process of restructuring existing computer code—changing the factoring—without changing its external behavior. It's a disciplined technique for cleaning up code that minimizes the chances of introducing bugs.",
+            ],
+            researchPrompt: "Install the `flake8` linter (`pip install flake8`) and run it on one of your previous projects. What style suggestions does it make?"
+        },
+        {
+            title: "Lesson 9.4: Introduction to Automated Testing",
+            content: [
+                "Running tests manually is slow and error-prone. Automated testing is the practice of writing scripts that run your tests for you.",
+                "**Continuous Integration (CI)** is a practice where developers frequently merge their code changes into a central repository, after which automated builds and tests are run. This helps find and address bugs quicker.",
+                "Tools like GitHub Actions allow you to create a simple CI pipeline that automatically runs your tests every time you push new code to your repository, ensuring that new changes don't break existing functionality.",
+            ],
+            researchPrompt: "What is the purpose of a `.travis.yml` or a `Jenkinsfile` in a software project?"
+        },
+    ]
+  },
+  {
+    title: "Module 10: Introduction to Databases",
+    pages: [
+        {
+            title: "Lesson 10.1: What is a Database?",
+            content: [
+                "A database is an organized collection of structured information, or data, typically stored electronically in a computer system. It's designed for efficient storage, retrieval, and management of data.",
+                "**Relational Databases** (like MySQL, PostgreSQL, SQLite) store data in tables with rows and columns, similar to a spreadsheet. They use SQL (Structured Query Language).",
+                "**NoSQL Databases** (like MongoDB, Redis) store data in a variety of ways, such as document, key-value, or graph formats. They are often more flexible and scalable for certain types of data.",
+                "For many applications, using a database is far more efficient and scalable than storing data in flat files like JSON or CSV.",
+            ],
+            researchPrompt: "What are the key differences between a relational (SQL) and a non-relational (NoSQL) database? When might you choose one over the other?"
+        },
+        {
+            title: "Lesson 10.2: SQL Basics with SQLite",
+            content: [
+                "**SQL (Structured Query Language)** is the standard language for interacting with relational databases.",
+                "The four fundamental operations are known as **CRUD**: Create (`INSERT`), Read (`SELECT`), Update (`UPDATE`), and Delete (`DELETE`).",
+                "**SQLite** is a lightweight, serverless, self-contained database that is perfect for learning and for use in smaller applications. Python has a built-in module called `sqlite3` for working with it.",
+                { type: "code", language: "python", code: "import sqlite3\n\n# Connect to a database (or create it if it doesn't exist)\nconn = sqlite3.connect('example.db')\n\n# Create a cursor object to execute SQL commands\ncursor = conn.cursor()\n\n# Create a table\ncursor.execute('''\nCREATE TABLE IF NOT EXISTS users (\n    id INTEGER PRIMARY KEY,\n    name TEXT NOT NULL,\n    email TEXT NOT NULL UNIQUE\n)\n''')\n\n# Commit the changes and close the connection\nconn.commit()\nconn.close()" }
+            ],
+            researchPrompt: "What is a 'Primary Key' in a SQL table and why is it important?"
+        },
+        {
+            title: "Lesson 10.3: CRUD Operations in Python",
+            content: [
+                "Let's see how to perform the four CRUD operations using Python's `sqlite3` module.",
+                "**Create (Insert):** Adds a new row to a table.",
+                "**Read (Select):** Retrieves rows from a table. You can fetch one (`fetchone()`) or all (`fetchall()`).",
+                "**Update:** Modifies existing rows in a table.",
+                "**Delete:** Removes rows from a table.",
+                { type: "code", language: "python", code: "import sqlite3\nconn = sqlite3.connect('example.db')\ncursor = conn.cursor()\n\n# CREATE\ncursor.execute(\"INSERT INTO users (name, email) VALUES (?, ?)\", ('Alice', 'alice@example.com'))\nconn.commit()\n\n# READ\ncursor.execute(\"SELECT * FROM users WHERE name = ?\", ('Alice',))\nuser = cursor.fetchone()\nprint(user)\n\n# UPDATE\ncursor.execute(\"UPDATE users SET email = ? WHERE name = ?\", ('new.email@example.com', 'Alice'))\nconn.commit()\n\n# DELETE\ncursor.execute(\"DELETE FROM users WHERE name = ?\", ('Alice',))\nconn.commit()\n\nconn.close()" }
+            ],
+            researchPrompt: "What is 'SQL Injection' and why is it important to use parameterized queries (using `?` placeholders) instead of f-strings to build SQL commands?"
+        },
+        {
+            title: "Lesson 10.4: Project: Simple Contact Book",
+            content: [
+                "Let's build a command-line application that manages a contact book. The contact information will be stored in a SQLite database, so the data will persist even when the program is closed.",
+                "The application should allow the user to:",
+                "1. Add a new contact (name, phone number, email).",
+                "2. View all contacts.",
+                "3. Search for a contact by name.",
+                "4. Update a contact's information.",
+                "5. Delete a contact.",
+                "This project will combine everything you've learned about functions, user input, error handling, and now, databases.",
+            ],
+            researchPrompt: "What is an ORM (Object-Relational Mapper) like SQLAlchemy or Django ORM? How does it simplify database interactions in Python?"
+        },
+    ]
+  },
+  {
+    title: "Module 11: Career Development & Lifelong Learning",
+    pages: [
+        {
+            title: "Lesson 11.1: Building Your Developer Brand",
+            content: [
+                "Your 'brand' as a developer is how you present your skills and experience to the world. It's more than just a resume; it's your professional identity.",
+                "**GitHub Portfolio:** Your GitHub profile is your new resume. Keep it active by pushing projects regularly. A good project has a clear `README.md` file explaining what the project is, how to run it, and what technologies it uses.",
+                "**Resume & Cover Letter:** Tailor your resume for each job application. Highlight projects and skills that are relevant to the job description. Your cover letter should be a short, compelling story about why you are a good fit for that specific company and role.",
+                "**Networking:** Connect with other developers on platforms like LinkedIn. Join online communities (like Discord or Slack groups) related to your interests. Share what you're learning and don't be afraid to ask questions.",
+            ],
+            researchPrompt: "Find three open-source projects on GitHub that interest you. Look at their `README.md` files. What makes a good README?"
+        },
+        {
+            title: "Lesson 11.2: Job Search Strategies & Interview Prep",
+            content: [
+                "The tech interview process often has multiple stages. Understanding them will help you prepare.",
+                "**Technical Screening:** Often a short online coding challenge or a call with a recruiter to discuss your background.",
+                "**Coding Interviews:** These test your problem-solving skills. You'll often be asked to solve algorithmic problems on a whiteboard or in a shared code editor. Practice on platforms like LeetCode, HackerRank, or Codewars is essential.",
+                "**Behavioral Interviews:** These assess your soft skills. Be prepared to talk about your projects, how you work in a team, how you handle challenges, and why you're interested in the company. Use the STAR method (Situation, Task, Action, Result) to structure your answers.",
+                "**System Design Interviews:** For more senior roles, these test your ability to design large-scale systems (e.g., 'Design Twitter').",
+            ],
+            researchPrompt: "What is the 'STAR' method for answering behavioral interview questions? Write out an example answer for 'Tell me about a challenging project you worked on.'"
+        },
+        {
+            title: "Lesson 11.3: Lifelong Learning in Tech",
+            content: [
+                "The technology landscape changes rapidly. Being a successful developer means being a lifelong learner.",
+                "**Stay Curious:** Always be exploring new languages, frameworks, and tools. Follow tech blogs, listen to podcasts, and watch conference talks.",
+                "**Contribute to Open Source:** Contributing to open-source projects is a great way to gain real-world experience, collaborate with other developers, and build your portfolio.",
+                "**Find a Community:** Surround yourself with people who are also learning. Join local meetups, find a mentor, and help others when you can. Teaching is one of the best ways to solidify your own knowledge.",
+                "**Avoid Burnout:** It's a marathon, not a sprint. It's important to take breaks, manage your time, and not compare your journey to others. Celebrate small wins and be patient with yourself.",
+            ],
+            researchPrompt: "What are MOOCs? Find two popular MOOC platforms and identify a course you might be interested in taking after this one."
+        },
+        {
+            title: "Lesson 11.4: Congratulations and Next Steps!",
+            content: [
+                "Congratulations on completing this comprehensive coding course! You have journeyed from the absolute basics of programming to building applications that interact with data, APIs, and databases. You've learned how to think like a programmer, write clean code, and debug your work.",
+                "This is not the end; it's the beginning of your journey as a developer. The skills you've acquired are a powerful foundation upon which you can build anything you can imagine.",
+                "**What's next?**",
+                "1. **Build a Final Project:** Apply everything you've learned to a project of your own choosing. This is the best way to solidify your knowledge and create something for your portfolio.",
+                "2. **Specialize:** Explore areas that interest you most. Is it web development, data science, mobile apps, or something else?",
+                "3. **Keep Learning:** The journey never ends. Continue practicing, building, and exploring.",
+                "You are now ready to take the final quiz to earn your Uvumbuzi certificate. Good luck!"
+            ],
+            researchPrompt: "What is one project you would like to build now that you have these foundational skills? Outline the key features and the modules from this course you would need to use."
+        },
     ]
   },
 ];
