@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp, collection } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Header } from "@/components/header";
@@ -16,10 +16,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Award } from "lucide-react";
+import { Loader2, ArrowLeft, Award, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { sendCertificateEmail } from "@/ai/flows/send-certificate-email";
 
 const examQuestions = {
     "Section A: Programming Fundamentals & Basics": [
@@ -77,7 +78,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
   const [submission, setSubmission] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const [user, authLoading] = useAuthState(auth);
@@ -153,10 +154,11 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleGenerateCertificate = async () => {
+  const handleGenerateAndSendCertificate = async () => {
     if (!submission) return;
-    setIsGeneratingCert(true);
+    setIsProcessing(true);
     try {
+        // 1. Get Student's Name
         const userProfileRef = doc(db, "userProfiles", submission.userId);
         const userProfileSnap = await getDoc(userProfileRef);
         if (!userProfileSnap.exists()) {
@@ -164,6 +166,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
         }
         const studentName = userProfileSnap.data().fullName;
 
+        // 2. Create Certificate Document
         const certRef = doc(collection(db, "certificates"));
         await setDoc(certRef, {
             studentName: studentName,
@@ -173,16 +176,32 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
             submissionId: params.id,
         });
 
+        // 3. Update Submission with Certificate ID
         const submissionRef = doc(db, "examSubmissions", params.id);
         await updateDoc(submissionRef, { certificateId: certRef.id });
 
         setCertificateId(certRef.id);
-        toast({ title: "Certificate Generated!", description: "The certificate is now available." });
+        toast({ title: "Certificate Generated!", description: "The certificate record has been created." });
+
+        // 4. Send Email via Genkit Flow
+        const certificateUrl = `${window.location.origin}/certificate/${certRef.id}`;
+        const emailResult = await sendCertificateEmail({
+            studentName,
+            studentEmail: submission.userEmail,
+            certificateUrl,
+        });
+
+        if (emailResult.success) {
+            toast({ title: "Email Sent!", description: "The certificate has been emailed to the student." });
+        } else {
+             throw new Error(emailResult.message || "Unknown error sending email.");
+        }
+
     } catch (error) {
         console.error(error);
-        toast({ variant: "destructive", title: "Error Generating Certificate", description: String(error) });
+        toast({ variant: "destructive", title: "Action Failed", description: String(error) });
     } finally {
-        setIsGeneratingCert(false);
+        setIsProcessing(false);
     }
   };
 
@@ -280,7 +299,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                                     )}
                                 />
                                 <div className="flex flex-wrap gap-4 items-center">
-                                    <Button type="submit" disabled={isSubmitting} size="lg">
+                                    <Button type="submit" disabled={isSubmitting || isProcessing} size="lg">
                                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
                                         Save Marking
                                     </Button>
@@ -290,9 +309,9 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                                                 <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
                                             </Button>
                                         ) : (
-                                            <Button type="button" onClick={handleGenerateCertificate} disabled={isGeneratingCert} size="lg" variant="secondary">
-                                                {isGeneratingCert ? <Loader2 className="animate-spin mr-2"/> : <Award className="mr-2"/>}
-                                                Generate Certificate
+                                            <Button type="button" onClick={handleGenerateAndSendCertificate} disabled={isProcessing} size="lg" variant="secondary">
+                                                {isProcessing ? <Loader2 className="animate-spin mr-2"/> : <><Award className="mr-2"/><Mail className="mr-2"/></>}
+                                                Generate & Email Certificate
                                             </Button>
                                         )
                                     )}
