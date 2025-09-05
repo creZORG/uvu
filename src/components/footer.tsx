@@ -4,12 +4,34 @@
 import Link from "next/link";
 import { UcnLogo } from "./icons";
 import { Twitter, Facebook, Linkedin, Instagram } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+type ContactDetails = {
+  email: string;
+  phone: string;
+  location: string;
+};
 
 export function Footer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [contact, setContact] = useState<ContactDetails | null>(null);
+
+   useEffect(() => {
+    const contentRef = doc(db, "siteContent", "content");
+    const unsubscribe = onSnapshot(contentRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.contact) {
+          setContact(data.contact);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <footer className="bg-primary/5 border-t border-primary/10">
@@ -27,19 +49,23 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link href="/#about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
-              <li><Link href="/#programs" className="text-muted-foreground hover:text-primary">Programs</Link></li>
+              <li><Link href="/about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
+              <li><Link href="/programs" className="text-muted-foreground hover:text-primary">Programs</Link></li>
               <li><Link href="/gallery" className="text-muted-foreground hover:text-primary">Gallery</Link></li>
               <li><Link href="/contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-headline font-semibold mb-4">Contact</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>info@uvumbuzicommunity.org</li>
-              <li>+254 741 626 496</li>
-              <li>Kivumbini, Nakuru, Kenya</li>
-            </ul>
+            {contact ? (
+              <ul className="space-y-2 text-muted-foreground">
+                <li>{contact.email}</li>
+                <li>{contact.phone}</li>
+                <li>{contact.location}</li>
+              </ul>
+            ) : (
+                <p className="text-muted-foreground">Loading...</p>
+            )}
           </div>
           <div>
             <h3 className="font-headline font-semibold mb-4">Follow Us</h3>

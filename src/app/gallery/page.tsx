@@ -1,25 +1,46 @@
 
+"use client";
+
+import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Loader2 } from "lucide-react";
+
+type GalleryImage = {
+  src: string;
+  alt: string;
+  className: string;
+};
+
+const defaultGalleryImages = [
+    { src: "https://i.postimg.cc/jLFzc1b4/IMG-20250902-WA0004.jpg", alt: "Gallery image 1", className: "row-span-2" },
+    { src: "https://i.postimg.cc/NK2RzxGq/IMG-20250902-WA0005.jpg", alt: "Gallery image 2", className: "" },
+    { src: "https://i.postimg.cc/7CvS8TbC/IMG-20250902-WA0006.jpg", alt: "Gallery image 3", className: "col-span-2" },
+    { src: "https://i.postimg.cc/gwv8Yk6g/IMG-20250902-WA0007.jpg", alt: "Gallery image 4", className: "" },
+];
 
 export default function GalleryPage() {
-  const galleryImages = [
-    { src: "https://i.postimg.cc/jLFzc1b4/IMG-20250902-WA0004.jpg", alt: "Gallery image 1", className: "row-span-2" },
-    { src: "https://i.postimg.cc/NK2RzxGq/IMG-20250902-WA0005.jpg", alt: "Gallery image 2" },
-    { src: "https://i.postimg.cc/7CvS8TbC/IMG-20250902-WA0006.jpg", alt: "Gallery image 3", className: "col-span-2" },
-    { src: "https://i.postimg.cc/gwv8Yk6g/IMG-20250902-WA0007.jpg", alt: "Gallery image 4" },
-    { src: "https://i.postimg.cc/7JL2M3tR/IMG-20250902-WA0008.jpg", alt: "Gallery image 5", className: "row-span-2" },
-    { src: "https://i.postimg.cc/7Gw7b83w/IMG-20250902-WA0009.jpg", alt: "Gallery image 6" },
-    { src: "https://i.postimg.cc/1nBFqCB6/IMG-20250902-WA0010.jpg", alt: "Gallery image 7" },
-    { src: "https://i.postimg.cc/3WrmThrZ/IMG-20250902-WA0011.jpg", alt: "Gallery image 8", className: "col-span-2" },
-    { src: "https://i.postimg.cc/mhdMZntW/IMG-20250902-WA0012.jpg", alt: "Gallery image 9" },
-    { src: "https://i.postimg.cc/yktZcSmf/IMG-20250902-WA0013.jpg", alt: "Gallery image 10" },
-    { src: "https://i.postimg.cc/TppbKcDL/IMG-20250902-WA0014.jpg", alt: "Gallery image 11" },
-    { src: "https://i.postimg.cc/BjF1gQNJ/IMG-20250902-WA0015.jpg", alt: "Gallery image 12", className: "col-span-2 row-span-2" },
-    { src: "https://i.postimg.cc/sBRG0d07/IMG-20250902-WA0016.jpg", alt: "Gallery image 13" },
-  ];
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(defaultGalleryImages);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const contentRef = doc(db, "siteContent", "content");
+    const unsubscribe = onSnapshot(contentRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.galleryImages && data.galleryImages.length > 0) {
+          setGalleryImages(data.galleryImages);
+        }
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -35,20 +56,26 @@ export default function GalleryPage() {
                 A glimpse into our community, the work we do, and the lives we impact.
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
-              {galleryImages.map((image, index) => (
-                <div key={index} className={cn("relative w-full h-full overflow-hidden rounded-lg shadow-lg group", image.className)}>
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
-                  />
-                   <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {loading ? (
+                 <div className="flex justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
-              ))}
-            </div>
+            ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
+                {galleryImages.map((image, index) => (
+                    <div key={index} className={cn("relative w-full h-full overflow-hidden rounded-lg shadow-lg group", image.className)}>
+                    <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                ))}
+                </div>
+            )}
           </div>
         </section>
       </main>

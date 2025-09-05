@@ -1,9 +1,37 @@
+
+"use client";
+
+import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContactForm } from "@/components/contact-form";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+type ContactDetails = {
+  email: string;
+  phone: string;
+  website: string;
+  location: string;
+};
 
 export default function ContactPage() {
+  const [contact, setContact] = useState<ContactDetails | null>(null);
+
+  useEffect(() => {
+    const contentRef = doc(db, "siteContent", "content");
+    const unsubscribe = onSnapshot(contentRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.contact) {
+          setContact(data.contact);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -18,12 +46,18 @@ export default function ContactPage() {
                 <p className="text-muted-foreground mt-4 text-lg">
                   We'd love to hear from you. Fill out the form or use the contact details provided.
                 </p>
-                <div className="mt-8 space-y-4 text-lg">
-                  <p><strong>Email:</strong> info@uvumbuzicommunity.org</p>
-                  <p><strong>Phone:</strong> +254 741 626 496</p>
-                  <p><strong>Website:</strong> <a href="http://uvumbuzicommunity.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">uvumbuzicommunity.org</a></p>
-                  <p><strong>Location:</strong> Kivumbini, Nakuru, Kenya</p>
-                </div>
+                {contact ? (
+                  <div className="mt-8 space-y-4 text-lg">
+                    <p><strong>Email:</strong> {contact.email}</p>
+                    <p><strong>Phone:</strong> {contact.phone}</p>
+                    <p><strong>Website:</strong> <a href={contact.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{new URL(contact.website).hostname}</a></p>
+                    <p><strong>Location:</strong> {contact.location}</p>
+                  </div>
+                ) : (
+                  <div className="mt-8 space-y-4 text-lg">
+                    <p>Loading contact details...</p>
+                  </div>
+                )}
               </div>
               <Card className="p-6 sm:p-8">
                 <CardHeader>

@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,21 +33,12 @@ type Submission = {
   status: "submitted" | "disqualified" | "passed" | "failed";
 };
 
-type CarouselImage = {
-  src: string;
-  alt: string;
-  "data-ai-hint": string;
-};
-
-type Program = {
-  href: string;
-  title: string;
-  description: string;
-};
-
-type HomepageContent = {
-  carouselImages: CarouselImage[];
-  programs: Program[];
+type SiteContent = {
+  carouselImages: { src: string; alt: string; "data-ai-hint": string; }[];
+  programs: { href: string; title: string; description: string; }[];
+  teamMembers: TeamMember[];
+  galleryImages: { src: string; alt: string; className: string; }[];
+  contact: { email: string; phone: string; website: string; location: string; };
 };
 
 type TeamMember = {
@@ -59,11 +50,10 @@ type TeamMember = {
   order: number;
 };
 
-type AdminView = "submissions" | "homepage" | "mail" | "team";
+type AdminView = "submissions" | "content" | "mail";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [user, authLoading] = useAuthState(auth);
@@ -72,15 +62,14 @@ export default function AdminPage() {
   const { toast } = useToast();
   
   const [activeView, setActiveView] = useState<AdminView>("submissions");
-  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
 
-
-  const contentForm = useForm<HomepageContent>();
+  const contentForm = useForm<SiteContent>();
   const mailForm = useForm<SendMailInput>();
-  const teamMemberForm = useForm<TeamMember>();
-
+  
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
   const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
+  const { fields: teamFields, append: appendTeam, remove: removeTeam } = useFieldArray({ control: contentForm.control, name: "teamMembers" });
+  const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({ control: contentForm.control, name: "galleryImages" });
 
   useEffect(() => {
     if (authLoading) return;
@@ -104,9 +93,9 @@ export default function AdminPage() {
     if (!isAuthorized) return;
 
     const fetchContent = async () => {
-        const contentDoc = await getDoc(doc(db, "siteContent", "homepage"));
+        const contentDoc = await getDoc(doc(db, "siteContent", "content"));
         if (contentDoc.exists()) {
-            contentForm.reset(contentDoc.data() as HomepageContent);
+            contentForm.reset(contentDoc.data() as SiteContent);
         }
     }
     fetchContent();
@@ -120,30 +109,20 @@ export default function AdminPage() {
       setSubmissions(subs);
     });
 
-    const teamQuery = query(collection(db, "teamMembers"), orderBy("order", "asc"));
-    const teamUnsubscribe = onSnapshot(teamQuery, (querySnapshot) => {
-        const members: TeamMember[] = [];
-        querySnapshot.forEach((doc) => {
-            members.push({ id: doc.id, ...doc.data()} as TeamMember);
-        });
-        setTeamMembers(members);
-    });
-
     setLoading(false);
 
     return () => {
         subsUnsubscribe();
-        teamUnsubscribe();
     };
   }, [isAuthorized, contentForm]);
 
-  const onContentSubmit = async (data: HomepageContent) => {
+  const onContentSubmit = async (data: SiteContent) => {
     try {
-      await setDoc(doc(db, "siteContent", "homepage"), data);
-      toast({ title: "Success!", description: "Homepage content updated." });
+      await setDoc(doc(db, "siteContent", "content"), data);
+      toast({ title: "Success!", description: "Site content updated." });
     } catch (error) {
       console.error("Error updating content: ", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not update homepage content." });
+      toast({ variant: "destructive", title: "Error", description: "Could not update site content." });
     }
   };
 
@@ -165,43 +144,6 @@ export default function AdminPage() {
     }
   };
   
-  const handleEditMember = (member: TeamMember) => {
-    setEditingMember(member);
-    teamMemberForm.reset(member);
-  };
-
-  const handleNewMember = () => {
-    const newMember: TeamMember = { name: "", title: "", bio: "", imageUrl: "", order: teamMembers.length + 1 };
-    setEditingMember(newMember);
-    teamMemberForm.reset(newMember);
-  };
-  
-  const onTeamMemberSubmit = async (data: TeamMember) => {
-    try {
-      if (editingMember?.id) {
-        await setDoc(doc(db, "teamMembers", editingMember.id), data, { merge: true });
-        toast({ title: "Success!", description: "Team member updated." });
-      } else {
-        await addDoc(collection(db, "teamMembers"), data);
-        toast({ title: "Success!", description: "New team member added." });
-      }
-      setEditingMember(null);
-    } catch (error) {
-      console.error("Error saving team member: ", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not save team member." });
-    }
-  };
-
-  const handleDeleteMember = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "teamMembers", id));
-      toast({ title: "Deleted", description: "Team member has been removed." });
-    } catch (error) {
-      console.error("Error deleting team member: ", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not delete team member." });
-    }
-  }
-
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "submitted": return "secondary";
@@ -242,47 +184,88 @@ export default function AdminPage() {
                     )}
                 </div>
             )
-        case "homepage":
+        case "content":
             return (
                 <div className="mt-6 md:mt-0">
                     <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-8">
+                      {/* Contact Info */}
                       <div className="space-y-4 p-4 border rounded-lg">
-                        <h3 className="font-headline text-xl">Carousel Images</h3>
+                         <h3 className="font-headline text-xl">Contact Information</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><Label>Email</Label><Input {...contentForm.register("contact.email")} /></div>
+                            <div><Label>Phone</Label><Input {...contentForm.register("contact.phone")} /></div>
+                            <div><Label>Website URL</Label><Input {...contentForm.register("contact.website")} /></div>
+                            <div><Label>Location</Label><Input {...contentForm.register("contact.location")} /></div>
+                          </div>
+                      </div>
+                      
+                      {/* Carousel */}
+                      <div className="space-y-4 p-4 border rounded-lg">
+                        <h3 className="font-headline text-xl">Homepage Carousel Images</h3>
                         {carouselFields.map((field, index) => (
                           <div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded">
                              <div className="md:col-span-3 grid gap-2">
-                                <Label htmlFor={`carousel-src-${index}`}>Image URL</Label>
-                                <Input id={`carousel-src-${index}`} {...contentForm.register(`carouselImages.${index}.src`)} />
-                                <Label htmlFor={`carousel-alt-${index}`}>Alt Text</Label>
-                                <Input id={`carousel-alt-${index}`} {...contentForm.register(`carouselImages.${index}.alt`)} />
-                                <Label htmlFor={`carousel-hint-${index}`}>AI Hint</Label>
-                                <Input id={`carousel-hint-${index}`} {...contentForm.register(`carouselImages.${index}.data-ai-hint`)} />
+                                <Label>Image URL</Label><Input {...contentForm.register(`carouselImages.${index}.src`)} />
+                                <Label>Alt Text</Label><Input {...contentForm.register(`carouselImages.${index}.alt`)} />
+                                <Label>AI Hint</Label><Input {...contentForm.register(`carouselImages.${index}.data-ai-hint`)} />
                              </div>
                              <Button type="button" variant="destructive" size="icon" onClick={() => removeCarousel(index)}><Trash2/></Button>
                           </div>
                         ))}
-                         <Button type="button" variant="outline" size="sm" onClick={() => appendCarousel({ src: '', alt: '', 'data-ai-hint': '' })}><PlusCircle className="mr-2"/>Add Image</Button>
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendCarousel({ src: '', alt: '', 'data-ai-hint': '' })}><PlusCircle className="mr-2"/>Add Carousel Image</Button>
                       </div>
 
+                      {/* Programs */}
                       <div className="space-y-4 p-4 border rounded-lg">
-                        <h3 className="font-headline text-xl">Programs Section</h3>
+                        <h3 className="font-headline text-xl">Homepage Programs</h3>
                         {programFields.map((field, index) => (
                             <div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded">
                                 <div className="md:col-span-3 grid gap-2">
-                                    <Label htmlFor={`program-title-${index}`}>Title</Label>
-                                    <Input id={`program-title-${index}`} {...contentForm.register(`programs.${index}.title`)} />
-                                    <Label htmlFor={`program-desc-${index}`}>Description</Label>
-                                    <Textarea id={`program-desc-${index}`} {...contentForm.register(`programs.${index}.description`)} />
-                                    <Label htmlFor={`program-href-${index}`}>Link (e.g., /programs/digital-literacy)</Label>
-                                    <Input id={`program-href-${index}`} {...contentForm.register(`programs.${index}.href`)} />
+                                    <Label>Title</Label><Input {...contentForm.register(`programs.${index}.title`)} />
+                                    <Label>Description</Label><Textarea {...contentForm.register(`programs.${index}.description`)} />
+                                    <Label>Link</Label><Input {...contentForm.register(`programs.${index}.href`)} />
                                 </div>
                                 <Button type="button" variant="destructive" size="icon" onClick={() => removeProgram(index)}><Trash2/></Button>
                             </div>
                         ))}
                         <Button type="button" variant="outline" size="sm" onClick={() => appendProgram({ href: '', title: '', description: '' })}><PlusCircle className="mr-2"/>Add Program</Button>
                       </div>
+
+                      {/* Team Members */}
+                       <div className="space-y-4 p-4 border rounded-lg">
+                        <h3 className="font-headline text-xl">Team Members</h3>
+                        {teamFields.map((field, index) => (
+                            <div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-2 border rounded">
+                                <div className="md:col-span-3 grid gap-2">
+                                    <Label>Name</Label><Input {...contentForm.register(`teamMembers.${index}.name`)} />
+                                    <Label>Title</Label><Input {...contentForm.register(`teamMembers.${index}.title`)} />
+                                    <Label>Bio</Label><Textarea {...contentForm.register(`teamMembers.${index}.bio`)} />
+                                    <Label>Image URL</Label><Input {...contentForm.register(`teamMembers.${index}.imageUrl`)} />
+                                    <Label>Order</Label><Input type="number" {...contentForm.register(`teamMembers.${index}.order`, {valueAsNumber: true})} />
+                                </div>
+                                <Button type="button" variant="destructive" size="icon" onClick={() => removeTeam(index)}><Trash2/></Button>
+                            </div>
+                        ))}
+                        <Button type="button" variant="outline" size="sm" onClick={() => appendTeam({ name: '', title: '', bio: '', imageUrl: '', order: teamFields.length + 1 })}><PlusCircle className="mr-2"/>Add Team Member</Button>
+                      </div>
+
+                       {/* Gallery Images */}
+                       <div className="space-y-4 p-4 border rounded-lg">
+                        <h3 className="font-headline text-xl">Gallery Images</h3>
+                        {galleryFields.map((field, index) => (
+                          <div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded">
+                             <div className="md:col-span-3 grid gap-2">
+                                <Label>Image URL</Label><Input {...contentForm.register(`galleryImages.${index}.src`)} />
+                                <Label>Alt Text</Label><Input {...contentForm.register(`galleryImages.${index}.alt`)} />
+                                <Label>CSS Class (e.g., col-span-2, row-span-2)</Label><Input {...contentForm.register(`galleryImages.${index}.className`)} />
+                             </div>
+                             <Button type="button" variant="destructive" size="icon" onClick={() => removeGallery(index)}><Trash2/></Button>
+                          </div>
+                        ))}
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', className: '' })}><PlusCircle className="mr-2"/>Add Gallery Image</Button>
+                      </div>
                       
-                      <Button type="submit">Save Homepage Content</Button>
+                      <Button type="submit">Save All Site Content</Button>
                     </form>
                 </div>
             )
@@ -307,78 +290,6 @@ export default function AdminPage() {
                             Send Email
                         </Button>
                     </form>
-                </div>
-            )
-        case "team":
-            return (
-                 <div className="mt-6 md:mt-0">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="font-headline text-2xl">Manage Team</h2>
-                        <Button onClick={handleNewMember}><PlusCircle className="mr-2"/> Add New Member</Button>
-                    </div>
-
-                    {editingMember && (
-                         <Card className="mb-8 p-4">
-                            <form onSubmit={teamMemberForm.handleSubmit(onTeamMemberSubmit)} className="space-y-4">
-                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                 <div>
-                                    <Label htmlFor="memberName">Name</Label>
-                                    <Input id="memberName" {...teamMemberForm.register("name")} />
-                                 </div>
-                                  <div>
-                                    <Label htmlFor="memberTitle">Title</Label>
-                                    <Input id="memberTitle" {...teamMemberForm.register("title")} />
-                                  </div>
-                               </div>
-                               <div>
-                                 <Label htmlFor="memberImageUrl">Image URL</Label>
-                                 <Input id="memberImageUrl" {...teamMemberForm.register("imageUrl")} />
-                               </div>
-                               <div>
-                                 <Label htmlFor="memberBio">Bio</Label>
-                                 <Textarea id="memberBio" {...teamMemberForm.register("bio")} />
-                               </div>
-                               <div>
-                                  <Label htmlFor="memberOrder">Order</Label>
-                                  <Input id="memberOrder" type="number" {...teamMemberForm.register("order", { valueAsNumber: true })} />
-                               </div>
-                               <div className="flex gap-2 justify-end">
-                                 <Button type="button" variant="ghost" onClick={() => setEditingMember(null)}>Cancel</Button>
-                                 <Button type="submit">Save Member</Button>
-                               </div>
-                            </form>
-                         </Card>
-                    )}
-
-                    <div className="space-y-4">
-                        {teamMembers.map(member => (
-                            <Card key={member.id} className="p-4 flex items-center justify-between">
-                               <div className="flex items-center gap-4">
-                                  <Avatar>
-                                    <AvatarImage src={member.imageUrl} alt={member.name} />
-                                    <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                                  </Avatar>
-                                  <div>
-                                    <p className="font-bold">{member.name} (#{member.order})</p>
-                                    <p className="text-sm text-muted-foreground">{member.title}</p>
-                                  </div>
-                               </div>
-                               <div className="flex gap-2">
-                                  <Button variant="outline" size="sm" onClick={() => handleEditMember(member)}>Edit</Button>
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Delete</Button></AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the team member. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleDeleteMember(member.id!)}>Yes, Delete</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                               </div>
-                            </Card>
-                        ))}
-                    </div>
                 </div>
             )
         default:
@@ -418,18 +329,11 @@ export default function AdminPage() {
                             <FileText className="mr-2" /> Submissions
                         </Button>
                         <Button
-                            variant={activeView === 'homepage' ? 'secondary' : 'ghost'}
-                            className={cn("justify-start", activeView === 'homepage' && "font-bold")}
-                            onClick={() => setActiveView("homepage")}
+                            variant={activeView === 'content' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'content' && "font-bold")}
+                            onClick={() => setActiveView("content")}
                         >
-                            <LayoutDashboard className="mr-2" /> Homepage Content
-                        </Button>
-                        <Button
-                            variant={activeView === 'team' ? 'secondary' : 'ghost'}
-                            className={cn("justify-start", activeView === 'team' && "font-bold")}
-                            onClick={() => setActiveView("team")}
-                        >
-                            <Users className="mr-2" /> Team Members
+                            <Settings className="mr-2" /> Site Content
                         </Button>
                         <Button
                             variant={activeView === 'mail' ? 'secondary' : 'ghost'}

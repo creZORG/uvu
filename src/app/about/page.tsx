@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -28,13 +28,15 @@ export default function AboutPage() {
   const missionVisionContent = `Vision: To empower underserved communities through inclusive access to digital innovation, sustainable development, and lifelong learning, fostering a resilient and connected society. Mission: To create inclusive platforms that promote digital literacy, environmental stewardship, and social innovation by establishing ICT hubs, supporting e-waste recycling initiatives, and equipping youth and women with practical skills for sustainable development. Our Approach: UCN works with schools, community-based organizations, and local governments to co-create solutions that respond to real challenges faced by our communities.`;
 
   useEffect(() => {
-    const q = query(collection(db, "teamMembers"), orderBy("order", "asc"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const members: TeamMember[] = [];
-      querySnapshot.forEach((doc) => {
-        members.push({ id: doc.id, ...doc.data() } as TeamMember);
-      });
-      setTeamMembers(members);
+    const contentRef = doc(db, "siteContent", "content");
+    const unsubscribe = onSnapshot(contentRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.teamMembers) {
+          const sortedTeam = [...data.teamMembers].sort((a,b) => a.order - b.order);
+          setTeamMembers(sortedTeam);
+        }
+      }
       setLoading(false);
     });
 
@@ -87,8 +89,8 @@ export default function AboutPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                {teamMembers.map((member) => (
-                  <Card key={member.id} className="text-center p-6">
+                {teamMembers.map((member, index) => (
+                  <Card key={index} className="text-center p-6">
                     <Avatar className="w-32 h-32 mx-auto mb-4 border-4 border-primary/20">
                       <AvatarImage src={member.imageUrl} alt={member.name} />
                       <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>

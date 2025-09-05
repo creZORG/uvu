@@ -24,9 +24,9 @@ import { ThemeToggle } from "./theme-toggle";
 
 
 const navLinks = [
-  { href: "/courses", label: "Courses", animated: true },
-  { href: "/programs", label: "Programs", animated: true },
   { href: "/about", label: "About", animated: false },
+  { href: "/programs", label: "Programs", animated: true },
+  { href: "/courses", label: "Courses", animated: true },
   { href: "/gallery", label: "Gallery", animated: false },
 ];
 
@@ -68,6 +68,10 @@ export function Header() {
              <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
+            {userRole === 'admin' && (
+                <DropdownMenuItem asChild><Link href="/admin">Admin Dashboard</Link></DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => auth.signOut()}>
               Log Out
             </DropdownMenuItem>
@@ -101,9 +105,6 @@ export function Header() {
           {link.label}
         </Link>
       ))}
-      {userRole === 'admin' && (
-           <Link href="/admin" onClick={() => setSheetOpen(false)} className="text-foreground/80 hover:text-foreground transition-colors">Admin</Link>
-      )}
     </nav>
   );
 
@@ -119,10 +120,10 @@ export function Header() {
                 <div className="hidden md:flex items-center gap-6">
                     <NavLinks />
                     <div className="flex items-center gap-4">
-                    <AuthNav />
                     <Button asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 rounded-full">
                         <Link href="/donate">Donate</Link>
                     </Button>
+                    <AuthNav />
                     <ThemeToggle />
                     </div>
                 </div>
