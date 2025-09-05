@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, FolderKanban } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Project = {
   id: string;
@@ -58,12 +59,22 @@ export default function ProgramsPage() {
                     <div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {projects.map((project) => (
+                        {projects.map((project, index) => (
                             <Link href={`/programs/${project.id}`} key={project.id} className="flex">
-                                <Card className="flex flex-col w-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                                <Card className={cn(
+                                    "flex flex-col w-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300",
+                                    "border-2",
+                                    index % 3 === 0 ? "border-primary" : index % 3 === 1 ? "border-accent-foreground" : "border-destructive"
+                                )}>
                                     <CardHeader className="items-center text-center">
-                                        <div className="p-4 bg-primary/10 rounded-full mb-4">
-                                            <FolderKanban className="size-12 text-primary" />
+                                        <div className={cn(
+                                            "p-4 rounded-full mb-4",
+                                            index % 3 === 0 ? "bg-primary/10" : index % 3 === 1 ? "bg-accent/80" : "bg-destructive/10"
+                                        )}>
+                                            <FolderKanban className={cn(
+                                                "size-12",
+                                                index % 3 === 0 ? "text-primary" : index % 3 === 1 ? "text-accent-foreground" : "text-destructive"
+                                            )} />
                                         </div>
                                         <CardTitle className="font-headline text-2xl">{project.title}</CardTitle>
                                     </CardHeader>

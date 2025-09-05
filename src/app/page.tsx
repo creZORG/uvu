@@ -4,10 +4,10 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { Computer, Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, TrendingUp, Code, Bot, BrainCircuit, PenTool, Video, Palette } from "lucide-react";
+import { Handshake, HeartHandshake, Leaf, Lightbulb, Recycle, ShieldCheck, FolderKanban } from "lucide-react";
 import { Footer } from "@/components/footer";
 import {
   Carousel,
@@ -18,7 +18,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, orderBy, query, limit } from "firebase/firestore";
 
 
 const defaultSliderImages = [
@@ -39,22 +39,19 @@ const defaultSliderImages = [
   },
 ];
 
-const defaultPrograms = [
-    { href: "/programs/digital-literacy", icon: <Computer className="size-10 text-primary" />, title: "Digital Access & Literacy", description: "We provide affordable internet connectivity and Wi-Fi hotspots to schools, market centers, health facilities, and households. These hotspots improve access to education, business opportunities, healthcare, and daily communication." },
-    { href: "/programs/environmental-stewardship", icon: <Recycle className="size-10 text-primary" />, title: "Environmental Stewardship", description: "Our community e-waste recycling and awareness campaigns create green jobs for youth in recycling and renewable energy. We also establish solar-powered ICT centers for sustainable access." },
-    { href: "/programs/vumbuachiqs", icon: <Code className="size-10 text-primary" />, title: "Vumbuachiqs - Girls in Technology", description: "Our flagship program empowering girls and young women in technology through hands-on training in coding, robotics, and digital creativity. We provide mentorship, safe learning spaces, and STEM career guidance." },
-    { href: "/programs/youth-empowerment", icon: <TrendingUp className="size-10 text-primary" />, title: "Youth Empowerment", description: "We equip young people with leadership, entrepreneurship, and life-skills training. Our innovation labs support youth-driven problem solving and provide access to digital tools for market and financial inclusion." },
-];
-
-const iconMap: { [key: string]: React.ElementType } = {
-    Computer, Recycle, Code, TrendingUp, Bot, BrainCircuit, PenTool, Video, Palette
+type Project = {
+  id: string;
+  title: string;
+  content: string;
 };
 
 export default function Home() {
   const [showIntroModal, setShowIntroModal] = useState(false);
   const [loadingContent, setLoadingContent] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(true);
   const [sliderImages, setSliderImages] = useState(defaultSliderImages);
-  const [programs, setPrograms] = useState(defaultPrograms);
+  const [projects, setProjects] = useState<Project[]>([]);
+
 
   useEffect(() => {
     const hasSeenIntro = localStorage.getItem("hasSeenCourseIntro");
@@ -68,11 +65,7 @@ export default function Home() {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                if(data.carouselImages) setSliderImages(data.carouselImages);
-                if(data.programs) {
-                    const dynamicPrograms = data.programs.map((p: any) => ({ ...p, href: `/programs/${p.id}` }));
-                    setPrograms(dynamicPrograms);
-                }
+                if(data.carouselImages && data.carouselImages.length > 0) setSliderImages(data.carouselImages);
             }
         } catch (error) {
             console.error("Error fetching homepage content:", error);
@@ -80,7 +73,19 @@ export default function Home() {
             setLoadingContent(false);
         }
     };
+
+    const projectsQuery = query(collection(db, "projects"), orderBy("createdAt", "desc"), limit(4));
+    const unsubscribe = onSnapshot(projectsQuery, (querySnapshot) => {
+        const projs: Project[] = [];
+        querySnapshot.forEach((doc) => {
+            projs.push({ id: doc.id, ...doc.data() } as Project);
+        });
+        setProjects(projs);
+        setLoadingProjects(false);
+    });
+
     fetchContent();
+    return () => unsubscribe();
   }, []);
 
   const handleModalAction = () => {
@@ -241,27 +246,32 @@ export default function Home() {
             <div className="text-center mb-12">
                 <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Our Programs</h2>
                 <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                    Initiatives driving change in our communities.
+                    A look at our latest initiatives driving change in our communities.
                 </p>
             </div>
-            {loadingContent ? (
+            {loadingProjects ? (
                 <div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin"/></div>
             ) : (
-                <div className="grid md:grid-cols-2 gap-8">
-                    {programs.map(program => (
-                    <Link href={program.href} key={program.title}>
-                        <Card className="flex flex-col sm:flex-row items-center p-6 gap-6 hover:shadow-lg transition-shadow h-full">
-                            <div className="flex-shrink-0">{iconMap[program.icon as keyof typeof iconMap] || <Computer className="size-10 text-primary" />}</div>
-                            <div>
-                                <CardTitle className="font-headline text-xl mb-2">{program.title}</CardTitle>
-                                <CardDescription>{program.description}</CardDescription>
-                                <Button variant="link" className="p-0 mt-2 text-primary">Learn More &rarr;</Button>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {projects.map(project => (
+                    <Link href={`/programs/${project.id}`} key={project.id}>
+                        <Card className="flex flex-col items-center p-6 gap-4 hover:shadow-lg transition-shadow h-full text-center">
+                             <div className="p-3 bg-primary/10 rounded-full mb-2">
+                                <FolderKanban className="size-8 text-primary" />
                             </div>
+                            <CardTitle className="font-headline text-xl">{project.title}</CardTitle>
+                            <CardDescription className="line-clamp-3">{project.content}</CardDescription>
+                            <Button variant="link" className="p-0 mt-2 text-primary">Learn More &rarr;</Button>
                         </Card>
                     </Link>
                     ))}
                 </div>
             )}
+            <div className="text-center mt-12">
+                <Button asChild size="lg">
+                    <Link href="/programs">View All Programs</Link>
+                </Button>
+            </div>
           </div>
         </section>
 
@@ -293,3 +303,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
