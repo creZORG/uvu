@@ -79,14 +79,9 @@ export function Header() {
       );
     }
     return (
-        <div className="flex items-center gap-2">
-            <Button asChild variant="ghost">
-                <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild>
-                <Link href="/signup">Sign Up</Link>
-            </Button>
-        </div>
+        <Button asChild>
+            <Link href="/auth">Login / Sign Up</Link>
+        </Button>
     );
   };
 
