@@ -15,10 +15,10 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, onSnapshot, orderBy, query, limit } from "firebase/firestore";
+import { HomeTour } from "@/components/home-tour";
 
 
 const defaultSliderImages = [
@@ -46,7 +46,7 @@ type Project = {
 };
 
 export default function Home() {
-  const [showIntroModal, setShowIntroModal] = useState(false);
+  const [runTour, setRunTour] = useState(false);
   const [loadingContent, setLoadingContent] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [sliderImages, setSliderImages] = useState(defaultSliderImages);
@@ -54,9 +54,10 @@ export default function Home() {
 
 
   useEffect(() => {
+    // We need to check this in useEffect to ensure it runs on the client
     const hasSeenIntro = localStorage.getItem("hasSeenCourseIntro");
     if (!hasSeenIntro) {
-      setShowIntroModal(true);
+      setRunTour(true);
     }
 
     const fetchContent = async () => {
@@ -88,9 +89,9 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  const handleModalAction = () => {
+  const handleTourCompletion = () => {
     localStorage.setItem("hasSeenCourseIntro", "true");
-    setShowIntroModal(false);
+    setRunTour(false);
   };
 
   const aboutContent = `Uvumbuzi Community Network (UCN) is a community-based organization (CBO) domiciled in Kivumbini Ward, Nakuru County, committed to bridging the digital divide and fostering sustainable development through innovation. Rooted in the Swahili word "Uvumbuzi," meaning innovation, UCN exists to spark creativity, resilience, and opportunity in underserved communities. From Nakuru, the network is expanding its reach across Kenya by creating inclusive platforms that combine digital literacy, affordable connectivity, environmental stewardship, entrepreneurship, and lifelong learning. By combining technology, indigenous knowledge, and collaborative leadership, UCN builds networks of resilience that inspire self-reliance and innovation.`;
@@ -108,27 +109,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <HomeTour run={runTour} onComplete={handleTourCompletion} />
       <Header />
-
-       <AlertDialog open={showIntroModal} onOpenChange={setShowIntroModal}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-headline text-2xl text-center">
-              Welcome to Uvumbuzi Digital Hub!
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-lg py-4">
-              Ready to learn new skills and earn a certificate? Our interactive courses are the perfect place to start.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="sm:justify-center">
-             <AlertDialogAction asChild onClick={handleModalAction} size="lg">
-              <Link href="/courses">
-                Explore Courses <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <main className="flex-1">
         <section id="home" className="relative h-[60vh] md:h-[80vh] w-full text-center text-white flex items-center justify-center">
@@ -303,5 +285,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

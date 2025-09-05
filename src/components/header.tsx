@@ -24,10 +24,10 @@ import { ThemeToggle } from "./theme-toggle";
 
 
 const navLinks = [
-  { href: "/about", label: "About", animated: false },
-  { href: "/programs", label: "Programs", animated: false },
-  { href: "/courses", label: "Courses", animated: true },
-  { href: "/gallery", label: "Gallery", animated: false },
+  { id: "nav-about", href: "/about", label: "About" },
+  { id: "nav-programs", href: "/programs", label: "Programs" },
+  { id: "nav-courses", href: "/courses", label: "Courses", animated: true },
+  { id: "nav-gallery", href: "/gallery", label: "Gallery" },
 ];
 
 
@@ -98,6 +98,7 @@ export function Header() {
       {navLinks.map((link) => (
         <Link
           key={link.href}
+          id={link.id}
           href={link.href}
           onClick={() => setSheetOpen(false)}
           className={cn(
@@ -123,7 +124,7 @@ export function Header() {
                 <div className="hidden md:flex items-center gap-6">
                     <NavLinks />
                     <div className="flex items-center gap-4">
-                    <Button asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 rounded-full">
+                    <Button id="nav-donate" asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 rounded-full">
                         <Link href="/donate">Donate</Link>
                     </Button>
                     <AuthNav />
