@@ -475,7 +475,7 @@ const courseContent = [
           "Encapsulation is the principle of bundling data (attributes) and the methods that operate on that data within a single unit (a class). A key part of this is controlling access to the internal data to prevent accidental modification.",
           "In Python, we use a naming convention to indicate that an attribute should be considered 'private'. A single underscore (`_`) is a hint for other developers, while a double underscore (`__`) 'mangles' the name, making it harder to access from outside the class.",
           "To provide controlled access, we use 'getter' methods to retrieve the value and 'setter' methods to change it. This allows us to add validation or logic before changing the data.",
-          { type: 'code', language: 'python', code: 'class BankAccount:\n    def __init__(self, initial_balance):\n        # Double underscore makes this attribute harder to access directly\n        self.__balance = initial_balance\n\n    # A \'getter\' method to safely retrieve the balance\n    def get_balance(self):\n        return self.__balance\n\n    # A \'setter\' method with validation logic\n    def deposit(self, amount):\n        if amount > 0:\n            self.__balance += amount\n            print(f"Deposited ${amount}. New balance: ${self.__balance}")\n        else:\n            print("Deposit amount must be positive.")\n\naccount = BankAccount(100)\n\n# Good practice: use the getter method\nprint(f"Current balance: ${account.get_balance()}")\n\n# Bad practice: trying to access directly (will cause an error)\n# print(account.__balance)' }
+          { type: 'code', language: 'python', code: 'class BankAccount:\n    def __init__(self, initial_balance):\n        # Double underscore makes this attribute harder to access directly\n        self.__balance = initial_balance\n\n    # A \'getter\' method to safely retrieve the balance\n    def get_balance(self):\n        return self.__balance\n\n    # A \'setter\' method with validation logic\n    def deposit(self, amount):\n        if amount > 0:\n            self.__balance += amount\n            print(f"Deposited ${amount}. New balance: ${self.__balance}")\n        else:\n            print("Deposit amount must be be positive.")\n\naccount = BankAccount(100)\n\n# Good practice: use the getter method\nprint(f"Current balance: ${account.get_balance()}")\n\n# Bad practice: trying to access directly (will cause an error)\n# print(account.__balance)' }
         ],
         researchPrompt: "What is 'name mangling' in Python and how does it work with double underscore attributes?"
       },
@@ -606,7 +606,52 @@ const courseContent = [
     ]
   },
   {
-    title: "Module 8: Algorithms & Problem Solving",
+    title: "Module 8: Working with APIs & Web Data",
+    pages: [
+      {
+        title: "Lesson 8.1: Introduction to APIs",
+        content: [
+            "An API, or Application Programming Interface, is a set of rules that allows different software applications to communicate with each other. Think of it as a waiter in a restaurant: you (your program) give an order (a request) to the waiter (the API), who then brings it to the kitchen (the server). The kitchen prepares your order, and the waiter brings the food (the data) back to you.",
+            "We use APIs to get data from external services without needing to know how those services work internally. This could be anything from weather data, stock prices, to user information from a social media site.",
+            "Most web APIs work over HTTP, the same protocol your browser uses to load websites. A request to an API is just a specially formatted URL.",
+            { type: 'code', language: 'python', code: "# We use the 'requests' library to make these HTTP calls in Python.\nimport requests\n\n# This is the API endpoint (the URL we send the request to)\nresponse = requests.get('https://api.agify.io?name=michael')\n\n# A status code of 200 means the request was successful!\nprint(f\"Status Code: {response.status_code}\")\n\n# The data is usually returned in a format called JSON.\nprint(f\"Response JSON: {response.json()}\")" }
+        ],
+        researchPrompt: "What does HTTP stand for? Find out what two other common status codes, like 404 and 500, mean."
+      },
+      {
+        title: "Lesson 8.2: Parsing JSON Data from APIs",
+        content: [
+            "JSON (JavaScript Object Notation) is the standard format for sending data between web servers and applications. It's lightweight, human-readable, and easy for machines to parse.",
+            "When you get a response from an API, the `requests` library has a handy `.json()` method that automatically converts the JSON data into a Python dictionary.",
+            "Once it's a dictionary, you can access the data just like any other dictionary in Python, using keys to get the values you need. Sometimes, the data might be nested inside other dictionaries or lists.",
+            { type: 'code', language: 'python', code: "import requests\n\nresponse = requests.get('https://api.agify.io?name=susan')\ndata = response.json()\n\n# Now 'data' is a Python dictionary\nname = data['name']\nage = data['age']\ncount = data['count']\n\nprint(f\"{name.title()} is a name with an estimated age of {age}.\")\nprint(f\"This estimate is based on {count} records.\")" }
+        ],
+        researchPrompt: "Find a public API online (like the JSONPlaceholder API) and look at its structure. How is it similar to or different from the Python dictionaries you've learned about?"
+      },
+      {
+        title: "Lesson 8.3: Handling API Errors",
+        content: [
+            "Not all API calls will be successful. The server might be down, you might have made a mistake in your request, or you might have exceeded the allowed number of requests (a 'rate limit'). A robust program must handle these situations gracefully.",
+            "The first step is always to check the `status_code` of the response. A code of `200` means everything is OK. Any other code, like `404` (Not Found) or `401` (Unauthorized), indicates an error.",
+            "You should wrap your API calls in a `try...except` block to catch potential network errors, like if you're not connected to the internet. Then, use an `if` statement to check the status code before you try to parse the JSON.",
+            { type: 'code', language: 'python', code: "import requests\n\n# This will cause a 404 error because the endpoint doesn't exist\nresponse = requests.get('https://api.example.com/nonexistent') \n\nif response.status_code == 200:\n    # This part will only run if the request was successful\n    print(\"Success!\")\n    print(response.json())\nelse:\n    # This part runs if there was an error\n    print(f\"Failed to retrieve data. Status code: {response.status_code}\")" }
+        ],
+        researchPrompt: "What is an 'API key'? Why do many APIs require you to use one in your requests?"
+      },
+      {
+        title: "Lesson 8.4: Mini Project - Weather Dashboard",
+        content: [
+            "Let's use everything we've learned to build a useful, real-world application: a command-line weather dashboard.",
+            "This project will involve prompting the user for a city, making a call to a free weather API to get live data, and then displaying that information in a clean, readable format.",
+            "This is a great exercise because it combines user input, functions, API requests, JSON parsing, and error handling—all key skills for any programmer.",
+            { type: 'code', language: 'python', code: "# Note: You'll need to sign up for a free API key from a weather service\n# like OpenWeatherMap for this to work.\n\nimport requests\n\nAPI_KEY = \"your_api_key_here\"\nBASE_URL = \"https://api.openweathermap.org/data/2.5/weather\"\n\ncity = input(\"Enter a city name: \")\nrequest_url = f\"{BASE_URL}?q={city}&appid={API_KEY}&units=metric\"\n\nresponse = requests.get(request_url)\n\nif response.status_code == 200:\n    data = response.json()\n    weather = data['weather'][0]['description']\n    temp = data['main']['temp']\n    print(f\"Weather in {city.title()}: {weather}\")\n    print(f\"Temperature: {temp}°C\")\nelse:\n    print(\"An error occurred.\")" }
+        ],
+        researchPrompt: "How could you extend this weather app to show a 5-day forecast instead of just the current weather? (Hint: The API documentation will likely show a different 'endpoint' for forecast data)."
+      }
+    ]
+  },
+  {
+    title: "Module 9: Algorithms & Problem Solving",
     pages: [
       {
         title: "Searching and Sorting Algorithms",
@@ -844,5 +889,3 @@ export default function CodingPage() {
     </div>
   );
 }
-
-    
