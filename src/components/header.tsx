@@ -27,6 +27,7 @@ const navLinks = [
   { href: "/courses", label: "Courses" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
+  { href: "/admin", label: "Admin" },
 ];
 
 const programLinks = [
