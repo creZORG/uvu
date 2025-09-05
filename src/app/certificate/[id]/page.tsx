@@ -6,7 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { UcnLogo } from '@/components/icons';
 import { format } from 'date-fns';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Download, Award } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -70,43 +70,62 @@ export default function CertificatePage({ params }: { params: { id: string } }) 
     }
 
     return (
-        <div className="bg-gray-100 min-h-screen py-12 px-4 flex flex-col items-center justify-center">
-             <div ref={certificateRef} className="bg-white p-12 shadow-2xl w-full max-w-4xl aspect-[1.414/1] border-8 border-primary relative font-serif">
-                <div className="absolute inset-0 border-2 border-primary/50 m-2"></div>
-                <div className="relative flex flex-col h-full items-center justify-center text-center">
-                    <div className="absolute top-12 flex items-center gap-4">
-                        <UcnLogo className="h-24 w-24" />
-                    </div>
-
-                    <p className="text-3xl font-headline tracking-wider mt-32">Certificate of Completion</p>
-
-                    <p className="mt-12 text-xl">This certificate is proudly presented to</p>
-
-                    <p className="text-6xl font-extrabold text-primary font-headline mt-4 tracking-wide">{certificate.studentName}</p>
-
-                    <div className="w-1/2 border-b-2 border-gray-300 mt-8"></div>
-
-                    <p className="mt-8 text-xl max-w-xl">
-                        for successfully completing the
-                        <span className="font-bold"> {certificate.courseName}</span>.
-                    </p>
-
-                    <div className="mt-auto flex justify-between w-full text-lg">
-                        <div>
-                            <p className="border-t-2 border-gray-400 pt-2 px-8">Signature</p>
-                            <p className="font-bold">Lead Instructor</p>
+        <div className="bg-gray-100 min-h-screen py-12 px-4 flex flex-col items-center justify-center font-serif">
+            <div className="w-full max-w-4xl">
+                 <div ref={certificateRef} className="bg-white p-8 shadow-2xl w-full aspect-[1.414/1] border-[10px] border-primary relative">
+                    <div className="absolute inset-0 border-2 border-accent m-2 pointer-events-none"></div>
+                    <div className="relative flex flex-col h-full items-center text-center text-gray-800">
+                        {/* Header */}
+                        <div className="flex items-center justify-between w-full">
+                           <UcnLogo className="h-20 w-20" />
+                           <div className="text-center">
+                                <h1 className="font-headline text-3xl font-bold text-gray-900">Uvumbuzi Community Network</h1>
+                                <p className="text-lg text-muted-foreground">Digital Hub</p>
+                           </div>
+                           <Award className="h-20 w-20 text-accent" />
                         </div>
-                        <div>
-                            <p className="border-t-2 border-gray-400 pt-2 px-8">
-                                {certificate.issuedAt ? format(certificate.issuedAt.toDate(), 'PPP') : 'N/A'}
-                            </p>
-                            <p className="font-bold">Date of Issue</p>
+
+                        {/* Title */}
+                        <div className="my-12">
+                            <p className="text-xl tracking-wider">This certifies that</p>
+                            <h2 className="text-6xl font-extrabold text-primary font-headline my-4 tracking-wide">{certificate.studentName}</h2>
+                            <p className="text-xl tracking-wider">has successfully completed the course</p>
+                        </div>
+                        
+                        {/* Course Name */}
+                        <h3 className="text-4xl font-bold font-headline">{certificate.courseName}</h3>
+
+                        {/* Description */}
+                        <p className="mt-8 text-base max-w-2xl">
+                           This course covered comprehensive concepts including programming fundamentals, data structures, object-oriented programming, error handling, file I/O, API interaction, and database management.
+                        </p>
+                        
+
+                        {/* Footer with Signatures and Date */}
+                        <div className="mt-auto w-full flex justify-between items-end text-base">
+                            <div className="text-center">
+                                <p className="border-b-2 border-gray-400 pb-1 px-8 italic">Signature</p>
+                                <p className="font-bold mt-2">Executive Director</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="font-bold">{certificate.issuedAt ? format(certificate.issuedAt.toDate(), 'PPP') : 'N/A'}</p>
+                                <p className="border-t-2 border-gray-400 pt-1">Date of Issue</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="border-b-2 border-gray-400 pb-1 px-8 italic">Signature</p>
+                                <p className="font-bold mt-2">Lead Instructor</p>
+                            </div>
+                        </div>
+
+                        {/* Certificate ID */}
+                        <div className="absolute bottom-2 left-2 text-xs text-gray-400">
+                            Certificate ID: {params.id}
                         </div>
                     </div>
                 </div>
             </div>
-             <Button onClick={handlePrint} className="mt-8">
-                Download / Print Certificate
+             <Button onClick={handlePrint} className="mt-8 font-sans">
+                <Download className="mr-2"/> Download / Print Certificate
             </Button>
         </div>
     );
