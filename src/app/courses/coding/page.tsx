@@ -445,7 +445,87 @@ const courseContent = [
     ]
   },
   {
-    title: "Module 6: Algorithms & Problem Solving",
+    title: "Module 6: Object-Oriented Programming (OOP)",
+    pages: [
+      {
+        title: "Lesson 6.1: Introduction to OOP",
+        content: [
+          "Object-Oriented Programming (OOP) is a way of thinking about and organizing code. Instead of a long script, we model our program around real-world 'objects' like a User, a Car, or a Product.",
+          "This approach makes code more reusable, easier to manage, and scalable for large projects.",
+          "The two core concepts are:",
+          "**Class:** A blueprint for creating objects. For example, a `Dog` class would define the properties (like `name`, `age`) and behaviors (like `bark()`) that all dogs have.",
+          "**Object (or Instance):** A specific item created from a class. For example, `my_dog = Dog(\"Buddy\", 3)` creates an actual dog object based on the `Dog` blueprint.",
+          { type: 'code', language: 'python', code: 'class Dog:\n    # This is the constructor method\n    def __init__(self, name, age):\n        self.name = name  # This is an attribute\n        self.age = age    # This is an attribute\n\n    # This is a method\n    def bark(self):\n        print(f"{self.name} says woof!")\n\n# Creating an object (instance) from the class\ndog1 = Dog("Buddy", 3)\n\n# Calling a method on the object\ndog1.bark() # Output: Buddy says woof!' }
+        ],
+        researchPrompt: "What is 'procedural programming' and how does it differ from Object-Oriented Programming?"
+      },
+      {
+        title: "Lesson 6.2: Constructors and the __init__ Method",
+        content: [
+          "The `__init__()` method is a special method in Python classes, often called the 'constructor'. It's automatically called whenever you create a new object from a class.",
+          "Its job is to initialize the object's attributes (the data it will hold). This ensures that every object starts with a valid state.",
+          "The `self` parameter is a reference to the specific instance of the class being created. It allows you to set attributes on that particular object, like `self.name = name`.",
+          { type: 'code', language: 'python', code: 'class Car:\n    # The __init__ method is the constructor\n    def __init__(self, brand, year, color):\n        print("A new car object is being created!")\n        self.brand = brand\n        self.year = year\n        self.color = color\n        self.is_running = False # Default attribute\n\n    def start_engine(self):\n        self.is_running = True\n        print(f"The {self.color} {self.brand}\'s engine is running.")\n\n# When you create this object, __init__ is called automatically\nmy_car = Car("Toyota", 2022, "Red")\n\n# Accessing attributes\nprint(f"My car is a {my_car.year} {my_car.brand}.")' }
+        ],
+        researchPrompt: "Can a class have more than one `__init__` method in Python? Why or why not?"
+      },
+      {
+        title: "Lesson 6.3: Encapsulation and Private Attributes",
+        content: [
+          "Encapsulation is the principle of bundling data (attributes) and the methods that operate on that data within a single unit (a class). A key part of this is controlling access to the internal data to prevent accidental modification.",
+          "In Python, we use a naming convention to indicate that an attribute should be considered 'private'. A single underscore (`_`) is a hint for other developers, while a double underscore (`__`) 'mangles' the name, making it harder to access from outside the class.",
+          "To provide controlled access, we use 'getter' methods to retrieve the value and 'setter' methods to change it. This allows us to add validation or logic before changing the data.",
+          { type: 'code', language: 'python', code: 'class BankAccount:\n    def __init__(self, initial_balance):\n        # Double underscore makes this attribute harder to access directly\n        self.__balance = initial_balance\n\n    # A \'getter\' method to safely retrieve the balance\n    def get_balance(self):\n        return self.__balance\n\n    # A \'setter\' method with validation logic\n    def deposit(self, amount):\n        if amount > 0:\n            self.__balance += amount\n            print(f"Deposited ${amount}. New balance: ${self.__balance}")\n        else:\n            print("Deposit amount must be positive.")\n\naccount = BankAccount(100)\n\n# Good practice: use the getter method\nprint(f"Current balance: ${account.get_balance()}")\n\n# Bad practice: trying to access directly (will cause an error)\n# print(account.__balance)' }
+        ],
+        researchPrompt: "What is 'name mangling' in Python and how does it work with double underscore attributes?"
+      },
+      {
+        title: "Lesson 6.4: Inheritance",
+        content: [
+          "Inheritance is a powerful feature that allows you to create a new class (the 'child' or 'subclass') that inherits attributes and methods from an existing class (the 'parent' or 'superclass').",
+          "This promotes code reuse and helps create a logical hierarchy. For example, `Dog` and `Cat` classes could both inherit from an `Animal` class.",
+          "The child class can use all of the parent's functionality, and it can also add its own new methods or 'override' parent methods to provide more specific behavior.",
+          "The `super()` function is used to call a method from the parent class, which is often useful in the child's `__init__` method.",
+          { type: 'code', language: 'python', code: 'class Animal: # Parent class\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        raise NotImplementedError("Subclass must implement this method")\n\nclass Dog(Animal): # Child class\n    def speak(self):\n        return f"{self.name} says Woof!"\n\nclass Cat(Animal): # Child class\n    def speak(self):\n        return f"{self.name} says Meow!"\n\ndog = Dog("Rex")\ncat = Cat("Whiskers")\n\nprint(dog.speak()) # Output: Rex says Woof!\nprint(cat.speak()) # Output: Whiskers says Meow!' }
+        ],
+        researchPrompt: "What is 'multiple inheritance' in Python, and what is one potential problem it can cause (e.g., the 'Diamond Problem')?"
+      },
+      {
+        title: "Lesson 6.5: Polymorphism",
+        content: [
+          "Polymorphism, which means 'many forms', is the ability of different objects to respond to the same method call in different ways.",
+          "It's closely related to inheritance. When multiple classes inherit from the same parent and override a method, you can treat objects of these different classes in the same way, and Python will automatically call the correct version of the method.",
+          "This makes your code more flexible and decoupled. You can write a function that works with any `Animal` without needing to know if it's a `Dog` or a `Cat`.",
+          { type: 'code', language: 'python', code: 'class Dog:\n    def speak(self): return "Woof!"\n\nclass Cat:\n    def speak(self): return "Meow!"\n\nclass Duck:\n    def speak(self): return "Quack!"\n\n# This function works with any object that has a .speak() method\ndef make_animal_speak(animal):\n    print(animal.speak())\n\n# Create a list of different animal objects\nanimals = [Dog(), Cat(), Duck()]\n\n# Loop and call the same function on each, getting different results\nfor animal in animals:\n    make_animal_speak(animal)' }
+        ],
+        researchPrompt: "What is 'Duck Typing' in Python and how does it relate to the concept of polymorphism?"
+      },
+      {
+        title: "Lesson 6.6: Magic Methods",
+        content: [
+          "Magic methods, also known as 'dunder' (double underscore) methods, are special methods that you can add to your classes to make them behave like Python's built-in types.",
+          "They let you define what happens when you use operators like `+`, `len()`, or `print()` on your objects.",
+          "`__str__(self)`: Defines what happens when you `print(your_object)`. It should return a user-friendly string.",
+          "`__len__(self)`: Defines what `len(your_object)` returns. It should return an integer.",
+          "`__repr__(self)`: Defines the 'official' string representation of an object, which should ideally be code that can recreate the object.",
+          { type: 'code', language: 'python', code: 'class Playlist:\n    def __init__(self, name, songs):\n        self.name = name\n        self.songs = songs\n\n    # Called by print()\n    def __str__(self):\n        return f"Playlist \'{self.name}\' with {len(self.songs)} songs."\n\n    # Called by len()\n    def __len__(self):\n        return len(self.songs)\n\nmy_playlist = Playlist("Rock Hits", ["Song A", "Song B", "Song C"])\n\nprint(my_playlist)      # Output: Playlist \'Rock Hits\' with 3 songs.\nprint(len(my_playlist)) # Output: 3' }
+        ],
+        researchPrompt: "Find two other magic methods besides `__str__` and `__len__`. What do they do and when would you use them?"
+      },
+      {
+        title: "Lesson 6.7: OOP Project - Student Management System",
+        content: [
+          "Time to combine all the OOP concepts into a practical project. We'll build a simple system to manage students and the courses they are enrolled in.",
+          "This project will use multiple classes that interact with each other, demonstrating how OOP helps organize more complex programs.",
+          "We'll need a `Student` class to hold student data and a `Course` class to manage a roster of students.",
+          { type: 'code', language: 'python', code: 'class Student:\n    def __init__(self, name, student_id):\n        self.name = name\n        self.student_id = student_id\n        self.grades = {}\n\n    def __str__(self):\n        return f"Student: {self.name} (ID: {self.student_id})"\n\n    def add_grade(self, course, grade):\n        self.grades[course] = grade\n\nclass Course:\n    def __init__(self, name):\n        self.name = name\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n        print(f"{student.name} enrolled in {self.name}.")\n\n# --- Usage ---\nstudent1 = Student("Alice", "123")\nmath_course = Course("Algebra 101")\n\nmath_course.add_student(student1)\nstudent1.add_grade("Algebra 101", 95)\n\nprint(f"{student1.name}\'s grades: {student1.grades}")' }
+        ],
+        researchPrompt: "How could you add a method to the `Course` class to calculate the average grade for all students enrolled in that specific course?"
+      }
+    ]
+  },
+  {
+    title: "Module 7: Algorithms & Problem Solving",
     pages: [
       {
         title: "Searching and Sorting Algorithms",
