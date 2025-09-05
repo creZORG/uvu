@@ -18,14 +18,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
 
 
 const navLinks = [
   { href: "/about", label: "About", animated: false },
-  { href: "/programs", label: "Programs", animated: true },
+  { href: "/programs", label: "Programs", animated: false },
   { href: "/courses", label: "Courses", animated: true },
   { href: "/gallery", label: "Gallery", animated: false },
 ];
@@ -37,19 +37,22 @@ export function Header() {
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserRole = async () => {
-        if (user) {
-            const userDoc = await getDoc(doc(db, "userProfiles", user.uid));
-            if (userDoc.exists()) {
-                setUserRole(userDoc.data().role);
-            }
+    if (user) {
+      const userDocRef = doc(db, "userProfiles", user.uid);
+      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setUserRole(docSnap.data().role);
+        } else {
+          setUserRole(null);
         }
-    };
-
-    if (!loading && user) {
-        fetchUserRole();
+      });
+      
+      // Cleanup listener on component unmount
+      return () => unsubscribe();
+    } else {
+      setUserRole(null);
     }
-  }, [user, loading]);
+  }, [user]);
 
   const AuthNav = () => {
     if (loading) {
