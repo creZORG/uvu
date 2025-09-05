@@ -70,10 +70,11 @@ const sendMailFlow = ai.defineFlow(
       });
       return { success: true, message: 'Email sent successfully.' };
     } catch (error: any) {
-      console.error('Zeptomail API Error:', error.message);
+      console.error('Zeptomail API Error:', error);
+      const errorMessage = error.message || 'An unknown error occurred';
       return {
         success: false,
-        message: `Failed to send email. Reason: ${error.message}`,
+        message: `Failed to send email. Reason: ${errorMessage}`,
       };
     }
   }
