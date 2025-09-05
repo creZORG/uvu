@@ -77,24 +77,67 @@ const courseContent = [
   {
     title: "Module 1: Setting Up Your Environment",
     pages: [
-      {
-        title: "Essential Tools: Text Editor & Terminal",
-        content: [
-            "A text editor is where you write your code. Visual Studio Code (VS Code) is a popular, free choice with many helpful extensions.",
-            "The terminal (or command line) is a text-based interface to your computer. It's essential for running code, installing tools, and navigating files.",
-            "Basic commands you'll use often: `ls` (list files), `cd` (change directory), and `pwd` (show current directory).",
-        ],
-        researchPrompt: "Explore popular VS Code extensions for Python or JavaScript development."
-      },
-      {
-        title: "Installation & Version Control with Git",
-        content: [
-            "You'll need to install a runtime for your chosen language, like Python or Node.js (for JavaScript).",
-            "Git is a version control system. It tracks changes to your code, allowing you to revert to previous versions and collaborate with others without overwriting work.",
-            "GitHub is a website that hosts Git repositories. It's like a social network for coders, allowing you to share your projects and contribute to others.",
-        ],
-        researchPrompt: "What is the difference between Git and GitHub?"
-      }
+        {
+            title: "Lesson 1.1: Installing Python",
+            content: [
+                "We will use Python for this course because its simple syntax makes it beginner-friendly and it's widely used in the industry.",
+                "An 'interpreter' is a program that reads and executes your code line by line. First, we need to install the Python interpreter.",
+                "For Windows: Download the latest version from python.org and run the installer. Make sure to check the box that says 'Add Python to PATH'.",
+                "For macOS: You can use the official installer from python.org or install it via Homebrew with `brew install python`.",
+                "To verify your installation, open your terminal (Command Prompt on Windows, Terminal on Mac) and type:",
+                { type: "code", language: "bash", code: "python3 --version" },
+                "You should see a version number like `Python 3.x.x`."
+            ],
+            researchPrompt: "What is Homebrew and why is it a popular tool for developers on macOS?"
+        },
+        {
+            title: "Lesson 1.2: Using the Terminal",
+            content: [
+                "The terminal, or command line, is a powerful text-based interface for interacting with your computer. It's a core tool for every developer.",
+                "You can navigate your file system with it. Here are some essential commands:",
+                "`cd <folder_name>` - Change directory (move into a folder)",
+                "`ls` (or `dir` on Windows) - List files and folders in the current directory",
+                "`pwd` - Print working directory (shows where you are)",
+                "`mkdir <folder_name>` - Make a new directory",
+                "Let's create a project folder. On your Desktop, run:",
+                { type: "code", language: "bash", code: "mkdir uvumbuzi-coding-practice" }
+            ],
+            researchPrompt: "Find three other useful terminal commands and write down what they do."
+        },
+        {
+            title: "Lesson 1.3: Your Code Editor: VS Code",
+            content: [
+                "A code editor is a text editor designed for writing code. It offers features like syntax highlighting and autocompletion that Notepad or Word don't.",
+                "We recommend Visual Studio Code (VS Code). It's free, powerful, and has a huge library of extensions.",
+                "First, download and install VS Code from the official website: https://code.visualstudio.com",
+                "Next, open VS Code, go to the Extensions tab, and install the official 'Python' extension from Microsoft. This provides features like smart code completion and debugging."
+            ],
+            researchPrompt: "What is 'linting' in the context of a code editor, and why is it useful?"
+        },
+        {
+            title: "Lesson 1.4: Intro to Git",
+            content: [
+                "Version control is a system that records changes to a file or set of files over time so that you can recall specific versions later. It's like a 'save' button for your entire project.",
+                "Git is the most popular version control system. It allows you to track your code, revert to previous stages, and collaborate with others.",
+                "You can install Git from the official website: https://git-scm.com/downloads. After installation, verify it by running `git --version` in your terminal.",
+                "To start tracking a project, navigate to your folder in the terminal and run:",
+                { type: "code", language: "bash", code: "git init" },
+                "This initializes an empty Git repository in your folder."
+            ],
+            researchPrompt: "What is the difference between `git add .` and `git add <file_name>`?"
+        },
+        {
+            title: "Lesson 1.5: Using GitHub",
+            content: [
+                "GitHub is a website for hosting Git repositories. It acts as a remote backup for your code and is the primary platform for collaboration in open-source.",
+                "First, create a free account at github.com. This will be your coding portfolio.",
+                "To upload your code, you first 'commit' your changes locally. A commit is a snapshot of your project at a specific point in time.",
+                { type: "code", language: "bash", code: "git add .\ngit commit -m \"Initial commit with my first project setup\"" },
+                "Then you 'push' your commits to a repository on GitHub. This makes your code available online.",
+                "Having an active GitHub profile is essential for modern developers. It showcases your work to potential employers."
+            ],
+            researchPrompt: "What is a 'pull request' on GitHub and how is it used in collaborative projects?"
+        }
     ]
   },
     {
@@ -435,5 +478,7 @@ export default function CodingPage() {
     </div>
   );
 }
+
+    
 
     
