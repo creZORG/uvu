@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, query, orderBy, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Header } from "@/components/header";
@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Submission = {
   id: string;
@@ -48,10 +50,20 @@ type HomepageContent = {
   programs: Program[];
 };
 
-type AdminView = "submissions" | "homepage" | "mail";
+type TeamMember = {
+  id?: string;
+  name: string;
+  title: string;
+  bio: string;
+  imageUrl: string;
+  order: number;
+};
+
+type AdminView = "submissions" | "homepage" | "mail" | "team";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [user, authLoading] = useAuthState(auth);
@@ -60,9 +72,12 @@ export default function AdminPage() {
   const { toast } = useToast();
   
   const [activeView, setActiveView] = useState<AdminView>("submissions");
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+
 
   const contentForm = useForm<HomepageContent>();
   const mailForm = useForm<SendMailInput>();
+  const teamMemberForm = useForm<TeamMember>();
 
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
   const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
@@ -96,17 +111,30 @@ export default function AdminPage() {
     }
     fetchContent();
 
-    const q = query(collection(db, "examSubmissions"), orderBy("submittedAt", "desc"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const subsQuery = query(collection(db, "examSubmissions"), orderBy("submittedAt", "desc"));
+    const subsUnsubscribe = onSnapshot(subsQuery, (querySnapshot) => {
       const subs: Submission[] = [];
       querySnapshot.forEach((doc) => {
         subs.push({ id: doc.id, ...doc.data() } as Submission);
       });
       setSubmissions(subs);
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    const teamQuery = query(collection(db, "teamMembers"), orderBy("order", "asc"));
+    const teamUnsubscribe = onSnapshot(teamQuery, (querySnapshot) => {
+        const members: TeamMember[] = [];
+        querySnapshot.forEach((doc) => {
+            members.push({ id: doc.id, ...doc.data()} as TeamMember);
+        });
+        setTeamMembers(members);
+    });
+
+    setLoading(false);
+
+    return () => {
+        subsUnsubscribe();
+        teamUnsubscribe();
+    };
   }, [isAuthorized, contentForm]);
 
   const onContentSubmit = async (data: HomepageContent) => {
@@ -136,6 +164,43 @@ export default function AdminPage() {
         setIsSendingMail(false);
     }
   };
+  
+  const handleEditMember = (member: TeamMember) => {
+    setEditingMember(member);
+    teamMemberForm.reset(member);
+  };
+
+  const handleNewMember = () => {
+    const newMember: TeamMember = { name: "", title: "", bio: "", imageUrl: "", order: teamMembers.length + 1 };
+    setEditingMember(newMember);
+    teamMemberForm.reset(newMember);
+  };
+  
+  const onTeamMemberSubmit = async (data: TeamMember) => {
+    try {
+      if (editingMember?.id) {
+        await setDoc(doc(db, "teamMembers", editingMember.id), data, { merge: true });
+        toast({ title: "Success!", description: "Team member updated." });
+      } else {
+        await addDoc(collection(db, "teamMembers"), data);
+        toast({ title: "Success!", description: "New team member added." });
+      }
+      setEditingMember(null);
+    } catch (error) {
+      console.error("Error saving team member: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not save team member." });
+    }
+  };
+
+  const handleDeleteMember = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "teamMembers", id));
+      toast({ title: "Deleted", description: "Team member has been removed." });
+    } catch (error) {
+      console.error("Error deleting team member: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not delete team member." });
+    }
+  }
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -244,6 +309,78 @@ export default function AdminPage() {
                     </form>
                 </div>
             )
+        case "team":
+            return (
+                 <div className="mt-6 md:mt-0">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="font-headline text-2xl">Manage Team</h2>
+                        <Button onClick={handleNewMember}><PlusCircle className="mr-2"/> Add New Member</Button>
+                    </div>
+
+                    {editingMember && (
+                         <Card className="mb-8 p-4">
+                            <form onSubmit={teamMemberForm.handleSubmit(onTeamMemberSubmit)} className="space-y-4">
+                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                 <div>
+                                    <Label htmlFor="memberName">Name</Label>
+                                    <Input id="memberName" {...teamMemberForm.register("name")} />
+                                 </div>
+                                  <div>
+                                    <Label htmlFor="memberTitle">Title</Label>
+                                    <Input id="memberTitle" {...teamMemberForm.register("title")} />
+                                  </div>
+                               </div>
+                               <div>
+                                 <Label htmlFor="memberImageUrl">Image URL</Label>
+                                 <Input id="memberImageUrl" {...teamMemberForm.register("imageUrl")} />
+                               </div>
+                               <div>
+                                 <Label htmlFor="memberBio">Bio</Label>
+                                 <Textarea id="memberBio" {...teamMemberForm.register("bio")} />
+                               </div>
+                               <div>
+                                  <Label htmlFor="memberOrder">Order</Label>
+                                  <Input id="memberOrder" type="number" {...teamMemberForm.register("order", { valueAsNumber: true })} />
+                               </div>
+                               <div className="flex gap-2 justify-end">
+                                 <Button type="button" variant="ghost" onClick={() => setEditingMember(null)}>Cancel</Button>
+                                 <Button type="submit">Save Member</Button>
+                               </div>
+                            </form>
+                         </Card>
+                    )}
+
+                    <div className="space-y-4">
+                        {teamMembers.map(member => (
+                            <Card key={member.id} className="p-4 flex items-center justify-between">
+                               <div className="flex items-center gap-4">
+                                  <Avatar>
+                                    <AvatarImage src={member.imageUrl} alt={member.name} />
+                                    <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <p className="font-bold">{member.name} (#{member.order})</p>
+                                    <p className="text-sm text-muted-foreground">{member.title}</p>
+                                  </div>
+                               </div>
+                               <div className="flex gap-2">
+                                  <Button variant="outline" size="sm" onClick={() => handleEditMember(member)}>Edit</Button>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Delete</Button></AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the team member. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleDeleteMember(member.id!)}>Yes, Delete</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                               </div>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            )
         default:
             return null;
     }
@@ -286,6 +423,13 @@ export default function AdminPage() {
                             onClick={() => setActiveView("homepage")}
                         >
                             <LayoutDashboard className="mr-2" /> Homepage Content
+                        </Button>
+                        <Button
+                            variant={activeView === 'team' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'team' && "font-bold")}
+                            onClick={() => setActiveView("team")}
+                        >
+                            <Users className="mr-2" /> Team Members
                         </Button>
                         <Button
                             variant={activeView === 'mail' ? 'secondary' : 'ghost'}

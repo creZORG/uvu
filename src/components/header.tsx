@@ -26,6 +26,7 @@ import { ThemeToggle } from "./theme-toggle";
 const navLinks = [
   { href: "/courses", label: "Courses", animated: true },
   { href: "/programs", label: "Programs", animated: true },
+  { href: "/about", label: "About", animated: false },
   { href: "/gallery", label: "Gallery", animated: false },
 ];
 
