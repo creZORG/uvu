@@ -22,18 +22,18 @@ const courseContent = [
       {
         title: "What is Programming?",
         content: [
-          "What is programming?",
-          "Why learn programming? (Career paths, automation, web dev, etc.)",
-          "How computers 'think' (logic, instructions, etc.)",
+          "Programming is the process of creating a set of instructions that tell a computer how to perform a task.",
+          "It involves designing and building an executable computer program to accomplish a specific computing result.",
+          "Think of it as teaching a computer a new skill by giving it very precise commands in a language it understands."
         ],
         researchPrompt: "Research the difference between a compiler and an interpreter. The quiz may ask you about this."
       },
       {
-        title: "Languages & Tools",
+        title: "Why Learn to Code & How Computers 'Think'",
         content: [
-          "Brief overview of popular programming languages (Python, JavaScript, Java, C++)",
-          "What are IDEs (Integrated Development Environments)?",
-          "Introduction to compilers and interpreters.",
+          "Learning to code opens up career paths in web development, data science, game development, and automation.",
+          "Computers 'think' using binary logic (0s and 1s). Programming languages act as a bridge, allowing us to write human-readable instructions that get converted into machine code.",
+          "Popular languages include Python (great for beginners), JavaScript (for web development), and Java (for large-scale applications)."
         ],
         researchPrompt: "Find out which programming language is most in-demand in your country or city."
       }
@@ -43,73 +43,147 @@ const courseContent = [
     title: "Module 1: Setting Up Your Environment",
     pages: [
       {
-        title: "Essential Tools",
+        title: "Essential Tools: Text Editor & Terminal",
         content: [
-            "Choosing and installing a text editor (e.g., VS Code, Sublime Text).",
-            "What is a terminal or command line?",
-            "Basic navigation commands (ls, cd, pwd).",
+            "A text editor is where you write your code. Visual Studio Code (VS Code) is a popular, free choice with many helpful extensions.",
+            "The terminal (or command line) is a text-based interface to your computer. It's essential for running code, installing tools, and navigating files.",
+            "Basic commands you'll use often: `ls` (list files), `cd` (change directory), and `pwd` (show current directory).",
         ],
         researchPrompt: "Explore popular VS Code extensions for Python or JavaScript development."
       },
       {
-        title: "Installation & Version Control",
+        title: "Installation & Version Control with Git",
         content: [
-            "Installing Python or Node.js (for JavaScript).",
-            "What is Git and why is it important?",
-            "Creating a GitHub account and basic repository setup.",
+            "You'll need to install a runtime for your chosen language, like Python or Node.js (for JavaScript).",
+            "Git is a version control system. It tracks changes to your code, allowing you to revert to previous versions and collaborate with others without overwriting work.",
+            "GitHub is a website that hosts Git repositories. It's like a social network for coders, allowing you to share your projects and contribute to others.",
         ],
         researchPrompt: "What is the difference between Git and GitHub?"
       }
     ]
   },
     {
-    title: "Module 2: Programming Basics (Python Recommended)",
+    title: "Module 2: Programming Basics",
     pages: [
       {
-        title: "Variables and Operators",
+        title: "Variables, Data Types, and I/O",
         content: [
-            "Variables & Data Types (integers, floats, strings, booleans).",
-            "How to get input from a user and print output.",
-            "Arithmetic (+, -, *, /), Comparison (==, !=, <, >), and Logical (and, or, not) Operators.",
+            "A variable is a container for storing data. Data comes in different types, like integers (numbers), floats (decimals), strings (text), and booleans (true/false).",
+            "You can get input from a user (e.g., asking for their name) and print output to the screen (e.g., saying 'Hello' to them).",
+            "Example (Python): `name = input('Enter your name: ')` followed by `print('Hello, ' + name)`.",
         ],
-        researchPrompt: "Look up 'truthiness' in Python. How does Python evaluate non-boolean values in an `if` statement?"
+        researchPrompt: "What is 'type casting'? For example, converting a string of numbers into an actual integer."
       },
       {
-        title: "Control Flow",
+        title: "Operators and Control Flow",
         content: [
-            "Conditional Statements (if, else, elif).",
-            "How to control the flow of your program based on conditions.",
-            "'for' loops (iterating over sequences).",
-            "'while' loops (repeating as long as a condition is true).",
-            "Basic error handling with try/except blocks.",
+            "Operators perform actions: Arithmetic (+, -, *, /), Comparison (==, !=, <, >), and Logical (and, or, not).",
+            "Control Flow directs the order in which your code executes.",
+            "Conditional Statements (if, else, elif) run code only if a certain condition is true.",
+            "Loops ('for' and 'while') repeat a block of code multiple times. 'for' loops are great for iterating over a sequence, while 'while' loops run as long as a condition is true.",
         ],
         researchPrompt: "What is an infinite loop and why should you avoid it?"
       }
     ]
   },
   {
-    title: "Module 3: Data Structures & Logic",
+    title: "Module 3: Data Structures",
     pages: [
         {
-            title: "Collections of Data",
+            title: "Collections of Data: Lists and Tuples",
             content: [
-                "Lists / Arrays: Ordered, mutable collections.",
-                "Tuples: Ordered, immutable collections.",
-                "Sets: Unordered, unique collections.",
-                "When to use each type.",
+                "Lists (or Arrays) are ordered, changeable collections of items. They are perfect for when you need to store multiple values that you might need to modify later.",
+                "Example (Python): `my_fruits = ['apple', 'banana', 'cherry']`",
+                "Tuples are ordered, but unchangeable collections. Once a tuple is created, you cannot add, remove, or change its items. This makes them fast and safe for data that shouldn't change.",
+                 "Example (Python): `point = (10, 20)`",
             ],
-            researchPrompt: "What is the key difference between a list and a tuple in Python? When would you use one over the other?"
+            researchPrompt: "What is the key difference in performance between a list and a tuple in Python?"
         },
         {
-            title: "Key-Value Pairs and Strings",
+            title: "Collections of Data: Sets and Dictionaries",
             content: [
-                "Dictionaries / Hashmaps: Storing data as key-value pairs.",
-                "In-depth string manipulation and methods.",
-                "Nested structures (e.g., a list of dictionaries).",
-                "Solving problems using these structures.",
+                "Sets are unordered, unindexed collections of unique items. They are useful for membership testing and removing duplicate entries.",
+                "Dictionaries (or hashmaps) are unordered collections of key-value pairs. They are optimized for retrieving a value when you know the key.",
+                "Example (Python): `student = {'name': 'John Doe', 'age': 25, 'course': 'Coding'}`",
+                "JSON (JavaScript Object Notation) is a popular data format that looks very similar to Python dictionaries.",
             ],
             researchPrompt: "Find an example of a JSON object. How does its structure compare to a Python dictionary?"
         }
+    ]
+  },
+   {
+    title: "Module 4: Functions & Modules",
+    pages: [
+      {
+        title: "Defining and Using Functions",
+        content: [
+          "A function is a reusable block of code that performs a specific task. They help keep your code organized and prevent repetition (DRY - Don't Repeat Yourself).",
+          "You define a function with the `def` keyword in Python, give it a name, and specify what code it should run.",
+          "Parameters are variables listed inside the parentheses in the function definition, which act as placeholders for the data you'll pass in.",
+          "The `return` statement is used to send a value back from the function.",
+        ],
+        researchPrompt: "What is the difference between a parameter and an argument in the context of a function?"
+      },
+      {
+        title: "Scope and Modules",
+        content: [
+          "Scope determines the visibility of a variable. Variables defined inside a function are in the local scope and can only be used within that function.",
+          "Variables defined outside of any function are in the global scope.",
+          "A module is simply a file containing Python code. You can import functions from other modules to use in your own code, which is a powerful way to organize large projects.",
+          "Python has many built-in modules (like `math` or `random`) that provide useful functions."
+        ],
+        researchPrompt: "How can you prevent 'namespace pollution' when importing modules in Python?"
+      }
+    ]
+  },
+  {
+    title: "Module 5: Object-Oriented Programming (OOP)",
+    pages: [
+      {
+        title: "Classes and Objects",
+        content: [
+          "OOP is a programming paradigm based on the concept of 'objects', which can contain data (attributes) and code (methods).",
+          "A Class is a blueprint for creating objects. For example, you could have a `Dog` class.",
+          "An Object is an instance of a class. `my_dog = Dog()` would create an object (an instance) of the `Dog` class.",
+          "The `__init__` method is a special method that runs automatically when a new object is created, used for initializing its attributes (e.g., `name`, `age`).",
+        ],
+        researchPrompt: "What does the `self` parameter in a class method refer to?"
+      },
+      {
+        title: "Core OOP Principles",
+        content: [
+          "Inheritance allows a new class (child) to inherit attributes and methods from an existing class (parent).",
+          "Polymorphism means 'many forms', and it allows us to perform a single action in different ways (e.g., different animal classes can have their own `make_sound` method).",
+          "Encapsulation is the bundling of data (attributes) and the methods that operate on the data into a single unit (a class). It restricts direct access to some of an object's components.",
+          "Abstraction means hiding complex implementation details and showing only the necessary features of the object.",
+        ],
+        researchPrompt: "Find a real-world analogy for explaining Inheritance in OOP."
+      }
+    ]
+  },
+  {
+    title: "Module 6: Algorithms & Problem Solving",
+    pages: [
+      {
+        title: "Searching and Sorting Algorithms",
+        content: [
+          "An algorithm is a step-by-step procedure for solving a problem or accomplishing a task.",
+          "Linear Search checks every element in a list one by one. It's simple but can be slow for large lists.",
+          "Binary Search is a much faster algorithm for finding an item in a *sorted* list by repeatedly dividing the search interval in half.",
+          "Sorting algorithms like Bubble Sort and Insertion Sort are basic methods for arranging items in a specific order.",
+        ],
+        researchPrompt: "Why must a list be sorted for Binary Search to work?"
+      },
+      {
+        title: "Efficiency and Big-O Notation",
+        content: [
+          "When solving problems, the efficiency of your code matters. A more efficient algorithm can solve a problem in seconds that might take an inefficient one years.",
+          "Big-O notation is a way to describe the performance or complexity of an algorithm as the input size grows.",
+          "For example, O(n) (Linear Time) means the runtime grows linearly with the size of the input. O(1) (Constant Time) is extremely fast, as the runtime is independent of input size.",
+          "Understanding Big-O helps you choose the right algorithm for the job.",
+        ],
+        researchPrompt: "What is the Big-O complexity of a Binary Search?"
+      }
     ]
   },
 ];
@@ -163,7 +237,9 @@ export default function CodingPage() {
       setCurrentModuleIndex(currentModuleIndex + 1);
       setCurrentPageIndex(0);
     } else {
-        if (!isQuizUnlocked) {
+        const pagesCompleted = courseContent.slice(0, currentModuleIndex).reduce((acc, module) => acc + module.pages.length, 0) + currentPageIndex + 1;
+        const progressPercentage = (pagesCompleted / totalPages) * 100;
+        if (progressPercentage >= 100 && !isQuizUnlocked) {
             setIsQuizUnlocked(true);
         }
     }
@@ -213,7 +289,7 @@ export default function CodingPage() {
 
   const pagesCompleted = courseContent.slice(0, currentModuleIndex).reduce((acc, module) => acc + module.pages.length, 0) + currentPageIndex + 1;
   const progressPercentage = (pagesCompleted / totalPages) * 100;
-  const isCourseComplete = progressPercentage === 100;
+  const isCourseComplete = progressPercentage >= 100;
 
 
   return (
@@ -281,13 +357,13 @@ export default function CodingPage() {
 
             <Card className="max-w-4xl mx-auto min-h-[500px] flex flex-col">
               <CardHeader>
-                <CardDescription>{currentModule.title} - Page {currentPageIndex + 1}</CardDescription>
+                <CardDescription>{currentModule.title} - Page {currentPageIndex + 1} of {currentModule.pages.length}</CardDescription>
                 <CardTitle className="font-headline text-2xl">{currentPage.title}</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 space-y-6">
                   <ul className="list-disc list-inside space-y-2 text-lg">
-                    {currentPage.content.map((item) => (
-                      <li key={item}>{item}</li>
+                    {currentPage.content.map((item, index) => (
+                      <li key={index}>{item}</li>
                     ))}
                   </ul>
                    <p className="pt-4 text-primary/80 italic">
@@ -318,4 +394,3 @@ export default function CodingPage() {
     </div>
   );
 }
-
