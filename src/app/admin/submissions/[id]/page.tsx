@@ -16,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Award, Mail } from "lucide-react";
+import { Loader2, ArrowLeft, Award, Mail, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -79,6 +79,7 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isUnvoiding, setIsUnvoiding] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const [user, authLoading] = useAuthState(auth);
@@ -205,6 +206,23 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleUnvoidSubmission = async () => {
+    setIsUnvoiding(true);
+    try {
+      const docRef = doc(db, "examSubmissions", params.id);
+      await updateDoc(docRef, {
+        status: "submitted",
+      });
+      setSubmission({ ...submission, status: "submitted" });
+      toast({ title: "Submission Reinstated", description: "You can now mark this exam." });
+    } catch (error) {
+      console.error("Error reinstating submission:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not reinstate submission." });
+    } finally {
+      setIsUnvoiding(false);
+    }
+  };
+
 
   if (authLoading || loading || !isAuthorized) {
     return (
@@ -243,6 +261,10 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
                     <p className="text-destructive-foreground mt-2">
                         This exam was disqualified. Reason: <span className="font-semibold">{submission.answers?.reason || "Not specified"}</span>
                     </p>
+                    <Button onClick={handleUnvoidSubmission} disabled={isUnvoiding} className="mt-4">
+                        {isUnvoiding ? <Loader2 className="animate-spin mr-2"/> : <RotateCcw className="mr-2"/>}
+                        Reinstate Exam
+                    </Button>
                 </div>
               ) : (
                 <div className="space-y-12">
@@ -329,3 +351,5 @@ export default function SubmissionPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+    
