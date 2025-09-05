@@ -8,19 +8,21 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 
 type GalleryImage = {
   src: string;
   alt: string;
   className: string;
+  description?: string;
+  location?: string;
 };
 
-const defaultGalleryImages = [
-    { src: "https://i.postimg.cc/jLFzc1b4/IMG-20250902-WA0004.jpg", alt: "Gallery image 1", className: "row-span-2" },
-    { src: "https://i.postimg.cc/NK2RzxGq/IMG-20250902-WA0005.jpg", alt: "Gallery image 2", className: "" },
-    { src: "https://i.postimg.cc/7CvS8TbC/IMG-20250902-WA0006.jpg", alt: "Gallery image 3", className: "col-span-2" },
-    { src: "https://i.postimg.cc/gwv8Yk6g/IMG-20250902-WA0007.jpg", alt: "Gallery image 4", className: "" },
+const defaultGalleryImages: GalleryImage[] = [
+    { src: "https://i.postimg.cc/jLFzc1b4/IMG-20250902-WA0004.jpg", alt: "Gallery image 1", className: "row-span-2", description: "Community members engaging in a digital literacy workshop.", location: "Nakuru, Kenya" },
+    { src: "https://i.postimg.cc/NK2RzxGq/IMG-20250902-WA0005.jpg", alt: "Gallery image 2", className: "", description: "A student proudly displays their first coding project." },
+    { src: "https://i.postimg.cc/7CvS8TbC/IMG-20250902-WA0006.jpg", alt: "Gallery image 3", className: "col-span-2", description: "Our team distributing learning materials to local schools.", location: "Kivumbini Ward" },
+    { src: "https://i.postimg.cc/gwv8Yk6g/IMG-20250902-WA0007.jpg", alt: "Gallery image 4", className: "", description: "Solar panel installation for a new ICT center." },
 ];
 
 export default function GalleryPage() {
@@ -64,14 +66,22 @@ export default function GalleryPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
                 {galleryImages.map((image, index) => (
                     <div key={index} className={cn("relative w-full h-full overflow-hidden rounded-lg shadow-lg group", image.className)}>
-                    <Image
-                        src={image.src}
-                        alt={image.alt}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <Image
+                            src={image.src}
+                            alt={image.alt}
+                            fill
+                            sizes="(max-width: 768px) 50vw, 25vw"
+                            className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute bottom-0 left-0 p-4 w-full text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out">
+                            {image.description && <p className="text-sm font-semibold">{image.description}</p>}
+                            {image.location && (
+                                <p className="text-xs flex items-center gap-1 mt-1 text-white/80">
+                                    <MapPin size={12}/> {image.location}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 ))}
                 </div>

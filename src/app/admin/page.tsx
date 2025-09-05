@@ -31,11 +31,19 @@ type Submission = {
   status: "submitted" | "disqualified" | "passed" | "failed";
 };
 
+type GalleryImage = {
+  src: string;
+  alt: string;
+  className: string;
+  description?: string;
+  location?: string;
+}
+
 type SiteContent = {
   carouselImages: { src: string; alt: string; "data-ai-hint": string; }[];
   programs: { href: string; title: string; description: string; }[];
   teamMembers: TeamMember[];
-  galleryImages: { src: string; alt: string; className: string; }[];
+  galleryImages: GalleryImage[];
   contact: { email: string; phone: string; website: string; location: string; };
 };
 
@@ -147,7 +155,7 @@ export default function AdminPage() {
 
   const onContentSubmit = async (data: SiteContent) => {
     try {
-      await setDoc(doc(db, "siteContent", "content"), data);
+      await setDoc(doc(db, "siteContent", "content"), data, { merge: true });
       toast({ title: "Success!", description: "Site content updated." });
     } catch (error) {
       console.error("Error updating content: ", error);
@@ -313,11 +321,13 @@ export default function AdminPage() {
                                 <Label>Image URL</Label><Input {...contentForm.register(`galleryImages.${index}.src`)} />
                                 <Label>Alt Text</Label><Input {...contentForm.register(`galleryImages.${index}.alt`)} />
                                 <Label>CSS Class (e.g., col-span-2, row-span-2)</Label><Input {...contentForm.register(`galleryImages.${index}.className`)} />
+                                <Label>Description (Optional)</Label><Input {...contentForm.register(`galleryImages.${index}.description`)} />
+                                <Label>Location (Optional)</Label><Input {...contentForm.register(`galleryImages.${index}.location`)} />
                              </div>
                              <Button type="button" variant="destructive" size="icon" onClick={() => removeGallery(index)}><Trash2/></Button>
                           </div>
                         ))}
-                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', className: '' })}><PlusCircle className="mr-2"/>Add Gallery Image</Button>
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', className: '', description: '', location: '' })}><PlusCircle className="mr-2"/>Add Gallery Image</Button>
                       </div>
                       
                       <Button type="submit">Save All Site Content</Button>
@@ -465,5 +475,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    
