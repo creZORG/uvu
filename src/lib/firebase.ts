@@ -13,6 +13,12 @@ const firebaseConfig = {
   messagingSenderId: "361125720929",
 };
 
+// Dynamically set authDomain based on environment
+if (typeof window !== 'undefined' && window.location.hostname !== 'uvumbuzicommunity.org') {
+    firebaseConfig.authDomain = 'uvumbuzi-digital-hub.firebaseapp.com';
+}
+
+
 // Initialize Firebase
 let app;
 if (!getApps().length) {
