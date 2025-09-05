@@ -140,27 +140,84 @@ const courseContent = [
         }
     ]
   },
-    {
-    title: "Module 2: Programming Basics",
+  {
+    title: "Module 2: Programming Basics (Using Python)",
     pages: [
       {
-        title: "Variables, Data Types, and I/O",
+        title: "Lesson 2.1: Your First Python Program",
         content: [
-            "A variable is a container for storing data. Data comes in different types, like integers (numbers), floats (decimals), strings (text), and booleans (true/false).",
-            "You can get input from a user (e.g., asking for their name) and print output to the screen (e.g., saying 'Hello' to them).",
-            { type: "code", language: "python", code: "name = input('Enter your name: ')\nprint('Hello, ' + name)"}
+          "Welcome to writing actual code! Let's start with the basics. Python's syntax is designed to be readable and clean. Whitespace (especially indentation) is very important and is used to define code blocks.",
+          "The `print()` function is the most basic way to see output from your code. It simply displays whatever you put inside its parentheses on the screen.",
+          "Comments are notes for humans that the computer ignores. In Python, you create a comment by starting a line with the `#` symbol. They are crucial for explaining what your code does.",
+          { type: "code", language: "python", code: "# This is a comment, the computer will ignore it.\n\nprint(\"Hello, Uvumbuzi Learner!\") # This prints a welcome message."}
         ],
-        researchPrompt: "What is 'type casting'? For example, converting a string of numbers into an actual integer."
+        researchPrompt: "What are 'keywords' in a programming language? Find a list of Python's keywords and try to guess what two of them might do."
       },
       {
-        title: "Operators and Control Flow",
+        title: "Lesson 2.2: Variables and Data Types",
         content: [
-            "Operators perform actions: Arithmetic (+, -, *, /), Comparison (==, !=, <, >), and Logical (and, or, not).",
-            "Control Flow directs the order in which your code executes.",
-            "Conditional Statements (if, else, elif) run code only if a certain condition is true.",
-            "Loops ('for' and 'while') repeat a block of code multiple times. 'for' loops are great for iterating over a sequence, while 'while' loops run as long as a condition is true.",
+          "A variable is like a labeled box where you can store information. This allows your program to remember and work with data.",
+          "Data comes in different 'types'. The most common ones are:",
+          "Strings (str): For text, like 'hello' or 'Uvumbuzi'. Always wrapped in quotes.",
+          "Integers (int): For whole numbers, like 10, -5, or 100.",
+          "Floats (float): For numbers with decimals, like 3.14 or -0.5.",
+          "Booleans (bool): Can only be `True` or `False`. Used for logic.",
+          "Sometimes you need to convert data from one type to another. This is called 'type casting'.",
+          { type: "code", language: "python", code: "name = \"Alex\"         # A string\nage = 25             # An integer\nheight = 5.9         # A float\nis_student = True   # a boolean\n\n# Converting a string input to an integer\nage_string = \"30\"\nage_number = int(age_string)"}
         ],
-        researchPrompt: "What is an infinite loop and why should you avoid it?"
+        researchPrompt: "What happens if you try to add a string to an integer, like `'Hello' + 5`? Why does Python throw an error?"
+      },
+      {
+          title: "Lesson 2.3: Getting User Input",
+          content: [
+              "Interactive programs need to get input from the user. Python's `input()` function makes this easy.",
+              "The `input()` function pauses your program and waits for the user to type something and press Enter.",
+              "Important: The `input()` function always returns the user's input as a string, even if they type numbers. You must use type casting (`int()` or `float()`) if you want to use their input for math.",
+              { type: "code", language: "python", code: "# Ask for the user's name\nname = input(\"What is your name? \")\n\n# Ask for their age and convert it to an integer\nage = int(input(\"How old are you? \"))\n\nprint(f\"Hello, {name}! You will be {age + 1} on your next birthday.\")"}
+          ],
+          researchPrompt: "What is an f-string in Python (like `f\"Hello, {name}\"`) and how is it different from regular string concatenation with the `+` sign?"
+      },
+      {
+          title: "Lesson 2.4: Operators and Expressions",
+          content: [
+              "Operators are the symbols we use to perform operations on data.",
+              "Arithmetic Operators: `+` (add), `-` (subtract), `*` (multiply), `/` (divide), `**` (exponent), `%` (modulo/remainder).",
+              "Comparison Operators: `==` (equal to), `!=` (not equal to), `<` (less than), `>` (greater than), `<=` (less than or equal to), `>=` (greater than or equal to). These always result in a Boolean (`True` or `False`).",
+              "Logical Operators: `and` (both must be true), `or` (at least one must be true), `not` (inverts the boolean).",
+              { type: "code", language: "python", code: "x = 15\ny = 4\n\n# Arithmetic\nprint(x / y)  # 3.75 (true division)\nprint(x % y)  # 3 (remainder)\n\n# Comparison\nprint(x > 10) # True\n\n# Logical\nprint(x > 10 and y < 5) # True"}
+          ],
+          researchPrompt: "What is the difference between the `/` operator and the `//` operator in Python? Provide an example."
+      },
+      {
+          title: "Lesson 2.5: Conditional Statements (if/elif/else)",
+          content: [
+              "Conditional statements allow your program to make decisions and run different code blocks based on whether a condition is true or false.",
+              "The structure starts with an `if`, followed by any number of `elif` (else if) blocks, and ends with an optional `else` block that runs if no other conditions were met.",
+              "Indentation is critical! The code that belongs to an `if`, `elif`, or `else` block must be indented underneath it.",
+              { type: "code", language: "python", code: "score = int(input(\"Enter your score: \"))\n\nif score >= 90:\n    print(\"Grade: A\")\nelif score >= 80:\n    print(\"Grade: B\")\nelif score >= 70:\n    print(\"Grade: C\")\nelse:\n    print(\"You need to improve.\")"}
+          ],
+          researchPrompt: "What is a 'nested' if statement? Write a simple example where one if statement is inside another."
+      },
+      {
+          title: "Lesson 2.6: Loops (while and for)",
+          content: [
+              "Loops are used to repeat a block of code multiple times without having to write it over and over.",
+              "`while` loop: This loop will continue to run as long as its condition remains `True`. It's great for when you don't know how many times you need to loop.",
+              "`for` loop: This loop iterates over a sequence (like a list, a string, or a range of numbers) and runs the code block once for each item in the sequence.",
+              "You can control loops with `break` (to exit the loop immediately) and `continue` (to skip the current iteration and go to the next).",
+              { type: "code", language: "python", code: "# A for loop using range()\nfor i in range(5):\n    print(f\"Hello number {i + 1}\")\n\n# A while loop for counting down\ncount = 3\nwhile count > 0:\n    print(count)\n    count = count - 1\nprint(\"Blast off!\")"}
+          ],
+          researchPrompt: "What is an 'infinite loop' and how can you accidentally create one with a `while` loop? Why are they a problem?"
+      },
+      {
+          title: "Lesson 2.7: Mini Project: Number Guessing Game",
+          content: [
+              "It's time to put everything together! This simple game is a classic first project for new programmers because it uses all the basic concepts we've just learned.",
+              "We'll need to use the `random` module, which is a built-in Python library that can generate random numbers.",
+              "The logic will involve: generating a secret number, using a `while` loop to keep the game going, getting user input, and using `if/elif/else` to give the user hints.",
+              { type: "code", language: "python", code: "import random\n\nsecret_number = random.randint(1, 10)\nguess = 0\n\nwhile guess != secret_number:\n    guess = int(input(\"Guess a number between 1 and 10: \"))\n\n    if guess < secret_number:\n        print(\"Too low, try again!\")\n    elif guess > secret_number:\n        print(\"Too high, try again!\")\n\nprint(\"Congratulations! You guessed it!\")"}
+          ],
+          researchPrompt: "How could you modify this game to limit the user to only 3 guesses? (Hint: You'll need another variable to track the number of attempts)."
       }
     ]
   },
@@ -478,7 +535,3 @@ export default function CodingPage() {
     </div>
   );
 }
-
-    
-
-    
