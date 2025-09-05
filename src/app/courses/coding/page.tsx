@@ -1,17 +1,21 @@
 
 "use client";
 
+import { useEffect } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function CodingPage() {
   const [user, loading] = useAuthState(auth);
+  const router = useRouter();
 
   const topics = [
     {
@@ -32,14 +36,31 @@ export default function CodingPage() {
     },
   ];
 
+  const handleStartQuiz = async () => {
+    if (!user) {
+      router.push('/auth');
+      return;
+    }
+    
+    // Check for user profile
+    const profileDoc = await getDoc(doc(db, "userProfiles", user.uid));
+    if (!profileDoc.exists()) {
+      sessionStorage.setItem('redirectAfterProfileUpdate', '/courses/coding/quiz');
+      router.push('/profile');
+    } else {
+      router.push('/courses/coding/quiz');
+    }
+  };
+
+
   const renderStartButton = () => {
     if (loading) {
       return <Button size="lg" disabled>Loading...</Button>;
     }
     if (user) {
       return (
-        <Button asChild size="lg">
-          <Link href="/courses/coding/quiz">Start Quiz</Link>
+        <Button onClick={handleStartQuiz} size="lg">
+          Start Quiz
         </Button>
       );
     }
@@ -47,7 +68,7 @@ export default function CodingPage() {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <Button size="lg" disabled>
+             <Button onClick={handleStartQuiz} size="lg">
               Start Quiz
             </Button>
           </TooltipTrigger>

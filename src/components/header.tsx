@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -11,6 +12,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -71,6 +74,9 @@ export function Header() {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+             <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             <DropdownMenuItem onClick={() => auth.signOut()}>
               Log Out
             </DropdownMenuItem>
