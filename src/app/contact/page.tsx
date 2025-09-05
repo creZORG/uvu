@@ -32,6 +32,15 @@ export default function ContactPage() {
     return () => unsubscribe();
   }, []);
 
+  const getHostname = (url: string) => {
+    if (!url) return "";
+    try {
+      return new URL(url).hostname;
+    } catch (e) {
+      return url;
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -50,7 +59,7 @@ export default function ContactPage() {
                   <div className="mt-8 space-y-4 text-lg">
                     <p><strong>Email:</strong> {contact.email}</p>
                     <p><strong>Phone:</strong> {contact.phone}</p>
-                    <p><strong>Website:</strong> <a href={contact.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{new URL(contact.website).hostname}</a></p>
+                    <p><strong>Website:</strong> <a href={contact.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{getHostname(contact.website)}</a></p>
                     <p><strong>Location:</strong> {contact.location}</p>
                   </div>
                 ) : (
