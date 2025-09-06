@@ -22,12 +22,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
 import type { UserProfile, Course, Project, Book as BookType, BookRequest, CourseContentBlock } from "@/lib/types";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courseContent as staticCourseContent } from "@/lib/course-content";
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from "@/components/ui/sidebar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 
 type GalleryImage = {
   src: string;
@@ -262,6 +264,10 @@ export default function AdminPage() {
     };
 
     const deleteItem = async (collectionName: string, id: string) => {
+      if (!id) {
+          toast({ variant: "destructive", title: "Error", description: "No ID provided for deletion."});
+          return;
+      }
       try {
           await deleteDoc(doc(db, collectionName, id));
           toast({ title: `${collectionName.slice(0, -1)} Deleted`});
@@ -555,12 +561,35 @@ export default function AdminPage() {
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {tutor.tutorProfile?.applicationStatus === 'pending' && (
-                                        <div className="flex gap-2 justify-end">
-                                            <Button variant="outline" size="sm" onClick={() => handleTutorApproval(tutor.userId, 'approved')}><UserCheck className="mr-2"/>Approve</Button>
-                                            <Button variant="destructive" size="sm" onClick={() => handleTutorApproval(tutor.userId, 'rejected')}><UserX className="mr-2"/>Reject</Button>
-                                        </div>
-                                    )}
+                                    <AlertDialog>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                {tutor.tutorProfile?.applicationStatus === 'pending' && (
+                                                    <>
+                                                        <DropdownMenuItem onClick={() => handleTutorApproval(tutor.userId, 'approved')}><UserCheck className="mr-2 h-4 w-4"/>Approve</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleTutorApproval(tutor.userId, 'rejected')}><UserX className="mr-2 h-4 w-4"/>Reject</DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                    </>
+                                                )}
+                                                <AlertDialogTrigger asChild>
+                                                    <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete Tutor</DropdownMenuItem>
+                                                </AlertDialogTrigger>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This will permanently delete the tutor profile for <strong>{tutor.fullName}</strong>. This action cannot be undone. This does not delete their Firebase Auth account.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => deleteItem('userProfiles', tutor.userId)}>Yes, delete tutor</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </TableCell>
                             </TableRow>
                             ))}
@@ -636,5 +665,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    
