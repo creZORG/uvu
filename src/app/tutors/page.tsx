@@ -8,14 +8,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle, Phone } from "lucide-react";
 import Image from "next/image";
 import type { UserProfile } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TutorsPage() {
   const [tutors, setTutors] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTutor, setSelectedTutor] = useState<UserProfile | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const tutorsQuery = query(
@@ -34,6 +39,17 @@ export default function TutorsPage() {
 
     return () => unsubscribe();
   }, []);
+
+  const handleContactClick = (tutor: UserProfile) => {
+    setSelectedTutor(tutor);
+    setIsModalOpen(true);
+    // In a real application, you would log this event to Firestore for safety.
+    console.log(`User is viewing contact info for ${tutor.fullName}`);
+     toast({
+      title: "Action Logged",
+      description: "For your safety, a record of this contact view has been created.",
+    });
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -84,7 +100,7 @@ export default function TutorsPage() {
                                     </div>
                                 </CardContent>
                                  <CardFooter>
-                                    <Button className="w-full">Contact Tutor</Button>
+                                    <Button className="w-full" onClick={() => handleContactClick(tutor)}>Contact Tutor</Button>
                                  </CardFooter>
                            </Card>
                         ))}
@@ -94,9 +110,32 @@ export default function TutorsPage() {
             </div>
         </section>
       </main>
-      <Footer />
+
+       <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-headline text-2xl">Contact Information</AlertDialogTitle>
+            <AlertDialogDescription>
+                You can reach out to <strong>{selectedTutor?.fullName}</strong> using the details below.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+            <div className="py-4">
+                <div className="flex items-center gap-3 font-semibold text-lg">
+                    <Phone size={20} />
+                    <span>{selectedTutor?.phoneNumber}</span>
+                </div>
+            </div>
+            <div className="p-4 rounded-md bg-destructive/10 border border-destructive/50 text-destructive-foreground">
+                <h4 className="font-bold flex items-center gap-2 mb-2"><AlertTriangle/>Safety Notice</h4>
+                <p className="text-xs">
+                    Please exercise caution when contacting individuals you meet online. For your safety, we have logged that you have viewed this contact information. Do not share sensitive personal information and arrange to meet in public places if necessary.
+                </p>
+            </div>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsModalOpen(false)}>Close</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-
-    

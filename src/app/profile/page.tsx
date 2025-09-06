@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck } from "lucide-react";
+import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck, BookHeart } from "lucide-react";
 import { ProfileEditModal, UserProfile } from "@/components/profile-edit-modal";
 import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
@@ -92,6 +92,7 @@ export default function ProfilePage() {
                     user={user}
                     existingProfile={profile}
                     onProfileUpdate={handleProfileUpdate}
+                    hideCloseButton={true}
                 />
             )}
         </main>
@@ -115,9 +116,9 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 {[
-                    { title: "Learning", icon: <GraduationCap/>, buttonText: "Browse Courses", href: "/courses" },
+                    { title: "My Learning", icon: <GraduationCap/>, buttonText: "View My Learning", href: "/courses" },
                     { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
-                    { title: "Hire a Tutor", icon: <UserRoundCheck/>, buttonText: "Find a Tutor", href: "#" },
+                    { title: "Hire a Tutor", icon: <UserRoundCheck/>, buttonText: "Find a Tutor", href: "/tutors" },
                     { title: "Upcoming Events", icon: <CalendarCheck/>, buttonText: "View Calendar", href: "#" }
                 ].map((item) => (
                     <Card key={item.title} className="text-center p-6 flex flex-col items-center justify-between shadow-md hover:shadow-xl transition-shadow">
@@ -151,12 +152,15 @@ export default function ProfilePage() {
                     <CardContent>
                         {courses.length > 0 ? (
                              <ul className="space-y-3 list-disc list-inside text-muted-foreground">
-                                {courses.map(course => <li key={course.id}>{course.title}</li>)}
+                                {courses.map(course => <li key={course.id}><Link href={`/courses/${course.id}`} className="hover:text-primary">{course.title}</Link></li>)}
                             </ul>
                         ) : (
                             <p className="text-sm text-muted-foreground">No featured courses at the moment. Check back soon!</p>
                         )}
                     </CardContent>
+                     <CardFooter>
+                        <Button variant="link" asChild className="p-0"><Link href="/courses">View all courses &rarr;</Link></Button>
+                    </CardFooter>
                 </Card>
             </div>
         </div>
