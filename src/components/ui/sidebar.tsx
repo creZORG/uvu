@@ -235,9 +235,9 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed z-10 hidden h-[calc(100svh-2rem)] w-[--sidebar-width] transition-[left,right,width,height] ease-linear md:flex",
+            "duration-200 fixed z-10 hidden h-auto w-[--sidebar-width] transition-[left,right,width,height] ease-linear md:flex",
              // Centering and pill shape for floating
-            variant === "floating" ? "top-1/2 -translate-y-1/2" : "inset-y-0",
+            variant === "floating" ? "top-20" : "inset-y-0",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",

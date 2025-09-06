@@ -693,42 +693,44 @@ export default function AdminPage() {
     <div className="flex flex-col min-h-screen bg-background">
         <Header />
         <main className="flex-1">
-            <SidebarProvider>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex">
-                    <Sidebar variant="floating" collapsible="icon">
-                        <SidebarContent>
-                            <SidebarMenu>
-                                {navItems.map(item => (
-                                    <SidebarMenuItem key={item.view}>
-                                        <SidebarMenuButton 
-                                            onClick={() => setActiveView(item.view)}
-                                            isActive={activeView === item.view}
-                                            tooltip={item.label}
-                                        >
-                                            <item.icon/>
-                                            <span>{item.label}</span>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarContent>
-                    </Sidebar>
-                    <SidebarInset>
-                         <Card className="m-4">
-                            <CardHeader className="flex flex-row items-center gap-4">
-                                <SidebarTrigger/>
-                                <div>
-                                    <CardTitle className="font-headline text-2xl">Admin Dashboard</CardTitle>
-                                    <CardDescription>Manage the Uvumbuzi Digital Hub.</CardDescription>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                {renderContent()}
-                            </CardContent>
-                        </Card>
-                    </SidebarInset>
+                    <SidebarProvider>
+                        <Sidebar variant="floating" collapsible="icon" className="top-20">
+                            <SidebarContent>
+                                <SidebarMenu>
+                                    {navItems.map(item => (
+                                        <SidebarMenuItem key={item.view}>
+                                            <SidebarMenuButton 
+                                                onClick={() => setActiveView(item.view)}
+                                                isActive={activeView === item.view}
+                                                tooltip={item.label}
+                                            >
+                                                <item.icon/>
+                                                <span>{item.label}</span>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    ))}
+                                </SidebarMenu>
+                            </SidebarContent>
+                        </Sidebar>
+                        <SidebarInset>
+                             <Card className="flex-1 my-4">
+                                <CardHeader className="flex flex-row items-center gap-4">
+                                    <SidebarTrigger/>
+                                    <div>
+                                        <CardTitle className="font-headline text-2xl">Admin Dashboard</CardTitle>
+                                        <CardDescription>Manage the Uvumbuzi Digital Hub.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    {renderContent()}
+                                </CardContent>
+                            </Card>
+                        </SidebarInset>
+                    </SidebarProvider>
                 </div>
-            </SidebarProvider>
+            </div>
         </main>
         {editingStudent && (
              <ProfileEditModal
