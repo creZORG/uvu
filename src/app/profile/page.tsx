@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, query, collection, orderBy, limit } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
@@ -16,12 +16,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import type { Course } from "@/app/admin/page";
 
 
 export default function ProfilePage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isModalRequired, setIsModalRequired] = useState(false);
 
@@ -33,7 +35,7 @@ export default function ProfilePage() {
     }
 
     const profileRef = doc(db, "userProfiles", user.uid);
-    const unsubscribe = onSnapshot(profileRef, (docSnap) => {
+    const unsubscribeProfile = onSnapshot(profileRef, (docSnap) => {
       if (docSnap.exists() && isProfileComplete(docSnap.data())) {
         setProfile({ userId: docSnap.id, ...docSnap.data() } as UserProfile);
         setIsModalRequired(false);
@@ -44,12 +46,22 @@ export default function ProfilePage() {
       setIsLoadingProfile(false);
     });
 
-    return () => unsubscribe();
+    const coursesQuery = query(collection(db, "courses"), orderBy("createdAt", "desc"), limit(4));
+    const unsubscribeCourses = onSnapshot(coursesQuery, (querySnapshot) => {
+        const courseList: Course[] = [];
+        querySnapshot.forEach((doc) => {
+            courseList.push({ id: doc.id, ...doc.data()} as Course);
+        });
+        setCourses(courseList);
+    });
+
+    return () => {
+        unsubscribeProfile();
+        unsubscribeCourses();
+    };
   }, [user, loading, router]);
 
   const handleProfileUpdate = () => {
-    // This function will be called from the modal when the profile is saved.
-    // It helps in scenarios where you might need to re-fetch data or hide the modal.
     const redirectUrl = sessionStorage.getItem('redirectAfterProfileUpdate');
     if (redirectUrl) {
       sessionStorage.removeItem('redirectAfterProfileUpdate');
@@ -103,8 +115,8 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 {[
-                    { title: "Learning", icon: <GraduationCap/>, buttonText: "Browse Courses", href: "/courses/coding" },
-                    { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
+                    { title: "Learning", icon: <GraduationCap/>, buttonText: "Browse Courses", href: "/courses" },
+                    { title: "My Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
                     { title: "Discussion Forums", icon: <MessageSquare/>, buttonText: "Join Discussion", href: "#" },
                     { title: "Upcoming Events", icon: <CalendarCheck/>, buttonText: "View Calendar", href: "#" }
                 ].map((item) => (
@@ -137,12 +149,13 @@ export default function ProfilePage() {
                  <Card className="shadow-md">
                     <CardHeader><CardTitle className="font-headline text-2xl">Featured Courses</CardTitle></CardHeader>
                     <CardContent>
-                        <ul className="space-y-3 list-disc list-inside text-muted-foreground">
-                            <li>General Coding Course</li>
-                            <li>Introduction to Graphics Design</li>
-                            <li>CCTV Installation Basics</li>
-                            <li>Web Design Fundamentals</li>
-                        </ul>
+                        {courses.length > 0 ? (
+                             <ul className="space-y-3 list-disc list-inside text-muted-foreground">
+                                {courses.map(course => <li key={course.id}>{course.title}</li>)}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No featured courses at the moment. Check back soon!</p>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -152,5 +165,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
