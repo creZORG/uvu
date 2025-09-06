@@ -16,10 +16,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, Clock, AlertTriangle, Ban } from "lucide-react";
+import { Loader2, Clock, AlertTriangle, Ban, CheckCircle, LayoutDashboard, User, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { UserProfile, TutorProfile } from "@/lib/types";
 import Link from "next/link";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+
 
 const tutorApplicationSchema = z.object({
   photoUrl: z.string().url({ message: "Please enter a valid URL for your photo." }),
@@ -128,7 +131,7 @@ export default function TutorPage() {
       const tutorProfileData: TutorProfile = {
           ...data,
           subjects: data.subjects.split(',').map(s => s.trim()),
-          applicationStatus: profile?.tutorProfile?.applicationStatus || 'pending'
+          applicationStatus: profile?.tutorProfile?.applicationStatus === 'rejected' ? 'pending' : (profile?.tutorProfile?.applicationStatus || 'pending')
       };
 
       const userProfileRef = doc(db, "userProfiles", user.uid);
@@ -150,6 +153,15 @@ export default function TutorPage() {
         setIsSubmitting(false);
     }
   };
+  
+  const getStatusBadge = (status: string | undefined) => {
+      switch(status) {
+          case 'approved': return <Badge variant="default" className="text-base"><CheckCircle className="mr-2"/>Approved</Badge>;
+          case 'pending': return <Badge variant="secondary" className="text-base"><Clock className="mr-2"/>Pending Review</Badge>;
+          case 'rejected': return <Badge variant="destructive" className="text-base"><AlertTriangle className="mr-2"/>Rejected</Badge>;
+          default: return <Badge variant="outline" className="text-base">Not Submitted</Badge>;
+      }
+  }
 
   const renderContent = () => {
     if (isLoadingProfile) {
@@ -176,77 +188,97 @@ export default function TutorPage() {
     
     const applicationStatus = profile?.tutorProfile?.applicationStatus;
     
-    if (applicationStatus === 'approved') {
-        return (
-             <Card className="max-w-2xl mx-auto">
+    if (!profile?.tutorProfile) {
+         return (
+            <Card className="max-w-2xl mx-auto">
                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Manage Your Tutor Profile</CardTitle>
-                    <CardDescription>Keep your public profile up-to-date to attract students. Your changes will be live immediately.</CardDescription>
+                    <CardTitle className="font-headline text-2xl">Become a Tutor</CardTitle>
+                    <CardDescription>Complete the form below to apply. Your profile will be reviewed by an administrator before being publicly listed.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                   <TutorApplicationForm 
+                    <TutorApplicationForm 
                         onSubmit={onSubmit}
                         isSubmitting={isSubmitting}
                         defaultValues={{
-                            ...profile?.tutorProfile,
-                            subjects: profile?.tutorProfile?.subjects.join(', ') || '',
+                            photoUrl: "",
+                            phoneNumber: profile?.phoneNumber || "",
+                            location: profile?.location || "",
+                            bio: "",
+                            subjects: "",
+                            qualifications: "",
+                            availability: "",
+                            sessionInfo: "",
+                            terms: "",
                         }}
-                   />
+                    />
                 </CardContent>
             </Card>
         );
     }
 
-    if (applicationStatus === 'pending') {
-        return (
-            <Card className="max-w-2xl mx-auto text-center">
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2"><Clock /> Application Pending</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p>Your application has been submitted and is currently under review by our team. Thank you for your patience.</p>
-                </CardContent>
-            </Card>
-        );
-    }
-    
-    if (applicationStatus === 'rejected') {
-        return (
-             <Card className="max-w-2xl mx-auto text-center border-destructive">
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive"><AlertTriangle/> Application Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p>We regret to inform you that your application was not approved at this time. Please contact administration for more details.</p>
-                </CardContent>
-            </Card>
-        )
-    }
 
     return (
-        <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-                <CardTitle className="font-headline text-2xl">Become a Tutor</CardTitle>
-                <CardDescription>Complete the form below to apply. Your profile will be reviewed by an administrator before being publicly listed.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <TutorApplicationForm 
-                    onSubmit={onSubmit}
-                    isSubmitting={isSubmitting}
-                    defaultValues={{
-                        photoUrl: "",
-                        phoneNumber: profile?.phoneNumber || "",
-                        location: profile?.location || "",
-                        bio: "",
-                        subjects: "",
-                        qualifications: "",
-                        availability: "",
-                        sessionInfo: "",
-                        terms: "",
-                    }}
-                />
-            </CardContent>
-        </Card>
+        <Tabs defaultValue="dashboard" className="max-w-4xl mx-auto">
+            <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="dashboard"><LayoutDashboard className="mr-2"/>Dashboard</TabsTrigger>
+                <TabsTrigger value="profile"><User className="mr-2"/>My Profile</TabsTrigger>
+                <TabsTrigger value="students"><Users className="mr-2"/>My Students</TabsTrigger>
+            </TabsList>
+            <TabsContent value="dashboard">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Tutor Dashboard</CardTitle>
+                         <CardDescription>Welcome back, {profile.fullName}. Here's a summary of your tutor account.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                       <div className="flex flex-wrap items-center gap-4">
+                           <h3 className="text-lg font-semibold">Application Status:</h3>
+                           {getStatusBadge(applicationStatus)}
+                       </div>
+                       {applicationStatus === 'rejected' && (
+                           <div className="p-4 rounded-md bg-destructive/10 text-destructive-foreground">
+                               <p>We regret to inform you that your application was not approved at this time. Please review your profile for completeness and accuracy, then resubmit it from the 'My Profile' tab. If you have questions, please contact administration.</p>
+                           </div>
+                       )}
+                        {applicationStatus === 'approved' && (
+                           <div className="p-4 rounded-md bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200">
+                               <p>Congratulations! Your profile is approved and live on the <Link href="/tutors" className="underline font-bold">tutors page</Link>. You can update your information anytime under the 'My Profile' tab.</p>
+                           </div>
+                       )}
+                    </CardContent>
+                </Card>
+            </TabsContent>
+            <TabsContent value="profile">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Manage Your Tutor Profile</CardTitle>
+                        <CardDescription>Keep your public profile up-to-date to attract students. Your changes will be live immediately after saving.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <TutorApplicationForm 
+                            onSubmit={onSubmit}
+                            isSubmitting={isSubmitting}
+                            defaultValues={{
+                                ...profile?.tutorProfile,
+                                subjects: profile?.tutorProfile?.subjects.join(', ') || '',
+                            }}
+                        />
+                    </CardContent>
+                </Card>
+            </TabsContent>
+            <TabsContent value="students">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">My Students</CardTitle>
+                        <CardDescription>Manage your student bookings and communication.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center py-12">
+                        <p className="text-muted-foreground">This feature is coming soon!</p>
+                        <p className="text-muted-foreground">You'll be able to view your student list, manage sessions, and communicate directly through the portal.</p>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+        </Tabs>
     );
   }
 
