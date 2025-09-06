@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { courseContent as staticCourseContent } from "@/lib/course-content";
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from "@/components/ui/sidebar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type GalleryImage = {
   src: string;
@@ -101,7 +102,6 @@ export default function AdminPage() {
   const courseForm = useForm<Course>({ defaultValues: { title: "", description: "", thumbnailUrl: "", content: [] } });
   
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
-  const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
   const { fields: teamFields, append: appendTeam, remove: removeTeam } = useFieldArray({ control: contentForm.control, name: "teamMembers" });
   const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({ control: contentForm.control, name: "galleryImages" });
   const { fields: eventFields, append: appendEvent, remove: removeEvent } = useFieldArray({ control: contentForm.control, name: "events" });
@@ -198,13 +198,16 @@ export default function AdminPage() {
 
   const onContentSubmit = async (data: SiteContent) => {
     try {
-      await setDoc(doc(db, "siteContent", "content"), data, { merge: true });
+      // Filter out empty program entries before saving
+      const cleanedData = { ...data };
+      await setDoc(doc(db, "siteContent", "content"), cleanedData, { merge: true });
       toast({ title: "Success!", description: "Site content updated." });
     } catch (error) {
       console.error("Error updating content: ", error);
       toast({ variant: "destructive", title: "Error", description: "Could not update site content." });
     }
   };
+
 
   const onMailSubmit = async (data: SendMailInput) => {
     setIsSendingMail(true);
@@ -340,32 +343,93 @@ export default function AdminPage() {
              )
         case "content":
             return (
-                <div>
-                    <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-8">
-                      <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Contact Information</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><Label>Email</Label><Input {...contentForm.register("contact.email")} /></div>
-                            <div><Label>Phone</Label><Input {...contentForm.register("contact.phone")} /></div>
-                            <div><Label>Website URL</Label><Input {...contentForm.register("contact.website")} /></div>
-                            <div><Label>Location</Label><Input {...contentForm.register("contact.location")} /></div>
-                          </div></div>
-                      <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Homepage Carousel Images</h3>
-                        {carouselFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Image URL</Label><Input {...contentForm.register(`carouselImages.${index}.src`)} /><Label>Alt Text</Label><Input {...contentForm.register(`carouselImages.${index}.alt`)} /><Label>AI Hint</Label><Input {...contentForm.register(`carouselImages.${index}.data-ai-hint`)} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeCarousel(index)}><Trash2/></Button></div>))}
-                         <Button type="button" variant="outline" size="sm" onClick={() => appendCarousel({ src: '', alt: '', 'data-ai-hint': '' })}><PlusCircle className="mr-2"/>Add Carousel Image</Button></div>
-                      <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Homepage Programs</h3>
-                        {programFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Title</Label><Input {...contentForm.register(`programs.${index}.title`)} /><Label>Description</Label><Textarea {...contentForm.register(`programs.${index}.description`)} /><Label>Link</Label><Input {...contentForm.register(`programs.${index}.href`)} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeProgram(index)}><Trash2/></Button></div>))}
-                        <Button type="button" variant="outline" size="sm" onClick={() => appendProgram({ href: '', title: '', description: '' })}><PlusCircle className="mr-2"/>Add Program</Button></div>
-                       <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Team Members</h3>
-                        {teamFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Name</Label><Input {...contentForm.register(`teamMembers.${index}.name`)} /><Label>Title</Label><Input {...contentForm.register(`teamMembers.${index}.title`)} /><Label>Bio</Label><Textarea {...contentForm.register(`teamMembers.${index}.bio`)} /><Label>Image URL</Label><Input {...contentForm.register(`teamMembers.${index}.imageUrl`)} /><Label>Order</Label><Input type="number" {...contentForm.register(`teamMembers.${index}.order`, {valueAsNumber: true})} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeTeam(index)}><Trash2/></Button></div>))}
-                        <Button type="button" variant="outline" size="sm" onClick={() => appendTeam({ name: '', title: '', bio: '', imageUrl: '', order: teamFields.length + 1 })}><PlusCircle className="mr-2"/>Add Team Member</Button></div>
-                       <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Gallery Images</h3>
-                        {galleryFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Image URL</Label><Input {...contentForm.register(`galleryImages.${index}.src`)} /><Label>Alt Text</Label><Input {...contentForm.register(`galleryImages.${index}.alt`)} /><Label>CSS Class</Label><Input {...contentForm.register(`galleryImages.${index}.className`)} /><Label>Description</Label><Input {...contentForm.register(`galleryImages.${index}.description`)} /><Label>Location</Label><Input {...contentForm.register(`galleryImages.${index}.location`)} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeGallery(index)}><Trash2/></Button></div>))}
-                         <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', className: '', description: '', location: '' })}><PlusCircle className="mr-2"/>Add Gallery Image</Button></div>
-                      <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Upcoming Events</h3>
-                        {eventFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Event Title</Label><Input {...contentForm.register(`events.${index}.title`)} /><Label>Date</Label><Input placeholder="e.g. October 26, 2024" {...contentForm.register(`events.${index}.date`)} /><Label>Description</Label><Textarea {...contentForm.register(`events.${index}.description`)} /><Label>Image URL</Label><Input {...contentForm.register(`events.${index}.imageUrl`)} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeEvent(index)}><Trash2/></Button></div>))}
-                         <Button type="button" variant="outline" size="sm" onClick={() => appendEvent({ title: '', date: '', description: '', imageUrl: '' })}><PlusCircle className="mr-2"/>Add Event</Button></div>
-                      <Button type="submit">Save All Site Content</Button>
-                    </form>
-                </div>
+                <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-6">
+                    <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger className="font-headline text-xl">Contact Information</AccordionTrigger>
+                            <AccordionContent className="p-1">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                    <div><Label>Email</Label><Input {...contentForm.register("contact.email")} /></div>
+                                    <div><Label>Phone</Label><Input {...contentForm.register("contact.phone")} /></div>
+                                    <div><Label>Website URL</Label><Input {...contentForm.register("contact.website")} /></div>
+                                    <div><Label>Location</Label><Input {...contentForm.register("contact.location")} /></div>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-2">
+                            <AccordionTrigger className="font-headline text-xl">Homepage Carousel Images</AccordionTrigger>
+                            <AccordionContent className="p-1 space-y-4 pt-2">
+                                {carouselFields.map((field, index) => (
+                                    <div key={field.id} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end p-4 border rounded">
+                                        <div className="grid md:grid-cols-3 gap-4">
+                                            <div><Label>Image URL</Label><Input {...contentForm.register(`carouselImages.${index}.src`)} /></div>
+                                            <div><Label>Alt Text</Label><Input {...contentForm.register(`carouselImages.${index}.alt`)} /></div>
+                                            <div><Label>AI Hint</Label><Input {...contentForm.register(`carouselImages.${index}.data-ai-hint`)} /></div>
+                                        </div>
+                                        <Button type="button" variant="destructive" size="icon" onClick={() => removeCarousel(index)}><Trash2/></Button>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={() => appendCarousel({ src: '', alt: '', 'data-ai-hint': '' })}><PlusCircle className="mr-2"/>Add Carousel Image</Button>
+                            </AccordionContent>
+                        </AccordionItem>
+                         <AccordionItem value="item-3">
+                            <AccordionTrigger className="font-headline text-xl">Team Members</AccordionTrigger>
+                            <AccordionContent className="p-1 space-y-4 pt-2">
+                                {teamFields.map((field, index) => (
+                                    <div key={field.id} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-start p-4 border rounded">
+                                        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                                            <div className="lg:col-span-2"><Label>Name</Label><Input {...contentForm.register(`teamMembers.${index}.name`)} /></div>
+                                            <div className="lg:col-span-2"><Label>Title</Label><Input {...contentForm.register(`teamMembers.${index}.title`)} /></div>
+                                            <div><Label>Order</Label><Input type="number" {...contentForm.register(`teamMembers.${index}.order`, {valueAsNumber: true})} /></div>
+                                            <div className="md:col-span-2 lg:col-span-5"><Label>Bio</Label><Textarea {...contentForm.register(`teamMembers.${index}.bio`)} /></div>
+                                            <div className="md:col-span-2 lg:col-span-5"><Label>Image URL</Label><Input {...contentForm.register(`teamMembers.${index}.imageUrl`)} /></div>
+                                        </div>
+                                        <Button type="button" variant="destructive" size="icon" onClick={() => removeTeam(index)}><Trash2/></Button>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={() => appendTeam({ name: '', title: '', bio: '', imageUrl: '', order: teamFields.length + 1 })}><PlusCircle className="mr-2"/>Add Team Member</Button>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-4">
+                            <AccordionTrigger className="font-headline text-xl">Gallery Images</AccordionTrigger>
+                            <AccordionContent className="p-1 space-y-4 pt-2">
+                                {galleryFields.map((field, index) => (
+                                    <div key={field.id} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end p-4 border rounded">
+                                        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                            <div className="lg:col-span-3"><Label>Image URL</Label><Input {...contentForm.register(`galleryImages.${index}.src`)} /></div>
+                                            <div className="lg:col-span-2"><Label>Alt Text</Label><Input {...contentForm.register(`galleryImages.${index}.alt`)} /></div>
+                                            <div className="lg:col-span-2"><Label>Description</Label><Input {...contentForm.register(`galleryImages.${index}.description`)} /></div>
+                                            <div><Label>Location</Label><Input {...contentForm.register(`galleryImages.${index}.location`)} /></div>
+                                            <div className="lg:col-span-2"><Label>CSS Class</Label><Input placeholder="e.g., col-span-2" {...contentForm.register(`galleryImages.${index}.className`)} /></div>
+                                        </div>
+                                        <Button type="button" variant="destructive" size="icon" onClick={() => removeGallery(index)}><Trash2/></Button>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', className: '', description: '', location: '' })}><PlusCircle className="mr-2"/>Add Gallery Image</Button>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-5">
+                            <AccordionTrigger className="font-headline text-xl">Upcoming Events</AccordionTrigger>
+                            <AccordionContent className="p-1 space-y-4 pt-2">
+                                {eventFields.map((field, index) => (
+                                    <div key={field.id} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end p-4 border rounded">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div><Label>Event Title</Label><Input {...contentForm.register(`events.${index}.title`)} /></div>
+                                            <div><Label>Date</Label><Input placeholder="e.g. October 26, 2024" {...contentForm.register(`events.${index}.date`)} /></div>
+                                            <div className="md:col-span-2"><Label>Description</Label><Textarea {...contentForm.register(`events.${index}.description`)} /></div>
+                                            <div className="md:col-span-2"><Label>Image URL</Label><Input {...contentForm.register(`events.${index}.imageUrl`)} /></div>
+                                        </div>
+                                        <Button type="button" variant="destructive" size="icon" onClick={() => removeEvent(index)}><Trash2/></Button>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={() => appendEvent({ title: '', date: '', description: '', imageUrl: '' })}><PlusCircle className="mr-2"/>Add Event</Button>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                    <div className="pt-4">
+                        <Button type="submit" size="lg">Save All Site Content</Button>
+                    </div>
+                </form>
             )
         case "projects":
              return (
@@ -572,3 +636,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
