@@ -82,11 +82,9 @@ export function Footer() {
             <button 
               onClick={() => setIsModalOpen(true)} 
               className={cn(
-                  "group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gray-800 px-4 py-2 font-mono font-medium tracking-tighter text-white"
+                  "group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-background/80 px-4 py-2 font-mono font-medium tracking-tighter text-foreground"
               )}
-              style={{ boxShadow: "inset 0 0 1.5rem rgba(139, 92, 246, 0.5)"}}
             >
-                <span className="absolute top-0 right-0 -mt-1 -mr-1 h-8 w-8 transform translate-x-1 translate-y-1 bg-primary opacity-10 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:translate-y-0"></span>
                 <span className="relative z-10">Powered by RancidPool</span>
             </button>
           </div>
@@ -96,16 +94,16 @@ export function Footer() {
        <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-headline text-2xl flex items-center gap-3"><Rocket className="text-primary"/>Powered by RancidPool</AlertDialogTitle>
+            <AlertDialogTitle className="font-headline text-xl">This website was developed by a member of RancidPool, a specialized team of experienced developers utilizing AI and autonomous agents to accelerate the design, deployment, and scaling of modern, secure applications with precision and cost-efficiency.</AlertDialogTitle>
             <AlertDialogDescription className="text-base pt-2">
-              To see the detailed journey of how this project was built, including the team, tools, and step-by-step progress, or to rate our work, please visit the official project page.
+              To review the full development process, including detailed documentation of the team, tools, and methodology, or to evaluate the quality of this work
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction asChild className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:opacity-90">
-                <a href="https://rancidpool.com/client/projects/uvumbuzi" target="_blank" rel="noopener noreferrer">View Project Journey & Rate Us</a>
+                <a href="https://rancidpool.com/client/projects/uvumbuzi" target="_blank" rel="noopener noreferrer">Review Technical Build Report</a>
             </AlertDialogAction>
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogCancel>Dismiss</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
