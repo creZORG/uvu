@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
-import type { UserProfile, Course, Project, Book as BookType, BookRequest, CourseContentBlock } from "@/lib/types";
+import type { UserProfile, Course, Project, Book as BookType, BookRequest, CourseContentBlock, SocialLinks } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from "@/components/ui/sidebar";
@@ -50,7 +50,7 @@ type SiteContent = {
   carouselImages: { src: string; alt: string; "data-ai-hint": string; }[];
   teamMembers: TeamMember[];
   galleryImages: GalleryImage[];
-  contact: { email: string; phone: string; website: string; location: string; };
+  contact: { email: string; phone: string; website: string; location: string; socials: SocialLinks; };
   events: Event[];
 };
 
@@ -395,6 +395,13 @@ export default function AdminPage() {
                                     <div><Label>Phone</Label><Input {...contentForm.register("contact.phone")} /></div>
                                     <div><Label>Website URL</Label><Input {...contentForm.register("contact.website")} /></div>
                                     <div><Label>Location</Label><Input {...contentForm.register("contact.location")} /></div>
+                                    <div className="md:col-span-2 space-y-4 pt-4 border-t">
+                                        <h4 className="font-semibold text-muted-foreground">Social Media Links</h4>
+                                        <div><Label>Instagram URL</Label><Input placeholder="https://instagram.com/..." {...contentForm.register("contact.socials.instagram")} /></div>
+                                        <div><Label>Twitter (X) URL</Label><Input placeholder="https://x.com/..." {...contentForm.register("contact.socials.twitter")} /></div>
+                                        <div><Label>Facebook URL</Label><Input placeholder="https://facebook.com/..." {...contentForm.register("contact.socials.facebook")} /></div>
+                                        <div><Label>LinkedIn URL</Label><Input placeholder="https://linkedin.com/in/..." {...contentForm.register("contact.socials.linkedin")} /></div>
+                                    </div>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -729,3 +736,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    

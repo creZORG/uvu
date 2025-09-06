@@ -80,4 +80,13 @@ export type Event = {
   date: string;
   imageUrl: string;
 };
+
+export type SocialLinks = {
+  twitter?: string;
+  facebook?: string;
+  linkedin?: string;
+  instagram?: string;
+}
+    
+
     

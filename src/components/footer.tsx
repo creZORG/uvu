@@ -9,11 +9,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 import { cn } from "@/lib/utils";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { SocialLinks } from "@/lib/types";
 
 type ContactDetails = {
   email: string;
   phone: string;
   location: string;
+  socials?: SocialLinks;
 };
 
 export function Footer() {
@@ -32,6 +34,8 @@ export function Footer() {
     });
     return () => unsubscribe();
   }, []);
+  
+  const socialLinks = contact?.socials;
 
   return (
     <footer className="bg-primary/5 border-t border-primary/10">
@@ -65,10 +69,10 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold mb-4">Follow Us</h3>
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Twitter /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Linkedin /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
+              {socialLinks?.twitter && <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Twitter /></a>}
+              {socialLinks?.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Facebook /></a>}
+              {socialLinks?.linkedin && <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Linkedin /></a>}
+              {socialLinks?.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Instagram /></a>}
             </div>
           </div>
         </div>
@@ -108,3 +112,5 @@ export function Footer() {
     </footer>
   );
 }
+
+    
