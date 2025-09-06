@@ -12,7 +12,7 @@ import { format, differenceInYears } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Edit, BookOpen, BrainCircuit, Code, Brush, BarChart, Bot, Tv, Wifi, Camera, ShieldLock, Wrench } from "lucide-react";
+import { Edit, BookOpen, BrainCircuit, Code, Brush, BarChart, Bot, Tv, Wifi, Camera, ShieldCheck, Wrench } from "lucide-react";
 import { UcnLogo } from "./icons";
 
 
@@ -34,7 +34,7 @@ const interestIcons: { [key: string]: React.ReactNode } = {
     "Web Development": <Code className="mr-2" />,
     "Networking (Fiber Optics & Radio Technology)": <Wifi className="mr-2" />,
     "CCTV Installation": <Camera className="mr-2" />,
-    "Access Control Systems": <ShieldLock className="mr-2" />,
+    "Access Control Systems": <ShieldCheck className="mr-2" />,
     "Power (Solar DC Option)": <Wrench className="mr-2" />,
 };
 
