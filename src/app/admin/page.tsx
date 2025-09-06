@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus, UserCheck, UserX } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus, UserCheck, UserX, Calendar } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,12 +36,20 @@ type GalleryImage = {
   location?: string;
 }
 
+type Event = {
+  title: string;
+  description: string;
+  date: string;
+  imageUrl: string;
+};
+
 type SiteContent = {
   carouselImages: { src: string; alt: string; "data-ai-hint": string; }[];
   programs: { href: string; title: string; description: string; }[];
   teamMembers: TeamMember[];
   galleryImages: GalleryImage[];
   contact: { email: string; phone: string; website: string; location: string; };
+  events: Event[];
 };
 
 type TeamMember = {
@@ -96,6 +104,7 @@ export default function AdminPage() {
   const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
   const { fields: teamFields, append: appendTeam, remove: removeTeam } = useFieldArray({ control: contentForm.control, name: "teamMembers" });
   const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({ control: contentForm.control, name: "galleryImages" });
+  const { fields: eventFields, append: appendEvent, remove: removeEvent } = useFieldArray({ control: contentForm.control, name: "events" });
   const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({ control: projectForm.control, name: "imageUrls" });
   const { fields: courseContentFields, append: appendCourseContent, remove: removeCourseContent, move: moveCourseContent } = useFieldArray({ control: courseForm.control, name: "content" });
 
@@ -351,6 +360,9 @@ export default function AdminPage() {
                        <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Gallery Images</h3>
                         {galleryFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Image URL</Label><Input {...contentForm.register(`galleryImages.${index}.src`)} /><Label>Alt Text</Label><Input {...contentForm.register(`galleryImages.${index}.alt`)} /><Label>CSS Class</Label><Input {...contentForm.register(`galleryImages.${index}.className`)} /><Label>Description</Label><Input {...contentForm.register(`galleryImages.${index}.description`)} /><Label>Location</Label><Input {...contentForm.register(`galleryImages.${index}.location`)} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeGallery(index)}><Trash2/></Button></div>))}
                          <Button type="button" variant="outline" size="sm" onClick={() => appendGallery({ src: '', alt: '', className: '', description: '', location: '' })}><PlusCircle className="mr-2"/>Add Gallery Image</Button></div>
+                      <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Upcoming Events</h3>
+                        {eventFields.map((field, index) => (<div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-2 border rounded"><div className="md:col-span-3 grid gap-2"><Label>Event Title</Label><Input {...contentForm.register(`events.${index}.title`)} /><Label>Date</Label><Input placeholder="e.g. October 26, 2024" {...contentForm.register(`events.${index}.date`)} /><Label>Description</Label><Textarea {...contentForm.register(`events.${index}.description`)} /><Label>Image URL</Label><Input {...contentForm.register(`events.${index}.imageUrl`)} /></div><Button type="button" variant="destructive" size="icon" onClick={() => removeEvent(index)}><Trash2/></Button></div>))}
+                         <Button type="button" variant="outline" size="sm" onClick={() => appendEvent({ title: '', date: '', description: '', imageUrl: '' })}><PlusCircle className="mr-2"/>Add Event</Button></div>
                       <Button type="submit">Save All Site Content</Button>
                     </form>
                 </div>
@@ -560,7 +572,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    
-
-    

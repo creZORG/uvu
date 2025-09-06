@@ -69,4 +69,10 @@ export type BookRequest = {
     requestedAt: { toDate: () => Date };
 }
 
+export type Event = {
+  title: string;
+  description: string;
+  date: string;
+  imageUrl: string;
+};
     

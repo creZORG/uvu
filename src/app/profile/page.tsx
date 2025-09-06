@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck, BookHeart } from "lucide-react";
+import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck, BookHeart, Calendar } from "lucide-react";
 import { ProfileEditModal, UserProfile } from "@/components/profile-edit-modal";
 import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import type { Course } from "@/app/admin/page";
+import type { Course } from "@/lib/types";
 
 
 export default function ProfilePage() {
@@ -117,9 +117,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 {[
                     { title: "My Learning", icon: <GraduationCap/>, buttonText: "View My Learning", href: "/courses" },
-                    { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
+                    { title: "Browse Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
                     { title: "Hire a Tutor", icon: <UserRoundCheck/>, buttonText: "Find a Tutor", href: "/tutors" },
-                    { title: "Upcoming Events", icon: <CalendarCheck/>, buttonText: "View Calendar", href: "#" }
+                    { title: "Upcoming Events", icon: <Calendar/>, buttonText: "View Calendar", href: "/events" }
                 ].map((item) => (
                     <Card key={item.title} className="text-center p-6 flex flex-col items-center justify-between shadow-md hover:shadow-xl transition-shadow">
                         <div className="flex flex-col items-center gap-4">
@@ -138,8 +138,8 @@ export default function ProfilePage() {
                     <CardHeader><CardTitle className="font-headline text-2xl">Announcements</CardTitle></CardHeader>
                     <CardContent className="space-y-6">
                         <div className="border-l-4 border-primary pl-4">
-                            <h3 className="font-semibold">New 'Intro to AI' Course Available!</h3>
-                            <p className="text-muted-foreground">Dive into the world of Artificial Intelligence. Enroll now from the courses page.</p>
+                            <h3 className="font-semibold">New Courses Available!</h3>
+                            <p className="text-muted-foreground">Check out the new dynamic courses on our courses page.</p>
                         </div>
                         <div className="border-l-4 border-primary pl-4">
                             <h3 className="font-semibold">Community Book Fair Next Week!</h3>
