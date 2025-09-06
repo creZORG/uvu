@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, onSnapshot, query, collection, orderBy, limit } from "firebase/firestore";
+import { doc, onSnapshot, query, collection, orderBy, limit, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
@@ -116,7 +116,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 {[
                     { title: "Learning", icon: <GraduationCap/>, buttonText: "Browse Courses", href: "/courses" },
-                    { title: "My Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
+                    { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
                     { title: "Discussion Forums", icon: <MessageSquare/>, buttonText: "Join Discussion", href: "#" },
                     { title: "Upcoming Events", icon: <CalendarCheck/>, buttonText: "View Calendar", href: "#" }
                 ].map((item) => (

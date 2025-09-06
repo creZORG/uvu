@@ -12,7 +12,7 @@ import { format, differenceInYears } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Edit, BookOpen, BrainCircuit, Code, Brush, BarChart, Bot, Tv, Wifi, Camera, ShieldCheck, Wrench } from "lucide-react";
+import { Edit, BookOpen, BrainCircuit, Code, Brush, BarChart, Bot, Tv, Wifi, Camera, ShieldCheck, Wrench, BookHeart } from "lucide-react";
 import { UcnLogo } from "./icons";
 
 
@@ -101,43 +101,54 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
                     </div>
                 </div>
                 <div className="md:col-span-2 space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline text-xl">My Learning</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <h3 className="font-semibold">General Coding Course</h3>
-                            <div>
-                                <div className="flex justify-between mb-1">
-                                    <span className="text-sm font-medium text-primary">Course Progress</span>
-                                    <span className="text-sm font-medium text-primary">{Math.round(progressPercentage)}%</span>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="font-headline text-xl">My Learning</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <h3 className="font-semibold">General Coding Course</h3>
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm font-medium text-primary">Course Progress</span>
+                                        <span className="text-sm font-medium text-primary">{Math.round(progressPercentage)}%</span>
+                                    </div>
+                                    <Progress value={progressPercentage} />
                                 </div>
-                                <Progress value={progressPercentage} />
-                            </div>
-                            <div className="flex items-center gap-4 flex-wrap">
-                                 <div>
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-1">Exam Status</h4>
-                                    {examStatus ? (
-                                        <Badge variant={getStatusVariant(examStatus)} className="text-base capitalize">
-                                            {examStatus} {finalScore !== null ? `(${finalScore.toFixed(2)}%)` : ''}
-                                        </Badge>
-                                    ) : (
-                                        <Badge variant="outline">Not Started</Badge>
+                                <div className="flex items-center gap-4 flex-wrap">
+                                     <div>
+                                        <h4 className="font-medium text-sm text-muted-foreground mb-1">Exam Status</h4>
+                                        {examStatus ? (
+                                            <Badge variant={getStatusVariant(examStatus)} className="text-base capitalize">
+                                                {examStatus} {finalScore !== null ? `(${finalScore.toFixed(2)}%)` : ''}
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant="outline">Not Started</Badge>
+                                        )}
+                                    </div>
+                                    {certificateId && (
+                                        <Button asChild variant="outline" size="sm">
+                                            <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
+                                        </Button>
                                     )}
                                 </div>
-                                {certificateId && (
-                                    <Button asChild variant="outline" size="sm">
-                                        <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
-                                    </Button>
-                                )}
-                            </div>
-                            <Button asChild>
-                                <Link href="/courses/coding">
-                                    {progressPercentage > 0 && progressPercentage < 100 ? "Continue Course" : "Go to Course"}
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
+                                <Button asChild>
+                                    <Link href="/courses/coding">
+                                        {progressPercentage > 0 && progressPercentage < 100 ? "Continue Course" : "Go to Course"}
+                                    </Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                            <CardHeader>
+                                <CardTitle className="font-headline text-xl flex items-center gap-2"><BookHeart />My Books</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2 text-center text-muted-foreground">
+                                <p className="text-sm">Your borrowed books, history, and wishlist will appear here.</p>
+                                <Button variant="secondary" size="sm">View My Book History</Button>
+                            </CardContent>
+                        </Card>
+                    </div>
                     <Card>
                         <CardHeader>
                             <CardTitle className="font-headline text-xl">My Interests</CardTitle>
