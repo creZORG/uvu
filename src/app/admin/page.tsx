@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
+import type { UserProfile } from "@/components/profile-edit-modal";
 
 type Submission = {
   id: string;
@@ -65,11 +66,12 @@ type Project = {
 };
 
 
-type AdminView = "submissions" | "content" | "mail" | "projects";
+type AdminView = "submissions" | "content" | "mail" | "projects" | "students";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [students, setStudents] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [user, authLoading] = useAuthState(auth);
@@ -142,12 +144,23 @@ export default function AdminPage() {
         });
         setProjects(projs);
     });
+    
+    const studentsQuery = query(collection(db, "userProfiles"), orderBy("fullName", "asc"));
+    const studentsUnsubscribe = onSnapshot(studentsQuery, (querySnapshot) => {
+        const studentList: UserProfile[] = [];
+        querySnapshot.forEach((doc) => {
+            studentList.push({ userId: doc.id, ...doc.data() } as UserProfile);
+        });
+        setStudents(studentList);
+    });
+
 
     setLoading(false);
 
     return () => {
         subsUnsubscribe();
         projectsUnsubscribe();
+        studentsUnsubscribe();
     };
   }, [isAuthorized, contentForm]);
 
@@ -254,6 +267,34 @@ export default function AdminPage() {
                     )}
                 </div>
             )
+        case "students":
+             return (
+                <div className="mt-6 md:mt-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead>Role</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {students.map((student) => (
+                            <TableRow key={student.userId}>
+                                <TableCell className="font-medium">{student.fullName}</TableCell>
+                                <TableCell>{student.email}</TableCell>
+                                <TableCell>{student.phoneNumber}</TableCell>
+                                <TableCell><Badge variant={student.role === 'admin' ? 'destructive' : 'secondary'} className="capitalize">{student.role}</Badge></TableCell>
+                            </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {students.length === 0 && (
+                        <p className="text-center text-muted-foreground py-8">No students found.</p>
+                    )}
+                </div>
+             )
         case "content":
             return (
                 <div className="mt-6 md:mt-0">
@@ -456,6 +497,13 @@ export default function AdminPage() {
                             <FolderKanban className="mr-2" /> Projects
                         </Button>
                         <Button
+                            variant={activeView === 'students' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'students' && "font-bold")}
+                            onClick={() => setActiveView("students")}
+                        >
+                            <Users className="mr-2" /> Students
+                        </Button>
+                        <Button
                             variant={activeView === 'content' ? 'secondary' : 'ghost'}
                             className={cn("justify-start", activeView === 'content' && "font-bold")}
                             onClick={() => setActiveView("content")}
@@ -482,3 +530,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
