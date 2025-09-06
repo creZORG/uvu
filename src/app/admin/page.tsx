@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, query, orderBy, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, getDoc, setDoc, deleteDoc, addDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Header } from "@/components/header";
@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus, UserCheck, UserX } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,20 +21,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
-import type { UserProfile } from "@/components/profile-edit-modal";
+import type { UserProfile, Course, Project, Book, BookRequest, CourseContentBlock } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courseContent as staticCourseContent } from "@/lib/course-content";
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from "@/components/ui/sidebar";
-
-type Submission = {
-  id: string;
-  userEmail: string;
-  submittedAt: {
-    toDate: () => Date;
-  };
-  status: "submitted" | "disqualified" | "passed" | "failed";
-};
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 type GalleryImage = {
   src: string;
@@ -61,48 +53,15 @@ type TeamMember = {
   order: number;
 };
 
-type Project = {
-  id?: string;
-  title: string;
-  content: string;
-  imageUrls: { url: string }[];
-  createdAt?: any;
+
+type Submission = {
+  id: string;
+  userEmail: string;
+  submittedAt: {
+    toDate: () => Date;
+  };
+  status: "submitted" | "disqualified" | "passed" | "failed";
 };
-
-type Book = {
-    id?: string;
-    title: string;
-    author: string;
-    description: string;
-    coverImageUrl: string;
-    createdAt?: any;
-}
-
-type BookRequest = {
-    id: string;
-    title: string;
-    author: string;
-    reason: string;
-    requestedBy: string;
-    requestedAt: { toDate: () => Date };
-}
-
-export type CourseContentBlock = {
-    type: 'text' | 'code' | 'image' | 'video' | 'tip';
-    content: string;
-    language?: 'python' | 'javascript' | 'bash' | 'html' | 'css';
-}
-
-export type Course = {
-    id?: string;
-    title: string;
-    description: string;
-    thumbnailUrl: string;
-    content: CourseContentBlock[];
-    createdAt?: any;
-    isStatic?: boolean;
-}
-
 
 type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books" | "bookRequests" | "courses" | "tutors";
 
@@ -112,6 +71,7 @@ export default function AdminPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [bookRequests, setBookRequests] = useState<BookRequest[]>([]);
   const [students, setStudents] = useState<UserProfile[]>([]);
+  const [tutors, setTutors] = useState<UserProfile[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -179,7 +139,11 @@ export default function AdminPage() {
     const booksUnsubscribe = onSnapshot(booksQuery, (querySnapshot) => setBooks(querySnapshot.docs.map(d => ({id:d.id, ...d.data()} as Book))));
     
     const studentsQuery = query(collection(db, "userProfiles"), orderBy("fullName", "asc"));
-    const studentsUnsubscribe = onSnapshot(studentsQuery, (querySnapshot) => setStudents(querySnapshot.docs.map(d => ({userId: d.id, ...d.data()} as UserProfile))));
+    const studentsUnsubscribe = onSnapshot(studentsQuery, (querySnapshot) => {
+        const allUsers = querySnapshot.docs.map(d => ({userId: d.id, ...d.data()} as UserProfile));
+        setStudents(allUsers.filter(u => u.role === 'student'));
+        setTutors(allUsers.filter(u => u.role === 'tutor'));
+    });
 
     const bookRequestsQuery = query(collection(db, "newBookRequests"), orderBy("requestedAt", "desc"));
     const bookRequestsUnsubscribe = onSnapshot(bookRequestsQuery, (querySnapshot) => setBookRequests(querySnapshot.docs.map(d => ({id: d.id, ...d.data()} as BookRequest))));
@@ -292,6 +256,19 @@ export default function AdminPage() {
       } catch (error) {
           toast({ variant: "destructive", title: "Error", description: `Could not delete ${collectionName.slice(0, -1)}.`});
       }
+    };
+    
+    const handleTutorApproval = async (tutorId: string, status: 'approved' | 'rejected') => {
+        const tutorRef = doc(db, "userProfiles", tutorId);
+        try {
+            await updateDoc(tutorRef, { "tutorProfile.applicationStatus": status });
+            toast({
+                title: `Tutor ${status}`,
+                description: `The tutor's application has been ${status}.`
+            });
+        } catch (error) {
+             toast({ variant: "destructive", title: "Error", description: "Could not update tutor status."});
+        }
     };
 
 
@@ -478,10 +455,42 @@ export default function AdminPage() {
                     </Table>{bookRequests.length === 0 && (<p className="text-center text-muted-foreground py-8">No book requests yet.</p>)}</div>)
         case "tutors":
             return (
-                <div className="text-center py-16">
-                    <UserPlus className="mx-auto h-12 w-12 text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-semibold">Tutor Management</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">This feature is coming soon. You will be able to manage tutor applications and profiles here.</p>
+                <div>
+                    <h3 className="font-headline text-2xl mb-4">Tutor Applications</h3>
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Subjects</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {tutors.map((tutor) => (
+                            <TableRow key={tutor.userId}>
+                                <TableCell className="font-medium flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src={tutor.tutorProfile?.photoUrl} alt={tutor.fullName} />
+                                        <AvatarFallback>{tutor.fullName.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p>{tutor.fullName}</p>
+                                        <p className="text-xs text-muted-foreground">{tutor.email}</p>
+                                    </div>
+                                </TableCell>
+                                <TableCell>{tutor.tutorProfile?.subjects.join(', ')}</TableCell>
+                                <TableCell>
+                                    <Badge variant={tutor.tutorProfile?.applicationStatus === 'approved' ? 'default' : tutor.tutorProfile?.applicationStatus === 'rejected' ? 'destructive' : 'secondary'}>
+                                        {tutor.tutorProfile?.applicationStatus || 'No Application'}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    {tutor.tutorProfile?.applicationStatus === 'pending' && (
+                                        <div className="flex gap-2 justify-end">
+                                            <Button variant="outline" size="sm" onClick={() => handleTutorApproval(tutor.userId, 'approved')}><UserCheck className="mr-2"/>Approve</Button>
+                                            <Button variant="destructive" size="sm" onClick={() => handleTutorApproval(tutor.userId, 'rejected')}><UserX className="mr-2"/>Reject</Button>
+                                        </div>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {tutors.length === 0 && <p className="text-center text-muted-foreground py-8">No tutors found.</p>}
                 </div>
             )
         case "mail":
@@ -551,3 +560,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
