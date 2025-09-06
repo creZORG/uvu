@@ -10,6 +10,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Loader2, Search, GraduationCap, Book, MessageSquare, CalendarCheck } from "lucide-react";
 import { ProfileEditModal, UserProfile } from "@/components/profile-edit-modal";
+import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,10 +35,10 @@ export default function ProfilePage() {
     const profileRef = doc(db, "userProfiles", user.uid);
     const unsubscribe = onSnapshot(profileRef, (docSnap) => {
       if (docSnap.exists() && isProfileComplete(docSnap.data())) {
-        setProfile(docSnap.data() as UserProfile);
+        setProfile({ userId: docSnap.id, ...docSnap.data() } as UserProfile);
         setIsModalRequired(false);
       } else {
-        setProfile(docSnap.exists() ? docSnap.data() as UserProfile : null);
+        setProfile(docSnap.exists() ? { userId: docSnap.id, ...docSnap.data() } as UserProfile : null);
         setIsModalRequired(true);
       }
       setIsLoadingProfile(false);
@@ -47,7 +48,15 @@ export default function ProfilePage() {
   }, [user, loading, router]);
 
   const handleProfileUpdate = () => {
-    setIsModalRequired(false);
+    // This function will be called from the modal when the profile is saved.
+    // It helps in scenarios where you might need to re-fetch data or hide the modal.
+    const redirectUrl = sessionStorage.getItem('redirectAfterProfileUpdate');
+    if (redirectUrl) {
+      sessionStorage.removeItem('redirectAfterProfileUpdate');
+      router.push(redirectUrl);
+    } else {
+      setIsModalRequired(false);
+    }
   };
   
   if (loading || isLoadingProfile) {
@@ -87,7 +96,7 @@ export default function ProfilePage() {
             <header className="mb-12 text-center">
                 <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight">Welcome to the Student Hub</h1>
                  <div className="relative max-w-lg mx-auto mt-6">
-                    <Input placeholder="Search..." className="h-12 pl-12 pr-4 rounded-full text-base" />
+                    <Input placeholder="Search resources, courses, and more..." className="h-12 pl-12 pr-4 rounded-full text-base" />
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 </div>
             </header>
@@ -108,18 +117,20 @@ export default function ProfilePage() {
                     </Card>
                 ))}
             </div>
+            
+            {profile && <ProfileDisplay profile={profile} userId={user!.uid} />}
 
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid lg:grid-cols-3 gap-8 mt-12">
                 <Card className="lg:col-span-2 shadow-md">
                     <CardHeader><CardTitle className="font-headline text-2xl">Announcements</CardTitle></CardHeader>
                     <CardContent className="space-y-6">
                         <div className="border-l-4 border-primary pl-4">
-                            <h3 className="font-semibold">New courses available</h3>
-                            <p className="text-muted-foreground">Introduction to Python, Creative Writing, Digital Marketing</p>
+                            <h3 className="font-semibold">New 'Intro to AI' Course Available!</h3>
+                            <p className="text-muted-foreground">Dive into the world of Artificial Intelligence. Enroll now from the courses page.</p>
                         </div>
                         <div className="border-l-4 border-primary pl-4">
-                            <h3 className="font-semibold">Book fair next week!</h3>
-                            <p className="text-muted-foreground">Visit our book fair from October 10-12 to borrow the latest titles</p>
+                            <h3 className="font-semibold">Community Book Fair Next Week!</h3>
+                            <p className="text-muted-foreground">Visit our book fair from October 10-12 to borrow the latest titles and meet fellow readers.</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -127,9 +138,10 @@ export default function ProfilePage() {
                     <CardHeader><CardTitle className="font-headline text-2xl">Featured Courses</CardTitle></CardHeader>
                     <CardContent>
                         <ul className="space-y-3 list-disc list-inside text-muted-foreground">
-                            <li>Fundamentals of Python</li>
-                            <li>Introduction to Photography</li>
-                            <li>Basic Graphic Design</li>
+                            <li>General Coding Course</li>
+                            <li>Introduction to Graphics Design</li>
+                            <li>CCTV Installation Basics</li>
+                            <li>Web Design Fundamentals</li>
                         </ul>
                     </CardContent>
                 </Card>
@@ -140,6 +152,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-
-    

@@ -24,23 +24,24 @@ interface ProfileDisplayProps {
 const totalPages = courseContent.reduce((sum, module) => sum + module.pages.length, 0);
 
 const interestIcons: { [key: string]: React.ReactNode } = {
-    "ICT Literacy": <BookOpen className="mr-2" />,
-    "Coding": <Code className="mr-2" />,
-    "Graphics & Design": <Brush className="mr-2" />,
-    "Digital Marketing": <BarChart className="mr-2" />,
-    "Entrepreneurship": <BrainCircuit className="mr-2" />,
-    "BPO Training": <Tv className="mr-2" />,
-    "Robotics": <Bot className="mr-2" />,
-    "Web Development": <Code className="mr-2" />,
-    "Networking (Fiber Optics & Radio Technology)": <Wifi className="mr-2" />,
-    "CCTV Installation": <Camera className="mr-2" />,
-    "Access Control Systems": <ShieldCheck className="mr-2" />,
-    "Power (Solar DC Option)": <Wrench className="mr-2" />,
+    "ICT Literacy": <BookOpen size={16} className="mr-2" />,
+    "Coding": <Code size={16} className="mr-2" />,
+    "Graphics & Design": <Brush size={16} className="mr-2" />,
+    "Digital Marketing": <BarChart size={16} className="mr-2" />,
+    "Entrepreneurship": <BrainCircuit size={16} className="mr-2" />,
+    "BPO Training": <Tv size={16} className="mr-2" />,
+    "Robotics": <Bot size={16} className="mr-2" />,
+    "Web Development": <Code size={16} className="mr-2" />,
+    "Networking (Fiber Optics & Radio Technology)": <Wifi size={16} className="mr-2" />,
+    "CCTV Installation": <Camera size={16} className="mr-2" />,
+    "Access Control Systems": <ShieldCheck size={16} className="mr-2" />,
+    "Power (Solar DC Option)": <Wrench size={16} className="mr-2" />,
 };
 
 export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
     const [examStatus, setExamStatus] = useState<string | null>(null);
     const [finalScore, setFinalScore] = useState<number | null>(null);
+    const [certificateId, setCertificateId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchExamStatus = async () => {
@@ -52,6 +53,9 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
                 if(data.scorePercentage) {
                     setFinalScore(data.scorePercentage);
                 }
+                if(data.certificateId) {
+                    setCertificateId(data.certificateId);
+                }
             }
         };
         fetchExamStatus();
@@ -62,15 +66,6 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
     const pagesCompleted = courseContent.slice(0, module).reduce((acc, mod) => acc + mod.pages.length, 0) + page + 1;
     const progressPercentage = totalPages > 0 ? (pagesCompleted / totalPages) * 100 : 0;
     
-    let dob: Date | null = null;
-    let age: number | null = null;
-    if (profile.dateOfBirth) {
-        dob = profile.dateOfBirth.toDate ? profile.dateOfBirth.toDate() : new Date(profile.dateOfBirth);
-        if (!isNaN(dob.getTime())) {
-            age = differenceInYears(new Date(), dob);
-        }
-    }
-
     const getStatusVariant = (status: string | null) => {
         switch (status) {
           case "disqualified": return "destructive";
@@ -82,38 +77,36 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
     };
 
     return (
-        <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-1 space-y-6">
-                <Card className="bg-gradient-to-br from-primary/10 to-accent/20 border-primary/20 shadow-lg">
-                     <CardHeader className="text-center items-center">
-                        <UcnLogo className="w-24 h-24 mb-4" />
+        <Card className="p-6 bg-gradient-to-tr from-card to-background">
+            <div className="grid md:grid-cols-3 gap-8">
+                <div className="md:col-span-1 space-y-4 md:border-r md:pr-8">
+                     <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                        <UcnLogo className="w-24 h-24 mb-4 rounded-full border-4 border-primary/20 shadow-lg" />
                         <CardTitle className="font-headline text-2xl">{profile.fullName}</CardTitle>
                         <CardDescription className="text-base">{profile.email}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-sm space-y-3">
-                         <div className="border-t border-primary/10 pt-3">
+                    </div>
+                    <div className="text-sm space-y-3 pt-4 border-t">
+                         <div>
                             <p className="text-xs text-muted-foreground">Location</p>
                             <p>{profile.location}</p>
                         </div>
-                         <div className="border-t border-primary/10 pt-3">
+                         <div>
                             <p className="text-xs text-muted-foreground">Phone</p>
                             <p>{profile.phoneNumber}</p>
                         </div>
-                        <div className="border-t border-primary/10 pt-3">
-                            <p className="text-xs text-muted-foreground">Education Level</p>
+                        <div>
+                            <p className="text-xs text-muted-foreground">Education</p>
                             <p>{profile.levelOfEducation}</p>
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="md:col-span-2 space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">My Learning</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <h3 className="font-semibold text-lg">General Coding Course</h3>
+                    </div>
+                </div>
+                <div className="md:col-span-2 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline text-xl">My Learning</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <h3 className="font-semibold">General Coding Course</h3>
                             <div>
                                 <div className="flex justify-between mb-1">
                                     <span className="text-sm font-medium text-primary">Course Progress</span>
@@ -121,44 +114,50 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
                                 </div>
                                 <Progress value={progressPercentage} />
                             </div>
-                             <div>
-                                <h4 className="font-medium text-sm text-muted-foreground mb-2">Exam Status</h4>
-                                {examStatus ? (
-                                    <Badge variant={getStatusVariant(examStatus)} className="text-base capitalize">
-                                        {examStatus} {finalScore !== null ? `(${finalScore.toFixed(2)}%)` : ''}
-                                    </Badge>
-                                ) : (
-                                    <Badge variant="outline">Not Started</Badge>
+                            <div className="flex items-center gap-4 flex-wrap">
+                                 <div>
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-1">Exam Status</h4>
+                                    {examStatus ? (
+                                        <Badge variant={getStatusVariant(examStatus)} className="text-base capitalize">
+                                            {examStatus} {finalScore !== null ? `(${finalScore.toFixed(2)}%)` : ''}
+                                        </Badge>
+                                    ) : (
+                                        <Badge variant="outline">Not Started</Badge>
+                                    )}
+                                </div>
+                                {certificateId && (
+                                    <Button asChild variant="outline" size="sm">
+                                        <Link href={`/certificate/${certificateId}`} target="_blank">View Certificate</Link>
+                                    </Button>
                                 )}
                             </div>
                             <Button asChild>
                                 <Link href="/courses/coding">
-                                    {progressPercentage > 0 ? "Continue Course" : "Start Course"}
+                                    {progressPercentage > 0 && progressPercentage < 100 ? "Continue Course" : "Go to Course"}
                                 </Link>
                             </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">My Interests</CardTitle>
-                         <CardDescription>The skills you're interested in learning at Uvumbuzi.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                            {profile.areasOfInterest && profile.areasOfInterest.map(interest => (
-                                <Badge key={interest} variant="secondary" className="text-sm py-1 px-3 flex items-center">
-                                    {interestIcons[interest] || <BrainCircuit className="mr-2"/>}
-                                    {interest}
-                                </Badge>
-                            ))}
-                            {(!profile.areasOfInterest || profile.areasOfInterest.length === 0) && (
-                                <p className="text-sm text-muted-foreground">No interests selected yet.</p>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline text-xl">My Interests</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                                {profile.areasOfInterest && profile.areasOfInterest.map(interest => (
+                                    <Badge key={interest} variant="secondary" className="text-sm py-1 px-3 flex items-center">
+                                        {interestIcons[interest] || <BrainCircuit size={16} className="mr-2"/>}
+                                        {interest}
+                                    </Badge>
+                                ))}
+                                {(!profile.areasOfInterest || profile.areasOfInterest.length === 0) && (
+                                    <p className="text-sm text-muted-foreground">No interests selected yet.</p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-        </div>
+        </Card>
     );
 }
