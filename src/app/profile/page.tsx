@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Loader2, Search, GraduationCap, Book, MessageSquare, CalendarCheck } from "lucide-react";
+import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck } from "lucide-react";
 import { ProfileEditModal, UserProfile } from "@/components/profile-edit-modal";
 import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
@@ -117,7 +117,7 @@ export default function ProfilePage() {
                 {[
                     { title: "Learning", icon: <GraduationCap/>, buttonText: "Browse Courses", href: "/courses" },
                     { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
-                    { title: "Discussion Forums", icon: <MessageSquare/>, buttonText: "Join Discussion", href: "#" },
+                    { title: "Hire a Tutor", icon: <UserRoundCheck/>, buttonText: "Find a Tutor", href: "#" },
                     { title: "Upcoming Events", icon: <CalendarCheck/>, buttonText: "View Calendar", href: "#" }
                 ].map((item) => (
                     <Card key={item.title} className="text-center p-6 flex flex-col items-center justify-between shadow-md hover:shadow-xl transition-shadow">
