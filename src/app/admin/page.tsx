@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -75,13 +75,23 @@ type Book = {
     createdAt?: any;
 }
 
+type BookRequest = {
+    id: string;
+    title: string;
+    author: string;
+    reason: string;
+    requestedBy: string;
+    requestedAt: { toDate: () => Date };
+}
 
-type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books";
+
+type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books" | "bookRequests";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
+  const [bookRequests, setBookRequests] = useState<BookRequest[]>([]);
   const [students, setStudents] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -183,6 +193,14 @@ export default function AdminPage() {
         setStudents(studentList);
     });
 
+    const bookRequestsQuery = query(collection(db, "newBookRequests"), orderBy("requestedAt", "desc"));
+    const bookRequestsUnsubscribe = onSnapshot(bookRequestsQuery, (querySnapshot) => {
+        const requests: BookRequest[] = [];
+        querySnapshot.forEach((doc) => {
+            requests.push({ id: doc.id, ...doc.data() } as BookRequest);
+        });
+        setBookRequests(requests);
+    });
 
     setLoading(false);
 
@@ -191,6 +209,7 @@ export default function AdminPage() {
         projectsUnsubscribe();
         studentsUnsubscribe();
         booksUnsubscribe();
+        bookRequestsUnsubscribe();
     };
   }, [isAuthorized, contentForm]);
 
@@ -546,6 +565,36 @@ export default function AdminPage() {
                     </div>
                 </div>
             );
+        case "bookRequests":
+             return (
+                <div className="mt-6 md:mt-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Book Title</TableHead>
+                                <TableHead>Author</TableHead>
+                                <TableHead>Reason</TableHead>
+                                <TableHead>Requested By</TableHead>
+                                <TableHead>Date</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {bookRequests.map((req) => (
+                            <TableRow key={req.id}>
+                                <TableCell className="font-medium">{req.title}</TableCell>
+                                <TableCell>{req.author}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{req.reason}</TableCell>
+                                <TableCell>{req.requestedBy}</TableCell>
+                                <TableCell>{req.requestedAt ? format(req.requestedAt.toDate(), "PPP") : "N/A"}</TableCell>
+                            </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {bookRequests.length === 0 && (
+                        <p className="text-center text-muted-foreground py-8">No book requests yet.</p>
+                    )}
+                </div>
+            )
         case "mail":
             return (
                  <div className="mt-6 md:mt-0">
@@ -618,6 +667,13 @@ export default function AdminPage() {
                             onClick={() => setActiveView("books")}
                         >
                             <Book className="mr-2" /> Books
+                        </Button>
+                         <Button
+                            variant={activeView === 'bookRequests' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'bookRequests' && "font-bold")}
+                            onClick={() => setActiveView("bookRequests")}
+                        >
+                            <Lightbulb className="mr-2" /> Book Requests
                         </Button>
                         <Button
                             variant={activeView === 'students' ? 'secondary' : 'ghost'}

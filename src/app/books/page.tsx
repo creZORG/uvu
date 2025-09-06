@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Loader2 } from "lucide-react";
+import { Loader2, PlusCircle, Star } from "lucide-react";
 import Image from "next/image";
 
 type Book = {
@@ -18,6 +18,8 @@ type Book = {
   author: string;
   description: string;
   coverImageUrl: string;
+  avgRating?: number;
+  reviewCount?: number;
 };
 
 export default function BooksPage() {
@@ -51,6 +53,11 @@ export default function BooksPage() {
               <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
                 Browse our collection of books. Find your next read and request to borrow it.
               </p>
+               <div className="mt-6 flex justify-center">
+                    <Button asChild>
+                        <Link href="/books/request"><PlusCircle className="mr-2"/>Request a New Book</Link>
+                    </Button>
+               </div>
             </div>
           </div>
         </section>
@@ -61,24 +68,32 @@ export default function BooksPage() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
                         {books.map((book) => (
-                           <Card key={book.id} className="flex flex-col overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                                <div className="relative w-full h-64">
-                                    <Image
-                                        src={book.coverImageUrl || 'https://picsum.photos/400/600'}
-                                        alt={`Cover of ${book.title}`}
-                                        fill
-                                        className="object-cover"
-                                        data-ai-hint="book cover"
-                                    />
-                                </div>
-                                <CardContent className="p-4 flex flex-col flex-1">
-                                    <h3 className="font-headline text-lg font-bold">{book.title}</h3>
-                                    <p className="text-sm text-muted-foreground mb-2">by {book.author}</p>
-                                    <p className="text-sm text-muted-foreground line-clamp-3 flex-1">{book.description}</p>
-                                    <Button asChild className="mt-4 w-full">
-                                        <Link href={`/books/borrow/${book.id}`}>Borrow Book</Link>
-                                    </Button>
-                                </CardContent>
+                           <Card key={book.id} className="flex flex-col overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+                                <Link href={`/books/borrow/${book.id}`} className="flex flex-col h-full">
+                                    <div className="relative w-full h-64">
+                                        <Image
+                                            src={book.coverImageUrl || 'https://picsum.photos/400/600'}
+                                            alt={`Cover of ${book.title}`}
+                                            fill
+                                            className="object-cover"
+                                            data-ai-hint="book cover"
+                                        />
+                                    </div>
+                                    <CardContent className="p-4 flex flex-col flex-1">
+                                        <h3 className="font-headline text-lg font-bold group-hover:text-primary">{book.title}</h3>
+                                        <p className="text-sm text-muted-foreground mb-2">by {book.author}</p>
+                                        {book.avgRating && (
+                                            <div className="flex items-center gap-1 mb-2">
+                                                {Array.from({length: 5}).map((_, i) => <Star key={i} size={16} className={i < book.avgRating! ? "text-amber-400 fill-amber-400" : "text-gray-300"} />)}
+                                                <span className="text-xs text-muted-foreground ml-1">({book.reviewCount || 0})</span>
+                                            </div>
+                                        )}
+                                        <p className="text-sm text-muted-foreground line-clamp-3 flex-1">{book.description}</p>
+                                        <Button asChild className="mt-4 w-full">
+                                            <span className="w-full">View Details & Borrow</span>
+                                        </Button>
+                                    </CardContent>
+                                </Link>
                            </Card>
                         ))}
                          {books.length === 0 && <p className="text-muted-foreground col-span-full text-center">No books are currently available in the catalog.</p>}
