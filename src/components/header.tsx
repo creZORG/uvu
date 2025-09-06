@@ -27,6 +27,7 @@ const mainSiteLinks = [
    { id: "nav-about", href: "/about", label: "About" },
   { id: "nav-programs", href: "/programs", label: "Programs" },
   { id: "nav-gallery", href: "/gallery", label: "Gallery" },
+  { id: "nav-tutors", href: "/tutors", label: "Tutors" },
 ];
 
 const studentPortalLinks = [
@@ -185,5 +186,3 @@ export function Header() {
     </header>
   );
 }
-
-    
