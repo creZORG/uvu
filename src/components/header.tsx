@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, GraduationCap, BookOpen, Rss } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -24,17 +24,35 @@ import { ThemeToggle } from "./theme-toggle";
 
 
 const navLinks = [
-  { id: "nav-about", href: "/about", label: "About" },
-  { id: "nav-programs", href: "/programs", label: "Programs" },
-  { id: "nav-portal", href: "/profile", label: "Student Portal", animated: true },
-  { id: "nav-gallery", href: "/gallery", label: "Gallery" },
+  { id: "nav-home", href: "/", label: "Home" },
+  { id: "nav-courses", href: "/courses/coding", label: "Courses" },
+  { id: "nav-resources", href: "#", label: "Resources" },
 ];
+
+const mainSiteLinks = [
+   { id: "nav-about", href: "/about", label: "About" },
+  { id: "nav-programs", href: "/programs", label: "Programs" },
+  { id: "nav-gallery", href: "/gallery", label: "Gallery" },
+]
 
 
 export function Header() {
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [user, loading] = useAuthState(auth);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isStudentPortal, setIsStudentPortal] = useState(false);
+  
+  // A simple way to detect if we are in the student portal section
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith('/profile') || currentPath.startsWith('/courses')) {
+            setIsStudentPortal(true);
+        } else {
+            setIsStudentPortal(false);
+        }
+    }
+  }, [user]); // Re-check when user changes, as they might navigate
 
   useEffect(() => {
     if (user) {
@@ -47,7 +65,6 @@ export function Header() {
         }
       });
       
-      // Cleanup listener on component unmount
       return () => unsubscribe();
     } else {
       setUserRole(null);
@@ -67,10 +84,10 @@ export function Header() {
               <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align="end">
              <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/profile">Student Portal</Link></DropdownMenuItem>
             {userRole === 'admin' && (
                 <DropdownMenuItem asChild><Link href="/admin">Admin Dashboard</Link></DropdownMenuItem>
             )}
@@ -92,44 +109,51 @@ export function Header() {
     );
   };
 
+  const currentNavLinks = isStudentPortal ? navLinks : mainSiteLinks;
 
   const NavLinks = ({ inSheet }: { inSheet?: boolean }) => (
     <nav className={cn(
       "flex gap-6 items-center",
       inSheet ? "flex-col text-lg" : "hidden md:flex"
     )}>
-      {navLinks.map((link) => (
+      {currentNavLinks.map((link) => (
         <Link
           key={link.href}
           id={link.id}
           href={link.href}
           onClick={() => setSheetOpen(false)}
-          className={cn(
-            "text-foreground/80 hover:text-foreground transition-colors px-3 py-1 rounded-md",
-            link.animated && "animate-shine"
-          )}
+          className="text-foreground/80 hover:text-foreground transition-colors px-3 py-1 rounded-md"
         >
           {link.label}
         </Link>
       ))}
+      { !isStudentPortal && 
+         <Button asChild className="animate-shine bg-primary/10 text-primary hover:text-primary-foreground">
+             <Link href="/profile">Student Portal</Link>
+        </Button>
+      }
     </nav>
   );
 
   return (
     <header className={cn("sticky top-0 z-50 w-full p-2")}>
-        <div className="rounded-full border border-border/20 bg-background/80 shadow-lg backdrop-blur-lg">
+        <div className="rounded-xl border border-border/20 bg-background/80 shadow-lg backdrop-blur-lg">
             <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
-                <UcnLogo className="h-10 w-10" />
-                <span className="hidden sm:inline">Uvumbuzi Community Network</span>
+                <Link href={isStudentPortal ? "/profile" : "/"} className="flex items-center gap-2 font-bold font-headline text-lg">
+                    <UcnLogo className="h-10 w-10" />
+                    <span className="hidden sm:inline">
+                        {isStudentPortal ? "Student Portal" : "Uvumbuzi"}
+                    </span>
                 </Link>
 
                 <div className="hidden md:flex items-center gap-6">
                     <NavLinks />
                     <div className="flex items-center gap-4">
-                    <Button id="nav-donate" asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 rounded-full">
-                        <Link href="/donate">Donate</Link>
-                    </Button>
+                     {!isStudentPortal && 
+                        <Button id="nav-donate" asChild style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 rounded-full">
+                            <Link href="/donate">Donate</Link>
+                        </Button>
+                     }
                     <AuthNav />
                     <ThemeToggle />
                     </div>
@@ -147,9 +171,11 @@ export function Header() {
                     <SheetContent side="right" className="w-[80vw] sm:w-[50vw] bg-background">
                     <div className="flex flex-col items-center justify-center h-full gap-8">
                         <NavLinks inSheet />
-                        <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4 rounded-full">
-                            <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
-                        </Button>
+                         {!isStudentPortal &&
+                            <Button asChild size="lg" style={{ backgroundColor: '#FFD700', color: 'black' }} className="hover:opacity-90 mt-4 rounded-full">
+                                <Link href="/donate" onClick={() => setSheetOpen(false)}>Donate</Link>
+                            </Button>
+                         }
                     </div>
                     </SheetContent>
                 </Sheet>
