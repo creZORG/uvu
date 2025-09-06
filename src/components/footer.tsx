@@ -3,9 +3,9 @@
 
 import Link from "next/link";
 import { UcnLogo } from "./icons";
-import { Twitter, Facebook, Linkedin, Instagram } from "lucide-react";
+import { Twitter, Facebook, Linkedin, Instagram, Rocket } from "lucide-react";
 import { useState, useEffect } from "react";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -96,21 +96,19 @@ export function Footer() {
        <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-headline text-2xl">Powered by RancidPool</AlertDialogTitle>
+            <AlertDialogTitle className="font-headline text-2xl flex items-center gap-3"><Rocket className="text-primary"/>Powered by RancidPool</AlertDialogTitle>
             <AlertDialogDescription className="text-base pt-2">
               This website was built by a member of RancidPool, a team of experienced developers leveraging AI and AI agents to build, deploy, and scale applications faster and more affordably.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction asChild>
+            <AlertDialogAction asChild className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:opacity-90">
                 <a href="https://rancidpool.com/case-studies" target="_blank" rel="noopener noreferrer">View Project Case Study</a>
             </AlertDialogAction>
-            <AlertDialogAction onClick={() => setIsModalOpen(false)} variant="ghost">Close</AlertDialogAction>
+            <AlertDialogCancel>Close</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </footer>
   );
 }
-
-    
