@@ -98,12 +98,12 @@ export function Footer() {
           <AlertDialogHeader>
             <AlertDialogTitle className="font-headline text-2xl flex items-center gap-3"><Rocket className="text-primary"/>Powered by RancidPool</AlertDialogTitle>
             <AlertDialogDescription className="text-base pt-2">
-              This website was built by a member of RancidPool, a team of experienced developers leveraging AI and AI agents to build, deploy, and scale applications faster and more affordably.
+              To see the detailed journey of how this project was built, including the team, tools, and step-by-step progress, or to rate our work, please visit the official project page.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction asChild className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:opacity-90">
-                <a href="https://rancidpool.com/case-studies" target="_blank" rel="noopener noreferrer">View Project Case Study</a>
+                <a href="https://rancidpool.com/client/projects/uvumbuzi" target="_blank" rel="noopener noreferrer">View Project Journey & Rate Us</a>
             </AlertDialogAction>
             <AlertDialogCancel>Close</AlertDialogCancel>
           </AlertDialogFooter>
