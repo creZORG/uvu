@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus, UserCheck, UserX, Calendar } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus, UserCheck, UserX, Calendar, Ban, UserCog, RotateCcw } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,11 @@ import { cn } from "@/lib/utils";
 import type { UserProfile, Course, Project, Book as BookType, BookRequest, CourseContentBlock } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { courseContent as staticCourseContent } from "@/lib/course-content";
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from "@/components/ui/sidebar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ProfileEditModal } from "@/components/profile-edit-modal";
 
 
 type GalleryImage = {
@@ -48,7 +48,6 @@ type Event = {
 
 type SiteContent = {
   carouselImages: { src: string; alt: string; "data-ai-hint": string; }[];
-  programs: { href: string; title: string; description: string; }[];
   teamMembers: TeamMember[];
   galleryImages: GalleryImage[];
   contact: { email: string; phone: string; website: string; location: string; };
@@ -95,6 +94,9 @@ export default function AdminPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingBook, setEditingBook] = useState<BookType | null>(null);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [editingStudent, setEditingStudent] = useState<UserProfile | null>(null);
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<UserProfile | null>(null);
 
 
   const contentForm = useForm<SiteContent>();
@@ -198,9 +200,14 @@ export default function AdminPage() {
     courseForm.reset(editingCourse || { title: "", description: "", thumbnailUrl: "", content: [] });
   }, [editingCourse, courseForm]);
 
+  useEffect(() => {
+    if (editingStudent) {
+        setIsStudentModalOpen(true);
+    }
+  }, [editingStudent])
+
   const onContentSubmit = async (data: SiteContent) => {
     try {
-      // Filter out empty program entries before saving
       const cleanedData = { ...data };
       await setDoc(doc(db, "siteContent", "content"), cleanedData, { merge: true });
       toast({ title: "Success!", description: "Site content updated." });
@@ -275,6 +282,13 @@ export default function AdminPage() {
           toast({ variant: "destructive", title: "Error", description: `Could not delete ${collectionName.slice(0, -1)}.`});
       }
     };
+
+    const handleConfirmDeleteStudent = async () => {
+        if (studentToDelete) {
+            await deleteItem('userProfiles', studentToDelete.userId);
+            setStudentToDelete(null);
+        }
+    };
     
     const handleTutorApproval = async (tutorId: string, status: 'approved' | 'rejected') => {
         const tutorRef = doc(db, "userProfiles", tutorId);
@@ -286,6 +300,19 @@ export default function AdminPage() {
             });
         } catch (error) {
              toast({ variant: "destructive", title: "Error", description: "Could not update tutor status."});
+        }
+    };
+    
+    const handleStudentStatus = async (student: UserProfile, newStatus: 'active' | 'suspended') => {
+        const studentRef = doc(db, "userProfiles", student.userId);
+        try {
+            await updateDoc(studentRef, { status: newStatus });
+            toast({
+                title: `Student ${newStatus}`,
+                description: `${student.fullName}'s account has been ${newStatus}.`
+            });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Error", description: "Could not update student status."});
         }
     };
 
@@ -324,19 +351,28 @@ export default function AdminPage() {
              return (
                 <div>
                     <Table>
-                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                         <TableBody>
                             {students.map((student) => (
                             <TableRow key={student.userId}>
-                                <TableCell className="font-medium">{student.fullName}</TableCell>
+                                <TableCell className="font-medium flex items-center gap-2">
+                                     {student.status === 'suspended' && <Ban className="h-4 w-4 text-destructive" title="Suspended"/>}
+                                    {student.fullName}
+                                </TableCell>
                                 <TableCell>{student.email}</TableCell>
                                 <TableCell>{student.phoneNumber}</TableCell>
+                                <TableCell><Badge variant={student.status === 'suspended' ? 'destructive' : 'secondary'} className="capitalize">{student.status || 'active'}</Badge></TableCell>
                                 <TableCell className="text-right">
                                     <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>View Profile</DropdownMenuItem>
-                                            <DropdownMenuItem>Suspend Student</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive">Delete Account</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => setEditingStudent(student)}><UserCog className="mr-2"/>View/Edit Profile</DropdownMenuItem>
+                                            {student.status === 'suspended' ? (
+                                                 <DropdownMenuItem onClick={() => handleStudentStatus(student, 'active')}><RotateCcw className="mr-2"/>Reinstate Student</DropdownMenuItem>
+                                            ) : (
+                                                <DropdownMenuItem onClick={() => handleStudentStatus(student, 'suspended')}><Ban className="mr-2"/>Suspend Student</DropdownMenuItem>
+                                            )}
+                                            <DropdownMenuSeparator/>
+                                            <DropdownMenuItem className="text-destructive" onClick={() => setStudentToDelete(student)}><Trash2 className="mr-2"/>Delete Account</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
@@ -661,6 +697,34 @@ export default function AdminPage() {
                 </div>
             </SidebarProvider>
         </main>
+        {editingStudent && (
+             <ProfileEditModal
+                isOpen={isStudentModalOpen}
+                setIsOpen={(isOpen) => {
+                    if (!isOpen) setEditingStudent(null);
+                    setIsStudentModalOpen(isOpen);
+                }}
+                user={{ uid: editingStudent.userId, email: editingStudent.email, displayName: editingStudent.fullName }}
+                existingProfile={editingStudent}
+                onProfileUpdate={() => setEditingStudent(null)}
+             />
+        )}
+        {studentToDelete && (
+             <AlertDialog open={!!studentToDelete} onOpenChange={(isOpen) => !isOpen && setStudentToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the student account for <strong>{studentToDelete.fullName}</strong> and all of their associated data. This does not delete their Firebase Auth account.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setStudentToDelete(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmDeleteStudent} variant="destructive">Yes, delete account</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        )}
         <Footer />
     </div>
   );

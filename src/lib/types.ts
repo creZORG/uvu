@@ -45,6 +45,7 @@ export type UserProfile = {
   parentPhoneNumber?: string;
   codingCourseProgress?: { module: number; page: number };
   tutorProfile?: TutorProfile;
+  status?: 'active' | 'suspended';
 };
 
 export type Project = {
