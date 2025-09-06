@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
-import type { UserProfile, Course, Project, Book, BookRequest, CourseContentBlock } from "@/lib/types";
+import type { UserProfile, Course, Project, Book as BookType, BookRequest, CourseContentBlock } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courseContent as staticCourseContent } from "@/lib/course-content";
@@ -68,7 +68,7 @@ type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<BookType[]>([]);
   const [bookRequests, setBookRequests] = useState<BookRequest[]>([]);
   const [students, setStudents] = useState<UserProfile[]>([]);
   const [tutors, setTutors] = useState<UserProfile[]>([]);
@@ -82,14 +82,14 @@ export default function AdminPage() {
   
   const [activeView, setActiveView] = useState<AdminView>("submissions");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [editingBook, setEditingBook] = useState<BookType | null>(null);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
 
 
   const contentForm = useForm<SiteContent>();
   const mailForm = useForm<SendMailInput>();
   const projectForm = useForm<Project>({ defaultValues: { title: "", content: "", imageUrls: [] } });
-  const bookForm = useForm<Book>({ defaultValues: { title: "", author: "", description: "", coverImageUrl: "" } });
+  const bookForm = useForm<BookType>({ defaultValues: { title: "", author: "", description: "", coverImageUrl: "" } });
   const courseForm = useForm<Course>({ defaultValues: { title: "", description: "", thumbnailUrl: "", content: [] } });
   
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
@@ -136,7 +136,7 @@ export default function AdminPage() {
     const projectsUnsubscribe = onSnapshot(projectsQuery, (querySnapshot) => setProjects(querySnapshot.docs.map(d => ({id: d.id, ...d.data()} as Project))));
 
     const booksQuery = query(collection(db, "books"), orderBy("createdAt", "desc"));
-    const booksUnsubscribe = onSnapshot(booksQuery, (querySnapshot) => setBooks(querySnapshot.docs.map(d => ({id:d.id, ...d.data()} as Book))));
+    const booksUnsubscribe = onSnapshot(booksQuery, (querySnapshot) => setBooks(querySnapshot.docs.map(d => ({id:d.id, ...d.data()} as BookType))));
     
     const studentsQuery = query(collection(db, "userProfiles"), orderBy("fullName", "asc"));
     const studentsUnsubscribe = onSnapshot(studentsQuery, (querySnapshot) => {
@@ -223,7 +223,7 @@ export default function AdminPage() {
         } catch (error) { toast({ variant: "destructive", title: "Error", description: "Could not save project." }); }
     };
 
-    const onBookSubmit = async (data: Book) => {
+    const onBookSubmit = async (data: BookType) => {
         try {
             if (editingBook?.id) {
                 await setDoc(doc(db, "books", editingBook.id), data, { merge: true });
@@ -521,7 +521,7 @@ export default function AdminPage() {
         <main className="flex-1">
             <SidebarProvider>
                 <div className="flex">
-                    <Sidebar collapsible="icon">
+                    <Sidebar variant="floating" collapsible="icon">
                         <SidebarContent>
                             <SidebarMenu>
                                 {navItems.map(item => (
@@ -560,5 +560,7 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    
 
     
