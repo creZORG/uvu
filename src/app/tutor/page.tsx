@@ -16,9 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, CheckCircle, Clock, AlertTriangle, FileText, User, Briefcase, Calendar } from "lucide-react";
+import { Loader2, CheckCircle, Clock, AlertTriangle, FileText, User, Briefcase, Calendar, Ban } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { UserProfile, TutorProfile } from "@/lib/types";
+import Link from "next/link";
 
 const tutorApplicationSchema = z.object({
   photoUrl: z.string().url({ message: "Please enter a valid URL for your photo." }),
@@ -31,24 +32,53 @@ const tutorApplicationSchema = z.object({
 
 type TutorApplicationFormValues = z.infer<typeof tutorApplicationSchema>;
 
+const TutorApplicationForm = ({ onSubmit, defaultValues, isSubmitting }: { onSubmit: (data: TutorApplicationFormValues) => void, defaultValues: any, isSubmitting: boolean }) => {
+    const form = useForm<TutorApplicationFormValues>({
+        resolver: zodResolver(tutorApplicationSchema),
+        defaultValues,
+    });
+    
+    useEffect(() => {
+        form.reset(defaultValues);
+    }, [defaultValues, form]);
+
+    return (
+         <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField control={form.control} name="photoUrl" render={({ field }) => (
+                    <FormItem><FormLabel>Profile Photo URL</FormLabel><FormControl><Input placeholder="https://example.com/your-photo.jpg" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                    <FormField control={form.control} name="phoneNumber" render={({ field }) => (
+                    <FormItem><FormLabel>Contact Phone Number</FormLabel><FormControl><Input placeholder="e.g., 0712345678" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="location" render={({ field }) => (
+                    <FormItem><FormLabel>Your Location</FormLabel><FormControl><Input placeholder="e.g., Nakuru, Kenya" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="subjects" render={({ field }) => (
+                    <FormItem><FormLabel>Subjects You Teach (comma-separated)</FormLabel><FormControl><Input placeholder="e.g., Mathematics, Python, Web Design" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="bio" render={({ field }) => (
+                    <FormItem><FormLabel>Your Bio</FormLabel><FormControl><Textarea placeholder="Tell students about yourself, your teaching style, and your experience..." className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="qualifications" render={({ field }) => (
+                    <FormItem><FormLabel>Your Qualifications</FormLabel><FormControl><Textarea placeholder="List your degrees, certifications, and relevant experience." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="animate-spin mr-2" />}
+                    {defaultValues?.bio ? "Update Profile" : "Submit Application"}
+                </Button>
+            </form>
+        </Form>
+    );
+};
+
 export default function TutorPage() {
   const [user, loading] = useAuthState(auth);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-
-  const form = useForm<TutorApplicationFormValues>({
-    resolver: zodResolver(tutorApplicationSchema),
-    defaultValues: {
-      photoUrl: "",
-      phoneNumber: "",
-      location: "",
-      bio: "",
-      subjects: "",
-      qualifications: "",
-    },
-  });
 
   useEffect(() => {
     if (loading) return;
@@ -62,45 +92,41 @@ export default function TutorPage() {
       if (docSnap.exists()) {
         const data = { userId: docSnap.id, ...docSnap.data() } as UserProfile;
         setProfile(data);
-        if (data.role !== 'tutor') {
-            toast({ variant: "destructive", title: "Access Denied", description: "This page is for tutors only." });
-            router.push('/profile');
-        }
-        // Prefill form if profile data exists
-        if(data.tutorProfile) {
-            form.reset({
-                ...data.tutorProfile,
-                subjects: data.tutorProfile.subjects.join(', ')
-            });
-        }
       }
       setIsLoadingProfile(false);
     });
 
     return () => unsubscribe();
-  }, [user, loading, router, toast, form]);
+  }, [user, loading, router]);
 
   const onSubmit = async (data: TutorApplicationFormValues) => {
     if (!user) return;
+    setIsSubmitting(true);
     try {
+      const isUpdate = !!profile?.tutorProfile;
       const tutorProfileData: TutorProfile = {
           ...data,
           subjects: data.subjects.split(',').map(s => s.trim()),
-          applicationStatus: 'pending'
+          applicationStatus: profile?.tutorProfile?.applicationStatus || 'pending'
       };
 
       const userProfileRef = doc(db, "userProfiles", user.uid);
       await updateDoc(userProfileRef, {
-          tutorProfile: tutorProfileData
+          tutorProfile: tutorProfileData,
+          // Also update main user profile fields if they've changed
+          phoneNumber: data.phoneNumber,
+          location: data.location,
       });
 
       toast({
-        title: "Application Submitted!",
-        description: "Your application is under review. We will notify you once it's processed.",
+        title: isUpdate ? "Profile Updated!" : "Application Submitted!",
+        description: isUpdate ? "Your profile has been successfully updated." : "Your application is under review. We will notify you once it's processed.",
       });
     } catch (error) {
       console.error("Error submitting application: ", error);
       toast({ variant: "destructive", title: "Submission Failed", description: "There was a problem submitting your application." });
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -113,56 +139,41 @@ export default function TutorPage() {
       );
     }
     
+    if (profile && profile.role !== 'tutor') {
+         return (
+             <Card className="w-full max-w-md text-center border-destructive mx-auto">
+                 <CardHeader>
+                     <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive"><Ban /> Access Denied</CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                     <p>You are registered as a <span className="font-bold capitalize">{profile.role}</span>. This portal is for tutors only.</p>
+                     <Button asChild className="mt-4"><Link href="/">Return to Homepage</Link></Button>
+                 </CardContent>
+             </Card>
+         );
+    }
+    
     const applicationStatus = profile?.tutorProfile?.applicationStatus;
-
+    
     if (applicationStatus === 'approved') {
         return (
-             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">My Profile</CardTitle>
-                  <User className="h-4 w-4 text-muted-foreground" />
+             <Card className="max-w-2xl mx-auto">
+                <CardHeader>
+                    <CardTitle className="font-headline text-2xl">Manage Your Tutor Profile</CardTitle>
+                    <CardDescription>Keep your public profile up-to-date to attract students. Your changes will be live immediately.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    Update your bio, subjects, and qualifications.
-                  </p>
+                   <TutorApplicationForm 
+                        onSubmit={onSubmit}
+                        isSubmitting={isSubmitting}
+                        defaultValues={{
+                            ...(profile?.tutorProfile || {}),
+                            subjects: profile?.tutorProfile?.subjects.join(', ') || '',
+                            phoneNumber: profile?.phoneNumber || '',
+                        }}
+                   />
                 </CardContent>
-              </Card>
-               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">My Schedule</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    Set your availability and manage appointments.
-                  </p>
-                </CardContent>
-              </Card>
-               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Applications</CardTitle>
-                  <Briefcase className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    View and respond to new student requests.
-                  </p>
-                </CardContent>
-              </Card>
-               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Resources</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    Access teaching materials and guides.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            </Card>
         );
     }
 
@@ -199,32 +210,18 @@ export default function TutorPage() {
                 <CardDescription>Complete the form below to apply. Your profile will be reviewed by an administrator before being publicly listed.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <FormField control={form.control} name="photoUrl" render={({ field }) => (
-                            <FormItem><FormLabel>Profile Photo URL</FormLabel><FormControl><Input placeholder="https://example.com/your-photo.jpg" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                         <FormField control={form.control} name="phoneNumber" render={({ field }) => (
-                            <FormItem><FormLabel>Contact Phone Number</FormLabel><FormControl><Input placeholder="e.g., 0712345678" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="location" render={({ field }) => (
-                            <FormItem><FormLabel>Your Location</FormLabel><FormControl><Input placeholder="e.g., Nakuru, Kenya" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="subjects" render={({ field }) => (
-                            <FormItem><FormLabel>Subjects You Teach</FormLabel><FormControl><Input placeholder="e.g., Mathematics, Python, Web Design" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="bio" render={({ field }) => (
-                            <FormItem><FormLabel>Your Bio</FormLabel><FormControl><Textarea placeholder="Tell students about yourself, your teaching style, and your experience..." className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="qualifications" render={({ field }) => (
-                            <FormItem><FormLabel>Your Qualifications</FormLabel><FormControl><Textarea placeholder="List your degrees, certifications, and relevant experience." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <Button type="submit" disabled={form.formState.isSubmitting}>
-                            {form.formState.isSubmitting && <Loader2 className="animate-spin mr-2" />}
-                            Submit Application
-                        </Button>
-                    </form>
-                </Form>
+                <TutorApplicationForm 
+                    onSubmit={onSubmit}
+                    isSubmitting={isSubmitting}
+                    defaultValues={{
+                        photoUrl: "",
+                        phoneNumber: profile?.phoneNumber || "",
+                        location: profile?.location || "",
+                        bio: "",
+                        subjects: "",
+                        qualifications: "",
+                    }}
+                />
             </CardContent>
         </Card>
     );

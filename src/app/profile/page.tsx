@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck, BookHeart, Calendar } from "lucide-react";
+import { Loader2, Search, GraduationCap, Book, UserRoundCheck, CalendarCheck, BookHeart, Calendar, Ban } from "lucide-react";
 import { ProfileEditModal, UserProfile } from "@/components/profile-edit-modal";
 import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
@@ -36,11 +36,16 @@ export default function ProfilePage() {
 
     const profileRef = doc(db, "userProfiles", user.uid);
     const unsubscribeProfile = onSnapshot(profileRef, (docSnap) => {
-      if (docSnap.exists() && isProfileComplete(docSnap.data())) {
-        setProfile({ userId: docSnap.id, ...docSnap.data() } as UserProfile);
-        setIsModalRequired(false);
+      if (docSnap.exists()) {
+        const profileData = { userId: docSnap.id, ...docSnap.data() } as UserProfile;
+        setProfile(profileData);
+        if (isProfileComplete(profileData)) {
+          setIsModalRequired(false);
+        } else {
+          setIsModalRequired(true);
+        }
       } else {
-        setProfile(docSnap.exists() ? { userId: docSnap.id, ...docSnap.data() } as UserProfile : null);
+        setProfile(null);
         setIsModalRequired(true);
       }
       setIsLoadingProfile(false);
@@ -77,6 +82,26 @@ export default function ProfilePage() {
         <Loader2 className="h-8 w-8 animate-spin" />
         <p className="mt-4 text-muted-foreground">Loading Student Portal...</p>
       </div>
+    );
+  }
+  
+  if (profile && profile.role !== 'student') {
+    return (
+        <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1 flex items-center justify-center p-4">
+                <Card className="w-full max-w-md text-center border-destructive">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive"><Ban /> Access Denied</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>You are registered as a <span className="font-bold capitalize">{profile.role}</span>. This portal is for students only.</p>
+                        <Button asChild className="mt-4"><Link href="/">Return to Homepage</Link></Button>
+                    </CardContent>
+                </Card>
+            </main>
+            <Footer />
+        </div>
     );
   }
 
