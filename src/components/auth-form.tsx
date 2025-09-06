@@ -105,7 +105,7 @@ export function AuthForm() {
       // Redirect based on role
       switch (values.role) {
         case "student":
-          router.push("/profile");
+          router.push("/student-hub");
           break;
         case "tutor":
           router.push("/tutor");

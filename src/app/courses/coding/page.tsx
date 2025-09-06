@@ -137,7 +137,7 @@ export default function CodingPage() {
           description: "Please complete your profile before starting the quiz.",
       });
       sessionStorage.setItem('redirectAfterProfileUpdate', '/courses/coding/quiz');
-      router.push('/profile');
+      router.push('/student-hub');
     } else {
       router.push('/courses/coding/quiz');
     }

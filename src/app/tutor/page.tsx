@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import { doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, CheckCircle, Clock, AlertTriangle, FileText, User, Briefcase, Calendar, Ban } from "lucide-react";
+import { Loader2, Clock, AlertTriangle, Ban } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { UserProfile, TutorProfile } from "@/lib/types";
 import Link from "next/link";
@@ -77,6 +77,7 @@ export default function TutorPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -92,6 +93,13 @@ export default function TutorPage() {
       if (docSnap.exists()) {
         const data = { userId: docSnap.id, ...docSnap.data() } as UserProfile;
         setProfile(data);
+        if (data.role === 'tutor' || data.role === 'admin') {
+            setIsAuthorized(true);
+        } else {
+            setIsAuthorized(false);
+        }
+      } else {
+        setIsAuthorized(false);
       }
       setIsLoadingProfile(false);
     });
@@ -139,14 +147,14 @@ export default function TutorPage() {
       );
     }
     
-    if (profile && profile.role !== 'tutor') {
+    if (!isAuthorized) {
          return (
              <Card className="w-full max-w-md text-center border-destructive mx-auto">
                  <CardHeader>
                      <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive"><Ban /> Access Denied</CardTitle>
                  </CardHeader>
                  <CardContent>
-                     <p>You are registered as a <span className="font-bold capitalize">{profile.role}</span>. This portal is for tutors only.</p>
+                     <p>You are registered as a <span className="font-bold capitalize">{profile?.role || 'visitor'}</span>. This portal is for tutors only.</p>
                      <Button asChild className="mt-4"><Link href="/">Return to Homepage</Link></Button>
                  </CardContent>
              </Card>
@@ -169,7 +177,6 @@ export default function TutorPage() {
                         defaultValues={{
                             ...(profile?.tutorProfile || {}),
                             subjects: profile?.tutorProfile?.subjects.join(', ') || '',
-                            phoneNumber: profile?.phoneNumber || '',
                         }}
                    />
                 </CardContent>

@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, GraduationCap, BookOpen, Rss } from "lucide-react";
+import { Menu } from "lucide-react";
 import { UcnLogo } from "@/components/icons";
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ const mainSiteLinks = [
 ];
 
 const studentPortalLinks = [
-  { id: "nav-home", href: "/profile", label: "Home" },
+  { id: "nav-home", href: "/student-hub", label: "Home" },
   { id: "nav-courses", href: "/courses/coding", label: "Courses" },
   { id: "nav-resources", href: "#", label: "Resources" },
 ];
@@ -47,7 +47,7 @@ export function Header() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
         const currentPath = window.location.pathname;
-        if (currentPath.startsWith('/profile') || currentPath.startsWith('/courses')) {
+        if (currentPath.startsWith('/student-hub') || currentPath.startsWith('/courses')) {
             setIsStudentPortal(true);
         } else {
             setIsStudentPortal(false);
@@ -88,7 +88,9 @@ export function Header() {
           <DropdownMenuContent align="end">
              <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/profile">Student Portal</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/profile">My Profile</Link></DropdownMenuItem>
+            {userRole === 'student' && <DropdownMenuItem asChild><Link href="/student-hub">Student Hub</Link></DropdownMenuItem>}
+            {userRole === 'tutor' && <DropdownMenuItem asChild><Link href="/tutor">Tutor Portal</Link></DropdownMenuItem>}
             {userRole === 'admin' && (
                 <DropdownMenuItem asChild><Link href="/admin">Admin Dashboard</Link></DropdownMenuItem>
             )}
@@ -130,7 +132,7 @@ export function Header() {
       ))}
       { !isStudentPortal && 
          <Button asChild className="animate-shine bg-primary/10 text-primary hover:text-primary-foreground">
-             <Link href="/profile">Student Portal</Link>
+             <Link href="/student-hub">Student Hub</Link>
         </Button>
       }
     </nav>
@@ -140,10 +142,10 @@ export function Header() {
     <header className={cn("sticky top-0 z-50 w-full p-2")}>
         <div className="rounded-xl border border-border/20 bg-background/80 shadow-lg backdrop-blur-lg">
             <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
-                <Link href={isStudentPortal ? "/profile" : "/"} className="flex items-center gap-2 font-bold font-headline text-lg">
+                <Link href={isStudentPortal ? "/student-hub" : "/"} className="flex items-center gap-2 font-bold font-headline text-lg">
                     <UcnLogo className="h-10 w-10" />
                     <span className="hidden sm:inline">
-                        {isStudentPortal ? "Student Portal" : "Uvumbuzi"}
+                        {isStudentPortal ? "Student Hub" : "Uvumbuzi"}
                     </span>
                 </Link>
 
