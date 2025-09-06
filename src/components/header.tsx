@@ -26,7 +26,7 @@ import { ThemeToggle } from "./theme-toggle";
 const navLinks = [
   { id: "nav-about", href: "/about", label: "About" },
   { id: "nav-programs", href: "/programs", label: "Programs" },
-  { id: "nav-courses", href: "/courses", label: "Courses", animated: true },
+  { id: "nav-portal", href: "/profile", label: "Student Portal", animated: true },
   { id: "nav-gallery", href: "/gallery", label: "Gallery" },
 ];
 
@@ -73,6 +73,9 @@ export function Header() {
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             {userRole === 'admin' && (
                 <DropdownMenuItem asChild><Link href="/admin">Admin Dashboard</Link></DropdownMenuItem>
+            )}
+             {userRole === 'admin' && (
+                <DropdownMenuItem asChild><Link href="/documentation">Documentation</Link></DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => auth.signOut()}>
