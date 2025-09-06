@@ -23,17 +23,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
 
 
-const navLinks = [
-  { id: "nav-home", href: "/", label: "Home" },
-  { id: "nav-courses", href: "/courses/coding", label: "Courses" },
-  { id: "nav-resources", href: "#", label: "Resources" },
-];
-
 const mainSiteLinks = [
    { id: "nav-about", href: "/about", label: "About" },
   { id: "nav-programs", href: "/programs", label: "Programs" },
   { id: "nav-gallery", href: "/gallery", label: "Gallery" },
-]
+];
+
+const studentPortalLinks = [
+  { id: "nav-home", href: "/profile", label: "Home" },
+  { id: "nav-courses", href: "/courses/coding", label: "Courses" },
+  { id: "nav-resources", href: "#", label: "Resources" },
+];
 
 
 export function Header() {
@@ -52,7 +52,7 @@ export function Header() {
             setIsStudentPortal(false);
         }
     }
-  }, [user]); // Re-check when user changes, as they might navigate
+  }, []); // Re-check on route change if using Next.js 13+ router events
 
   useEffect(() => {
     if (user) {
@@ -109,7 +109,7 @@ export function Header() {
     );
   };
 
-  const currentNavLinks = isStudentPortal ? navLinks : mainSiteLinks;
+  const currentNavLinks = isStudentPortal ? studentPortalLinks : mainSiteLinks;
 
   const NavLinks = ({ inSheet }: { inSheet?: boolean }) => (
     <nav className={cn(
@@ -185,3 +185,5 @@ export function Header() {
     </header>
   );
 }
+
+    
