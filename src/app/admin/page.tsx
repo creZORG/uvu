@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -66,12 +66,22 @@ type Project = {
   createdAt?: any;
 };
 
+type Book = {
+    id?: string;
+    title: string;
+    author: string;
+    description: string;
+    coverImageUrl: string;
+    createdAt?: any;
+}
 
-type AdminView = "submissions" | "content" | "mail" | "projects" | "students";
+
+type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [students, setStudents] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -82,6 +92,7 @@ export default function AdminPage() {
   
   const [activeView, setActiveView] = useState<AdminView>("submissions");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
 
   const contentForm = useForm<SiteContent>();
   const mailForm = useForm<SendMailInput>();
@@ -90,6 +101,14 @@ export default function AdminPage() {
           title: "",
           content: "",
           imageUrls: []
+      }
+  });
+   const bookForm = useForm<Book>({
+      defaultValues: {
+          title: "",
+          author: "",
+          description: "",
+          coverImageUrl: ""
       }
   });
   
@@ -145,6 +164,15 @@ export default function AdminPage() {
         });
         setProjects(projs);
     });
+
+    const booksQuery = query(collection(db, "books"), orderBy("createdAt", "desc"));
+    const booksUnsubscribe = onSnapshot(booksQuery, (querySnapshot) => {
+        const bookList: Book[] = [];
+        querySnapshot.forEach((doc) => {
+            bookList.push({ id: doc.id, ...doc.data() } as Book);
+        });
+        setBooks(bookList);
+    });
     
     const studentsQuery = query(collection(db, "userProfiles"), orderBy("fullName", "asc"));
     const studentsUnsubscribe = onSnapshot(studentsQuery, (querySnapshot) => {
@@ -162,6 +190,7 @@ export default function AdminPage() {
         subsUnsubscribe();
         projectsUnsubscribe();
         studentsUnsubscribe();
+        booksUnsubscribe();
     };
   }, [isAuthorized, contentForm]);
 
@@ -172,6 +201,14 @@ export default function AdminPage() {
         projectForm.reset({ title: "", content: "", imageUrls: [] });
     }
   }, [editingProject, projectForm]);
+
+  useEffect(() => {
+    if (editingBook) {
+        bookForm.reset(editingBook);
+    } else {
+        bookForm.reset({ title: "", author: "", description: "", coverImageUrl: "" });
+    }
+  }, [editingBook, bookForm]);
 
   const onContentSubmit = async (data: SiteContent) => {
     try {
@@ -218,6 +255,23 @@ export default function AdminPage() {
         }
     };
 
+    const onBookSubmit = async (data: Book) => {
+        try {
+            if (editingBook?.id) {
+                await setDoc(doc(db, "books", editingBook.id), data, { merge: true });
+                toast({ title: "Book Updated!" });
+            } else {
+                await addDoc(collection(db, "books"), { ...data, createdAt: new Date() });
+                toast({ title: "Book Added!" });
+            }
+            setEditingBook(null);
+            bookForm.reset();
+        } catch (error) {
+            console.error("Error saving book:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save book." });
+        }
+    };
+
     const deleteProject = async (id: string) => {
         try {
             await deleteDoc(doc(db, "projects", id));
@@ -225,6 +279,16 @@ export default function AdminPage() {
         } catch (error) {
             console.error("Error deleting project:", error);
             toast({ variant: "destructive", title: "Error", description: "Could not delete project." });
+        }
+    };
+
+    const deleteBook = async (id: string) => {
+        try {
+            await deleteDoc(doc(db, "books", id));
+            toast({ title: "Book Deleted" });
+        } catch (error) {
+            console.error("Error deleting book:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not delete book." });
         }
     };
 
@@ -444,6 +508,44 @@ export default function AdminPage() {
                     </div>
                 </div>
             );
+        case "books":
+            return (
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 className="font-headline text-2xl mb-4">{editingBook ? "Edit Book" : "Add New Book"}</h3>
+                        <form onSubmit={bookForm.handleSubmit(onBookSubmit)} className="space-y-4 p-4 border rounded-lg">
+                            <div><Label>Book Title</Label><Input {...bookForm.register("title")} /></div>
+                            <div><Label>Author</Label><Input {...bookForm.register("author")} /></div>
+                            <div><Label>Description</Label><Textarea {...bookForm.register("description")} /></div>
+                            <div><Label>Cover Image URL</Label><Input {...bookForm.register("coverImageUrl")} /></div>
+                            <div className="flex gap-4">
+                                <Button type="submit">
+                                    {editingBook ? "Update Book" : "Add Book to Catalog"}
+                                </Button>
+                                {editingBook && <Button type="button" variant="ghost" onClick={() => setEditingBook(null)}>Cancel Edit</Button>}
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h3 className="font-headline text-2xl mb-4">Existing Books</h3>
+                        <div className="space-y-4">
+                            {books.map(book => (
+                                <div key={book.id} className="p-4 border rounded-lg flex justify-between items-center">
+                                    <div>
+                                        <p className="font-bold">{book.title}</p>
+                                        <p className="text-sm text-muted-foreground">by {book.author}</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => setEditingBook(book)}>Edit</Button>
+                                        <Button variant="destructive" size="sm" onClick={() => deleteBook(book.id!)}>Delete</Button>
+                                    </div>
+                                </div>
+                            ))}
+                            {books.length === 0 && <p className="text-muted-foreground">No books added yet.</p>}
+                        </div>
+                    </div>
+                </div>
+            );
         case "mail":
             return (
                  <div className="mt-6 md:mt-0">
@@ -511,6 +613,13 @@ export default function AdminPage() {
                             <FolderKanban className="mr-2" /> Projects
                         </Button>
                         <Button
+                            variant={activeView === 'books' ? 'secondary' : 'ghost'}
+                            className={cn("justify-start", activeView === 'books' && "font-bold")}
+                            onClick={() => setActiveView("books")}
+                        >
+                            <Book className="mr-2" /> Books
+                        </Button>
+                        <Button
                             variant={activeView === 'students' ? 'secondary' : 'ghost'}
                             className={cn("justify-start", activeView === 'students' && "font-bold")}
                             onClick={() => setActiveView("students")}
@@ -544,7 +653,5 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    
 
     

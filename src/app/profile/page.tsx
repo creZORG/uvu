@@ -104,7 +104,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 {[
                     { title: "Learning", icon: <GraduationCap/>, buttonText: "Browse Courses", href: "/courses/coding" },
-                    { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "#" },
+                    { title: "Borrow Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
                     { title: "Discussion Forums", icon: <MessageSquare/>, buttonText: "Join Discussion", href: "#" },
                     { title: "Upcoming Events", icon: <CalendarCheck/>, buttonText: "View Calendar", href: "#" }
                 ].map((item) => (
@@ -152,3 +152,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    

@@ -41,6 +41,7 @@ export type UserProfile = {
   fullName: string;
   location: string;
   dateOfBirth: any; 
+  nationalId?: string;
   phoneNumber: string;
   gender: string;
   occupation: string;
@@ -57,6 +58,7 @@ const profileSchema = z.object({
   dateOfBirth: z.string().refine((val) => /^\d{2}\/\d{2}\/\d{4}$/.test(val), {
     message: "Please enter a valid date in DD/MM/YYYY format.",
   }),
+  nationalId: z.string().optional(),
   phoneNumber: z.string().min(10, { message: "Please enter a valid phone number." }),
   location: z.string().min(2, { message: "Area of residence is required." }),
   levelOfEducation: z.string({ required_error: "Please select your level of education." }),
@@ -78,6 +80,17 @@ const profileSchema = z.object({
           return;
         }
         const age = differenceInYears(new Date(), dob);
+        
+        if (age >= 18) {
+            if (!data.nationalId || data.nationalId.length < 7) {
+                 ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["nationalId"],
+                    message: "National ID is required for users 18 and over.",
+                });
+            }
+        }
+
         if (age < 18) {
           if (!data.parentName || data.parentName.length < 3) {
             ctx.addIssue({
@@ -121,6 +134,7 @@ export function ProfileEditModal({ isOpen, setIsOpen, user, existingProfile, onP
       fullName: "",
       location: "",
       dateOfBirth: "",
+      nationalId: "",
       phoneNumber: "",
       gender: "",
       occupation: "",
@@ -149,17 +163,19 @@ export function ProfileEditModal({ isOpen, setIsOpen, user, existingProfile, onP
 
   const dobWatch = useWatch({ control: form.control, name: 'dateOfBirth' });
   
-  const isUnder18 = () => {
+  const getAge = () => {
     if (dobWatch && /^\d{2}\/\d{2}\/\d{4}$/.test(dobWatch)) {
       try {
         const dob = parse(dobWatch, 'dd/MM/yyyy', new Date());
         if (!isNaN(dob.getTime())) {
-          return differenceInYears(new Date(), dob) < 18;
+          return differenceInYears(new Date(), dob);
         }
-      } catch (e) { return false; }
+      } catch (e) { return null; }
     }
-    return false;
+    return null;
   };
+
+  const age = getAge();
 
   const onSubmit = async (data: ProfileFormValues) => {
     if (!user) return;
@@ -308,7 +324,16 @@ export function ProfileEditModal({ isOpen, setIsOpen, user, existingProfile, onP
                 )}
                 />
               
-              {isUnder18() && (
+              {age !== null && age >= 18 && (
+                <div className="space-y-4 p-4 border-l-4 border-primary bg-accent/50 rounded-r-lg mt-6">
+                     <h3 className="font-semibold text-foreground">Identification</h3>
+                     <FormField control={form.control} name="nationalId" render={({ field }) => (
+                       <FormItem><FormLabel>National ID Number</FormLabel><FormControl><Input placeholder="Your National ID" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </div>
+              )}
+
+              {age !== null && age < 18 && (
                 <div className="space-y-4 p-4 border-l-4 border-primary bg-accent/50 rounded-r-lg mt-6">
                     <h3 className="font-semibold text-foreground">Parent/Guardian Information Required (Under 18)</h3>
                     <FormField control={form.control} name="parentName" render={({ field }) => (
@@ -332,3 +357,5 @@ export function ProfileEditModal({ isOpen, setIsOpen, user, existingProfile, onP
     </Dialog>
   );
 }
+
+    
