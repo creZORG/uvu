@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { sendMail, SendMailInput } from "@/ai/flows/send-mail-flow";
 import { cn } from "@/lib/utils";
 import type { UserProfile, Course, Project, Book as BookType, BookRequest, CourseContentBlock, SocialLinks } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -73,13 +72,14 @@ type Submission = {
   status: "submitted" | "disqualified" | "passed" | "failed";
 };
 
-type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books" | "bookRequests" | "courses" | "tutors";
+type AdminView = "submissions" | "content" | "users" | "projects" | "students" | "books" | "bookRequests" | "courses" | "tutors";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [books, setBooks] = useState<BookType[]>([]);
   const [bookRequests, setBookRequests] = useState<BookRequest[]>([]);
+  const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [students, setStudents] = useState<UserProfile[]>([]);
   const [tutors, setTutors] = useState<UserProfile[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -87,7 +87,6 @@ export default function AdminPage() {
   const router = useRouter();
   const [user, authLoading] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isSendingMail, setIsSendingMail] = useState(false);
   const { toast } = useToast();
   
   const [activeView, setActiveView] = useState<AdminView>("submissions");
@@ -100,7 +99,6 @@ export default function AdminPage() {
 
 
   const contentForm = useForm<SiteContent>();
-  const mailForm = useForm<SendMailInput>();
   const projectForm = useForm<Project>({ defaultValues: { title: "", content: "", imageUrls: [] } });
   const bookForm = useForm<BookType>({ defaultValues: { title: "", author: "", description: "", coverImageUrl: "" } });
   const courseForm = useForm<Course>({ defaultValues: { title: "", description: "", thumbnailUrl: "", content: [] } });
@@ -151,11 +149,12 @@ export default function AdminPage() {
     const booksQuery = query(collection(db, "books"), orderBy("createdAt", "desc"));
     const booksUnsubscribe = onSnapshot(booksQuery, (querySnapshot) => setBooks(querySnapshot.docs.map(d => ({id:d.id, ...d.data()} as BookType))));
     
-    const studentsQuery = query(collection(db, "userProfiles"), orderBy("fullName", "asc"));
-    const studentsUnsubscribe = onSnapshot(studentsQuery, (querySnapshot) => {
-        const allUsers = querySnapshot.docs.map(d => ({userId: d.id, ...d.data()} as UserProfile));
-        setStudents(allUsers.filter(u => u.role === 'student'));
-        setTutors(allUsers.filter(u => u.role === 'tutor'));
+    const usersQuery = query(collection(db, "userProfiles"), orderBy("fullName", "asc"));
+    const usersUnsubscribe = onSnapshot(usersQuery, (querySnapshot) => {
+        const userList = querySnapshot.docs.map(d => ({userId: d.id, ...d.data()} as UserProfile));
+        setAllUsers(userList);
+        setStudents(userList.filter(u => u.role === 'student'));
+        setTutors(userList.filter(u => u.role === 'tutor'));
     });
 
     const bookRequestsQuery = query(collection(db, "newBookRequests"), orderBy("requestedAt", "desc"));
@@ -181,7 +180,7 @@ export default function AdminPage() {
     return () => {
         subsUnsubscribe();
         projectsUnsubscribe();
-        studentsUnsubscribe();
+        usersUnsubscribe();
         booksUnsubscribe();
         bookRequestsUnsubscribe();
         coursesUnsubscribe();
@@ -215,20 +214,6 @@ export default function AdminPage() {
       console.error("Error updating content: ", error);
       toast({ variant: "destructive", title: "Error", description: "Could not update site content." });
     }
-  };
-
-
-  const onMailSubmit = async (data: SendMailInput) => {
-    setIsSendingMail(true);
-    try {
-        const result = await sendMail(data);
-        if (result.success) {
-            toast({ title: "Email Sent!", description: result.message });
-            mailForm.reset();
-        } else { throw new Error(result.message); }
-    } catch (error) {
-        toast({ variant: "destructive", title: "Error", description: String(error) });
-    } finally { setIsSendingMail(false); }
   };
   
     const onProjectSubmit = async (data: Project) => {
@@ -315,6 +300,19 @@ export default function AdminPage() {
             toast({ variant: "destructive", title: "Error", description: "Could not update student status."});
         }
     };
+    
+    const handleRoleChange = async (userId: string, newRole: 'student' | 'tutor' | 'admin') => {
+        const userRef = doc(db, "userProfiles", userId);
+        try {
+            await updateDoc(userRef, { role: newRole });
+            toast({
+                title: `Role Updated`,
+                description: `User role has been changed to ${newRole}.`
+            });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Error", description: "Could not update user role."});
+        }
+    }
 
 
   const getStatusVariant = (status: string) => {
@@ -383,6 +381,36 @@ export default function AdminPage() {
                     {students.length === 0 && <p className="text-center text-muted-foreground py-8">No students found.</p>}
                 </div>
              )
+        case "users":
+            return (
+                <div>
+                     <h3 className="font-headline text-2xl mb-4">User Management ({allUsers.length} total users)</h3>
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Role</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {allUsers.map((u) => (
+                            <TableRow key={u.userId}>
+                                <TableCell className="font-medium">{u.fullName}</TableCell>
+                                <TableCell>{u.email}</TableCell>
+                                <TableCell><Badge variant={u.role === 'admin' ? 'destructive' : u.role === 'tutor' ? 'default' : 'secondary'} className="capitalize">{u.role}</Badge></TableCell>
+                                <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                             <DropdownMenuSeparator/>
+                                             <DropdownMenuItem onClick={() => handleRoleChange(u.userId, 'student')}>Make Student</DropdownMenuItem>
+                                             <DropdownMenuItem onClick={() => handleRoleChange(u.userId, 'tutor')}>Make Tutor</DropdownMenuItem>
+                                             <DropdownMenuItem onClick={() => handleRoleChange(u.userId, 'admin')}>Make Admin</DropdownMenuItem>
+                                             <DropdownMenuSeparator/>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )
         case "content":
             return (
                 <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-6">
@@ -641,8 +669,6 @@ export default function AdminPage() {
                     {tutors.length === 0 && <p className="text-center text-muted-foreground py-8">No tutors found.</p>}
                 </div>
             )
-        case "mail":
-            return (<div><form onSubmit={mailForm.handleSubmit(onMailSubmit)} className="space-y-6"><div><Label htmlFor="mail-to">Recipient Email</Label><Input id="mail-to" type="email" placeholder="recipient@example.com" {...mailForm.register("to")} /></div><div><Label htmlFor="mail-subject">Subject</Label><Input id="mail-subject" placeholder="Email Subject" {...mailForm.register("subject")} /></div><div><Label htmlFor="mail-body">Message</Label><Textarea id="mail-body" placeholder="<h1>Hello!</h1><p>This is your message.</p>" {...mailForm.register("htmlBody")} className="min-h-[250px] font-mono" /></div><Button type="submit" disabled={isSendingMail}>{isSendingMail ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2"/>}Send Email</Button></form></div>)
         default: return null;
     }
   }
@@ -659,8 +685,8 @@ export default function AdminPage() {
     { view: "bookRequests", label: "Book Requests", icon: Lightbulb },
     { view: "students", label: "Students", icon: Users },
     { view: "tutors", label: "Tutors", icon: UserPlus },
+    { view: "users", label: "All Users", icon: UserCog },
     { view: "content", label: "Site Content", icon: Settings },
-    { view: "mail", label: "Send Mail", icon: Mail },
   ] as const;
 
   return (
@@ -736,5 +762,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-    
