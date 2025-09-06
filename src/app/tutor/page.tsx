@@ -25,9 +25,12 @@ const tutorApplicationSchema = z.object({
   photoUrl: z.string().url({ message: "Please enter a valid URL for your photo." }),
   phoneNumber: z.string().min(10, "Please enter a valid phone number."),
   location: z.string().min(3, "Location is required."),
-  bio: z.string().min(50, "Bio must be at least 50 characters long."),
+  bio: z.string().min(50, "Bio must be at least 50 characters long.").max(500, "Bio must be under 500 characters."),
   subjects: z.string().min(3, "Please list at least one subject."),
   qualifications: z.string().min(10, "Please describe your qualifications."),
+  availability: z.string().min(10, "Please describe your general availability (e.g., weekdays 5pm-9pm).").max(200),
+  sessionInfo: z.string().min(10, "Describe how sessions are conducted (e.g., online, in-person location).").max(200),
+  terms: z.string().min(10, "State your payment terms clearly (e.g., 'Payment per session via M-Pesa').").max(200),
 });
 
 type TutorApplicationFormValues = z.infer<typeof tutorApplicationSchema>;
@@ -48,7 +51,7 @@ const TutorApplicationForm = ({ onSubmit, defaultValues, isSubmitting }: { onSub
                 <FormField control={form.control} name="photoUrl" render={({ field }) => (
                     <FormItem><FormLabel>Profile Photo URL</FormLabel><FormControl><Input placeholder="https://example.com/your-photo.jpg" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                    <FormField control={form.control} name="phoneNumber" render={({ field }) => (
+                <FormField control={form.control} name="phoneNumber" render={({ field }) => (
                     <FormItem><FormLabel>Contact Phone Number</FormLabel><FormControl><Input placeholder="e.g., 0712345678" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="location" render={({ field }) => (
@@ -63,6 +66,16 @@ const TutorApplicationForm = ({ onSubmit, defaultValues, isSubmitting }: { onSub
                 <FormField control={form.control} name="qualifications" render={({ field }) => (
                     <FormItem><FormLabel>Your Qualifications</FormLabel><FormControl><Textarea placeholder="List your degrees, certifications, and relevant experience." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
+                <FormField control={form.control} name="availability" render={({ field }) => (
+                    <FormItem><FormLabel>Availability</FormLabel><FormControl><Textarea placeholder="Describe your general availability, e.g., 'Weekdays 5 PM - 9 PM, weekends 10 AM - 6 PM'." {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                 <FormField control={form.control} name="sessionInfo" render={({ field }) => (
+                    <FormItem><FormLabel>Session Details</FormLabel><FormControl><Textarea placeholder="How are your sessions conducted? e.g., 'Online via Google Meet, or in-person at the Nakuru public library'." {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                 <FormField control={form.control} name="terms" render={({ field }) => (
+                    <FormItem><FormLabel>Terms</FormLabel><FormControl><Textarea placeholder="What are your payment terms? e.g., 'KES 1000 per hour, payment required at the start of each session via M-Pesa'." {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+
                 <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="animate-spin mr-2" />}
                     {defaultValues?.bio ? "Update Profile" : "Submit Application"}
@@ -175,7 +188,7 @@ export default function TutorPage() {
                         onSubmit={onSubmit}
                         isSubmitting={isSubmitting}
                         defaultValues={{
-                            ...(profile?.tutorProfile || {}),
+                            ...profile?.tutorProfile,
                             subjects: profile?.tutorProfile?.subjects.join(', ') || '',
                         }}
                    />
@@ -227,6 +240,9 @@ export default function TutorPage() {
                         bio: "",
                         subjects: "",
                         qualifications: "",
+                        availability: "",
+                        sessionInfo: "",
+                        terms: "",
                     }}
                 />
             </CardContent>

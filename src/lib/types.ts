@@ -23,6 +23,9 @@ export type TutorProfile = {
   subjects: string[];
   qualifications: string;
   applicationStatus: 'pending' | 'approved' | 'rejected';
+  availability: string;
+  sessionInfo: string;
+  terms: string;
 }
 
 export type UserProfile = {

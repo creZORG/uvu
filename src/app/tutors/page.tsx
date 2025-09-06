@@ -8,12 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Loader2, AlertTriangle, Phone } from "lucide-react";
+import { Loader2, AlertTriangle, Phone, Clock, Info, Banknote } from "lucide-react";
 import Image from "next/image";
 import type { UserProfile } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 export default function TutorsPage() {
   const [tutors, setTutors] = useState<UserProfile[]>([]);
@@ -43,12 +44,6 @@ export default function TutorsPage() {
   const handleContactClick = (tutor: UserProfile) => {
     setSelectedTutor(tutor);
     setIsModalOpen(true);
-    // In a real application, you would log this event to Firestore for safety.
-    console.log(`User is viewing contact info for ${tutor.fullName}`);
-     toast({
-      title: "Action Logged",
-      description: "For your safety, a record of this contact view has been created.",
-    });
   }
 
   return (
@@ -100,7 +95,7 @@ export default function TutorsPage() {
                                     </div>
                                 </CardContent>
                                  <CardFooter>
-                                    <Button className="w-full" onClick={() => handleContactClick(tutor)}>Contact Tutor</Button>
+                                    <Button className="w-full" onClick={() => handleContactClick(tutor)}>View More Info</Button>
                                  </CardFooter>
                            </Card>
                         ))}
@@ -112,27 +107,57 @@ export default function TutorsPage() {
       </main>
 
        <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-headline text-2xl">Contact Information</AlertDialogTitle>
-            <AlertDialogDescription>
-                You can reach out to <strong>{selectedTutor?.fullName}</strong> using the details below.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-            <div className="py-4">
-                <div className="flex items-center gap-3 font-semibold text-lg">
-                    <Phone size={20} />
-                    <span>{selectedTutor?.tutorProfile?.phoneNumber || "Not Provided"}</span>
+            <div className="flex items-center gap-4">
+                <Image src={selectedTutor?.tutorProfile?.photoUrl || 'https://picsum.photos/100'} alt={selectedTutor?.fullName || 'Tutor'} width={80} height={80} className="rounded-full border-4 border-primary/20"/>
+                <div>
+                    <AlertDialogTitle className="font-headline text-2xl">{selectedTutor?.fullName}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Tutor Profile & Contact Information
+                    </AlertDialogDescription>
                 </div>
             </div>
+          </AlertDialogHeader>
+            <div className="py-4 space-y-4 max-h-[50vh] overflow-y-auto pr-4">
+                <div className="flex items-start gap-4">
+                    <Phone className="mt-1 flex-shrink-0"/>
+                    <div>
+                        <h4 className="font-semibold">Contact</h4>
+                        <p className="text-muted-foreground">{selectedTutor?.tutorProfile?.phoneNumber || "Not Provided"}</p>
+                    </div>
+                </div>
+                 <div className="flex items-start gap-4">
+                    <Clock className="mt-1 flex-shrink-0"/>
+                    <div>
+                        <h4 className="font-semibold">Availability</h4>
+                        <p className="text-muted-foreground">{selectedTutor?.tutorProfile?.availability || "Not Provided"}</p>
+                    </div>
+                </div>
+                 <div className="flex items-start gap-4">
+                    <Info className="mt-1 flex-shrink-0"/>
+                    <div>
+                        <h4 className="font-semibold">Session Details</h4>
+                        <p className="text-muted-foreground">{selectedTutor?.tutorProfile?.sessionInfo || "Not Provided"}</p>
+                    </div>
+                </div>
+                 <div className="flex items-start gap-4">
+                    <Banknote className="mt-1 flex-shrink-0"/>
+                    <div>
+                        <h4 className="font-semibold">Terms</h4>
+                        <p className="text-muted-foreground">{selectedTutor?.tutorProfile?.terms || "Not Provided"}</p>
+                    </div>
+                </div>
+            </div>
+             <Separator />
             <div className="p-4 rounded-md bg-destructive/10 border border-destructive/50 text-destructive-foreground">
                 <h4 className="font-bold flex items-center gap-2 mb-2"><AlertTriangle/>Important Safety Notice</h4>
                 <p className="text-xs">
-                    Please exercise extreme caution. Tutors are independent contractors and are not employed by Uvumbuzi Digital Hub. We cannot fully verify the identity or background of any tutor.
+                    Please exercise extreme caution. Uvumbuzi Digital Hub provides this listing as a service but does not employ, endorse, or conduct background checks on tutors.
                     <br/><br/>
-                    <strong>Do NOT pay for any services in advance.</strong> Uvumbuzi Digital Hub is not responsible for any financial transactions or interactions that occur outside of this website.
+                    <strong>Do NOT pay for any services in advance.</strong> All scheduling, payment, and tutoring arrangements are made directly between you and the tutor at your own risk.
                     <br/><br/>
-                    By using this service, you agree to our <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="underline font-bold">Terms of Service</a> and acknowledge that Uvumbuzi Digital Hub is not liable for any outcomes from your interactions. This action has been logged for safety purposes.
+                    By using this service, you agree to our <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="underline font-bold">Terms of Service</a> and acknowledge that Uvumbuzi Digital Hub is not liable for any outcomes. This action has been logged for safety purposes.
                 </p>
             </div>
           <AlertDialogFooter>
