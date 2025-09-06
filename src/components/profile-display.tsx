@@ -12,6 +12,9 @@ import { format, differenceInYears } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { Edit, BookOpen, BrainCircuit, Code, Brush, BarChart, Bot, Tv, Wifi, Camera, ShieldLock, Wrench } from "lucide-react";
+import { UcnLogo } from "./icons";
+
 
 interface ProfileDisplayProps {
     profile: UserProfile;
@@ -19,6 +22,21 @@ interface ProfileDisplayProps {
 }
 
 const totalPages = courseContent.reduce((sum, module) => sum + module.pages.length, 0);
+
+const interestIcons: { [key: string]: React.ReactNode } = {
+    "ICT Literacy": <BookOpen className="mr-2" />,
+    "Coding": <Code className="mr-2" />,
+    "Graphics & Design": <Brush className="mr-2" />,
+    "Digital Marketing": <BarChart className="mr-2" />,
+    "Entrepreneurship": <BrainCircuit className="mr-2" />,
+    "BPO Training": <Tv className="mr-2" />,
+    "Robotics": <Bot className="mr-2" />,
+    "Web Development": <Code className="mr-2" />,
+    "Networking (Fiber Optics & Radio Technology)": <Wifi className="mr-2" />,
+    "CCTV Installation": <Camera className="mr-2" />,
+    "Access Control Systems": <ShieldLock className="mr-2" />,
+    "Power (Solar DC Option)": <Wrench className="mr-2" />,
+};
 
 export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
     const [examStatus, setExamStatus] = useState<string | null>(null);
@@ -66,35 +84,32 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
     return (
         <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-1 space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">{profile.fullName}</CardTitle>
-                        <CardDescription>{profile.email}</CardDescription>
+                <Card className="bg-gradient-to-br from-primary/10 to-accent/20 border-primary/20 shadow-lg">
+                     <CardHeader className="text-center items-center">
+                        <UcnLogo className="w-24 h-24 mb-4" />
+                        <CardTitle className="font-headline text-2xl">{profile.fullName}</CardTitle>
+                        <CardDescription className="text-base">{profile.email}</CardDescription>
                     </CardHeader>
-                    <CardContent className="text-sm space-y-2">
-                        <p><strong>Occupation:</strong> {profile.occupation}</p>
-                        <p><strong>Location:</strong> {profile.location}</p>
-                        <p><strong>Gender:</strong> <span className="capitalize">{profile.gender}</span></p>
-                        <p><strong>Phone:</strong> {profile.phoneNumber}</p>
-                        {dob && <p><strong>Date of Birth:</strong> {format(dob, 'PPP')}</p>}
+                    <CardContent className="text-sm space-y-3">
+                         <div className="border-t border-primary/10 pt-3">
+                            <p className="text-xs text-muted-foreground">Location</p>
+                            <p>{profile.location}</p>
+                        </div>
+                         <div className="border-t border-primary/10 pt-3">
+                            <p className="text-xs text-muted-foreground">Phone</p>
+                            <p>{profile.phoneNumber}</p>
+                        </div>
+                        <div className="border-t border-primary/10 pt-3">
+                            <p className="text-xs text-muted-foreground">Education Level</p>
+                            <p>{profile.levelOfEducation}</p>
+                        </div>
                     </CardContent>
                 </Card>
-                {age !== null && age < 18 && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline text-lg">Parent/Guardian</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm space-y-2">
-                            <p><strong>Name:</strong> {profile.parentName || 'Not provided'}</p>
-                            <p><strong>Phone:</strong> {profile.parentPhoneNumber || 'Not provided'}</p>
-                        </CardContent>
-                    </Card>
-                )}
             </div>
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline">My Courses</CardTitle>
+                        <CardTitle className="font-headline">My Learning</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -121,6 +136,25 @@ export function ProfileDisplay({ profile, userId }: ProfileDisplayProps) {
                                     {progressPercentage > 0 ? "Continue Course" : "Start Course"}
                                 </Link>
                             </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">My Interests</CardTitle>
+                         <CardDescription>The skills you're interested in learning at Uvumbuzi.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                            {profile.areasOfInterest && profile.areasOfInterest.map(interest => (
+                                <Badge key={interest} variant="secondary" className="text-sm py-1 px-3 flex items-center">
+                                    {interestIcons[interest] || <BrainCircuit className="mr-2"/>}
+                                    {interest}
+                                </Badge>
+                            ))}
+                            {(!profile.areasOfInterest || profile.areasOfInterest.length === 0) && (
+                                <p className="text-sm text-muted-foreground">No interests selected yet.</p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
