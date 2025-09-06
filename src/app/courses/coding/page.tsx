@@ -13,7 +13,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Trophy, AlertTriangle, ChevronLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Trophy, AlertTriangle, ChevronLeft, Loader2 } from "lucide-react";
 import { CodeSnippet } from "@/components/code-snippet";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -149,7 +149,7 @@ export default function CodingPage() {
   };
 
   const currentModule = courseContent[currentModuleIndex];
-  const currentPage = currentModule.pages[currentPageIndex];
+  const currentPage = currentModule?.pages[currentPageIndex];
 
   const pagesCompleted = courseContent.slice(0, currentModuleIndex).reduce((acc, module) => acc + module.pages.length, 0) + currentPageIndex + 1;
   const progressPercentage = (pagesCompleted / totalPages) * 100;
@@ -166,7 +166,7 @@ export default function CodingPage() {
              <div className="max-h-60 overflow-y-auto py-2"><ul className="list-decimal list-inside space-y-1 text-muted-foreground">
                     {courseContent.map((module, index) => (<li key={index}>{module.title}</li>))}</ul></div>
              { (currentModuleIndex > 0 || currentPageIndex > 0) &&
-                <p className="pt-2 text-primary font-semibold">You left off at: <span className="font-bold">{currentModule.title} - Page {currentPageIndex + 1}</span></p>}
+                <p className="pt-2 text-primary font-semibold">You left off at: <span className="font-bold">{currentModule?.title} - Page {currentPageIndex + 1}</span></p>}
           </AlertDialogHeader><AlertDialogFooter className="sm:justify-between"><Button variant="destructive" onClick={handleStartOver}>Start Over</Button><AlertDialogAction onClick={() => setShowIntroModal(false)}>Continue</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
       </AlertDialog>
 
@@ -177,9 +177,9 @@ export default function CodingPage() {
 
        <AlertDialog open={showModuleModal} onOpenChange={setShowModuleModal}>
             <AlertDialogContent><AlertDialogHeader><AlertDialogTitle className="font-headline text-2xl flex items-center gap-2"><Trophy className="text-amber-400" /> Well Done!</AlertDialogTitle>
-                    <AlertDialogDescription className="text-base pt-2">You've completed <strong>{currentModule.title}</strong>. Review these concepts before moving on.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogDescription className="text-base pt-2">You've completed <strong>{currentModule?.title}</strong>. Review these concepts before moving on.</AlertDialogDescription></AlertDialogHeader>
                 <div className="space-y-4"><div><h3 className="font-semibold mb-2 text-foreground">Self-Check Quiz:</h3><ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground bg-accent/50 p-4 rounded-md">
-                            {currentModule.quiz.map((q, i) => <li key={i}>{q}</li>)}</ul></div>
+                            {currentModule?.quiz.map((q, i) => <li key={i}>{q}</li>)}</ul></div>
                     {courseContent[currentModuleIndex + 1] && (<div><h3 className="font-semibold mb-2 text-foreground">Next Up: {courseContent[currentModuleIndex + 1]?.title}</h3>
                             <p className="text-sm text-muted-foreground">Here's a preview of what you'll learn:</p>
                             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground mt-2">
@@ -214,19 +214,28 @@ export default function CodingPage() {
                 <div className="flex justify-between mb-2"><span className="text-sm font-medium text-primary">Course Progress</span><span className="text-sm font-medium text-primary">{Math.round(progressPercentage)}%</span></div>
                 <Progress value={progressPercentage} /></div>
             <Card className="max-w-4xl mx-auto min-h-[500px] flex flex-col">
-              <CardHeader><CardDescription>{currentModule.title} - Page {currentPageIndex + 1} of {currentModule.pages.length}</CardDescription><CardTitle className="font-headline text-2xl">{currentPage.title}</CardTitle></CardHeader>
-              <CardContent className="flex-1 space-y-6">
-                  <div className="space-y-4 text-lg">{currentPage.content.map((item, index) => {
-                       if (typeof item === 'string') { return <p key={index}>{item}</p>; }
-                       if (item.type === 'code') { return <CodeSnippet key={index} language={item.language} code={item.code} />; }
-                       return null;})}</div>
-                   <p className="pt-4 text-primary/80 italic"><strong>Research Task:</strong> {currentPage.researchPrompt}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between border-t pt-6">
-                <Button variant="outline" onClick={handlePrev} disabled={currentModuleIndex === 0 && currentPageIndex === 0}><ArrowLeft className="mr-2"/> Previous</Button>
-                {isCourseComplete ? (<Button onClick={() => setShowFinalQuizModal(true)}><CheckCircle className="mr-2"/> Finish Course</Button>
-                ) : (<Button onClick={handleNext}>Next <ArrowRight className="ml-2"/></Button>)}
-              </CardFooter></Card></div></section>
+              {currentPage ? (
+                <>
+                  <CardHeader><CardDescription>{currentModule.title} - Page {currentPageIndex + 1} of {currentModule.pages.length}</CardDescription><CardTitle className="font-headline text-2xl">{currentPage.title}</CardTitle></CardHeader>
+                  <CardContent className="flex-1 space-y-6">
+                      <div className="space-y-4 text-lg">{currentPage.content.map((item, index) => {
+                           if (typeof item === 'string') { return <p key={index}>{item}</p>; }
+                           if (item.type === 'code') { return <CodeSnippet key={index} language={item.language} code={item.code} />; }
+                           return null;})}</div>
+                       <p className="pt-4 text-primary/80 italic"><strong>Research Task:</strong> {currentPage.researchPrompt}</p>
+                  </CardContent>
+                  <CardFooter className="flex justify-between border-t pt-6">
+                    <Button variant="outline" onClick={handlePrev} disabled={currentModuleIndex === 0 && currentPageIndex === 0}><ArrowLeft className="mr-2"/> Previous</Button>
+                    {isCourseComplete ? (<Button onClick={() => setShowFinalQuizModal(true)}><CheckCircle className="mr-2"/> Finish Course</Button>
+                    ) : (<Button onClick={handleNext}>Next <ArrowRight className="ml-2"/></Button>)}
+                  </CardFooter>
+                </>
+              ) : (
+                <div className="flex items-center justify-center flex-1">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              )}
+            </Card></div></section>
       </main>
       <Footer />
     </div>
