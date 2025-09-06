@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import type { UserProfile } from "@/components/profile-edit-modal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courseContent as staticCourseContent } from "@/lib/course-content";
+import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from "@/components/ui/sidebar";
 
 type Submission = {
   id: string;
@@ -103,7 +104,7 @@ export type Course = {
 }
 
 
-type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books" | "bookRequests" | "courses";
+type AdminView = "submissions" | "content" | "mail" | "projects" | "students" | "books" | "bookRequests" | "courses" | "tutors";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -308,7 +309,7 @@ export default function AdminPage() {
     switch (activeView) {
         case "submissions":
             return (
-                <div className="mt-6 md:mt-0">
+                <div>
                     <Table>
                         <TableHeader><TableRow><TableHead>Student Email</TableHead><TableHead>Submitted At</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
                         <TableBody>
@@ -326,7 +327,7 @@ export default function AdminPage() {
             )
         case "students":
              return (
-                <div className="mt-6 md:mt-0">
+                <div>
                     <Table>
                         <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                         <TableBody>
@@ -353,7 +354,7 @@ export default function AdminPage() {
              )
         case "content":
             return (
-                <div className="mt-6 md:mt-0">
+                <div>
                     <form onSubmit={contentForm.handleSubmit(onContentSubmit)} className="space-y-8">
                       <div className="space-y-4 p-4 border rounded-lg"><h3 className="font-headline text-xl">Contact Information</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div><Label>Email</Label><Input {...contentForm.register("contact.email")} /></div>
@@ -472,11 +473,19 @@ export default function AdminPage() {
             );
         case "bookRequests":
              return (
-                <div className="mt-6 md:mt-0"><Table><TableHeader><TableRow><TableHead>Book Title</TableHead><TableHead>Author</TableHead><TableHead>Reason</TableHead><TableHead>Requested By</TableHead><TableHead>Date</TableHead></TableRow></TableHeader>
+                <div><Table><TableHeader><TableRow><TableHead>Book Title</TableHead><TableHead>Author</TableHead><TableHead>Reason</TableHead><TableHead>Requested By</TableHead><TableHead>Date</TableHead></TableRow></TableHeader>
                         <TableBody>{bookRequests.map((req) => (<TableRow key={req.id}><TableCell className="font-medium">{req.title}</TableCell><TableCell>{req.author}</TableCell><TableCell className="text-sm text-muted-foreground">{req.reason}</TableCell><TableCell>{req.requestedBy}</TableCell><TableCell>{req.requestedAt ? format(req.requestedAt.toDate(), "PPP") : "N/A"}</TableCell></TableRow>))}</TableBody>
                     </Table>{bookRequests.length === 0 && (<p className="text-center text-muted-foreground py-8">No book requests yet.</p>)}</div>)
+        case "tutors":
+            return (
+                <div className="text-center py-16">
+                    <UserPlus className="mx-auto h-12 w-12 text-muted-foreground" />
+                    <h3 className="mt-4 text-lg font-semibold">Tutor Management</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">This feature is coming soon. You will be able to manage tutor applications and profiles here.</p>
+                </div>
+            )
         case "mail":
-            return (<div className="mt-6 md:mt-0"><form onSubmit={mailForm.handleSubmit(onMailSubmit)} className="space-y-6"><div><Label htmlFor="mail-to">Recipient Email</Label><Input id="mail-to" type="email" placeholder="recipient@example.com" {...mailForm.register("to")} /></div><div><Label htmlFor="mail-subject">Subject</Label><Input id="mail-subject" placeholder="Email Subject" {...mailForm.register("subject")} /></div><div><Label htmlFor="mail-body">Message</Label><Textarea id="mail-body" placeholder="<h1>Hello!</h1><p>This is your message.</p>" {...mailForm.register("htmlBody")} className="min-h-[250px] font-mono" /></div><Button type="submit" disabled={isSendingMail}>{isSendingMail ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2"/>}Send Email</Button></form></div>)
+            return (<div><form onSubmit={mailForm.handleSubmit(onMailSubmit)} className="space-y-6"><div><Label htmlFor="mail-to">Recipient Email</Label><Input id="mail-to" type="email" placeholder="recipient@example.com" {...mailForm.register("to")} /></div><div><Label htmlFor="mail-subject">Subject</Label><Input id="mail-subject" placeholder="Email Subject" {...mailForm.register("subject")} /></div><div><Label htmlFor="mail-body">Message</Label><Textarea id="mail-body" placeholder="<h1>Hello!</h1><p>This is your message.</p>" {...mailForm.register("htmlBody")} className="min-h-[250px] font-mono" /></div><Button type="submit" disabled={isSendingMail}>{isSendingMail ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2"/>}Send Email</Button></form></div>)
         default: return null;
     }
   }
@@ -485,21 +494,60 @@ export default function AdminPage() {
     return (<div className="flex flex-col min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin" /><p className="mt-4 text-muted-foreground">{isAuthorized ? 'Loading...' : 'Verifying...'}</p></div>);
   }
 
+  const navItems = [
+    { view: "submissions", label: "Submissions", icon: FileText },
+    { view: "courses", label: "Courses", icon: GraduationCap },
+    { view: "projects", label: "Projects", icon: FolderKanban },
+    { view: "books", label: "Books", icon: Book },
+    { view: "bookRequests", label: "Book Requests", icon: Lightbulb },
+    { view: "students", label: "Students", icon: Users },
+    { view: "tutors", label: "Tutors", icon: UserPlus },
+    { view: "content", label: "Site Content", icon: Settings },
+    { view: "mail", label: "Send Mail", icon: Mail },
+  ] as const;
+
   return (
-    <div className="flex flex-col min-h-screen bg-background"><Header />
-      <main className="flex-1 py-12"><section className="container max-w-6xl mx-auto"><Card>
-              <CardHeader><CardTitle className="font-headline text-4xl">Admin Dashboard</CardTitle><CardDescription>Manage the Uvumbuzi Digital Hub.</CardDescription></CardHeader>
-              <CardContent><div className="grid md:grid-cols-[240px_1fr] gap-8"><nav className="flex flex-col gap-2">
-                        <Button variant={activeView === 'submissions' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'submissions' && "font-bold")} onClick={() => setActiveView("submissions")}><FileText className="mr-2" /> Submissions</Button>
-                        <Button variant={activeView === 'courses' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'courses' && "font-bold")} onClick={() => setActiveView("courses")}><GraduationCap className="mr-2" /> Courses</Button>
-                        <Button variant={activeView === 'projects' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'projects' && "font-bold")} onClick={() => setActiveView("projects")}><FolderKanban className="mr-2" /> Projects</Button>
-                        <Button variant={activeView === 'books' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'books' && "font-bold")} onClick={() => setActiveView("books")}><Book className="mr-2" /> Books</Button>
-                        <Button variant={activeView === 'bookRequests' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'bookRequests' && "font-bold")} onClick={() => setActiveView("bookRequests")}><Lightbulb className="mr-2" /> Book Requests</Button>
-                        <Button variant={activeView === 'students' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'students' && "font-bold")} onClick={() => setActiveView("students")}><Users className="mr-2" /> Students</Button>
-                        <Button variant={activeView === 'content' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'content' && "font-bold")} onClick={() => setActiveView("content")}><Settings className="mr-2" /> Site Content</Button>
-                        <Button variant={activeView === 'mail' ? 'secondary' : 'ghost'} className={cn("justify-start", activeView === 'mail' && "font-bold")} onClick={() => setActiveView("mail")}><Mail className="mr-2" /> Send Mail</Button>
-                    </nav><div>{renderContent()}</div></div></CardContent></Card></section></main><Footer /></div>
+    <div className="flex flex-col min-h-screen bg-background">
+        <Header />
+        <main className="flex-1">
+            <SidebarProvider>
+                <div className="flex">
+                    <Sidebar collapsible="icon">
+                        <SidebarContent>
+                            <SidebarMenu>
+                                {navItems.map(item => (
+                                    <SidebarMenuItem key={item.view}>
+                                        <SidebarMenuButton 
+                                            onClick={() => setActiveView(item.view)}
+                                            isActive={activeView === item.view}
+                                            tooltip={item.label}
+                                        >
+                                            <item.icon/>
+                                            <span>{item.label}</span>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarContent>
+                    </Sidebar>
+                    <SidebarInset>
+                         <Card className="m-4">
+                            <CardHeader className="flex flex-row items-center gap-4">
+                                <SidebarTrigger/>
+                                <div>
+                                    <CardTitle className="font-headline text-2xl">Admin Dashboard</CardTitle>
+                                    <CardDescription>Manage the Uvumbuzi Digital Hub.</CardDescription>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                {renderContent()}
+                            </CardContent>
+                        </Card>
+                    </SidebarInset>
+                </div>
+            </SidebarProvider>
+        </main>
+        <Footer />
+    </div>
   );
 }
-
-    
