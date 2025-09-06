@@ -126,7 +126,7 @@ interface ProfileEditModalProps {
 export function ProfileEditModal({ isOpen, setIsOpen, user, existingProfile, onProfileUpdate }: ProfileEditModalProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isProfileCreated = !!existingProfile;
+  const isProfileCreated = !!existingProfile && isProfileComplete(existingProfile);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -357,5 +357,3 @@ export function ProfileEditModal({ isOpen, setIsOpen, user, existingProfile, onP
     </Dialog>
   );
 }
-
-    
