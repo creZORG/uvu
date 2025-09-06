@@ -22,6 +22,7 @@ import type { UserProfile, TutorProfile } from "@/lib/types";
 
 const tutorApplicationSchema = z.object({
   photoUrl: z.string().url({ message: "Please enter a valid URL for your photo." }),
+  phoneNumber: z.string().min(10, "Please enter a valid phone number."),
   location: z.string().min(3, "Location is required."),
   bio: z.string().min(50, "Bio must be at least 50 characters long."),
   subjects: z.string().min(3, "Please list at least one subject."),
@@ -41,6 +42,7 @@ export default function TutorPage() {
     resolver: zodResolver(tutorApplicationSchema),
     defaultValues: {
       photoUrl: "",
+      phoneNumber: "",
       location: "",
       bio: "",
       subjects: "",
@@ -201,6 +203,9 @@ export default function TutorPage() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField control={form.control} name="photoUrl" render={({ field }) => (
                             <FormItem><FormLabel>Profile Photo URL</FormLabel><FormControl><Input placeholder="https://example.com/your-photo.jpg" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                         <FormField control={form.control} name="phoneNumber" render={({ field }) => (
+                            <FormItem><FormLabel>Contact Phone Number</FormLabel><FormControl><Input placeholder="e.g., 0712345678" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="location" render={({ field }) => (
                             <FormItem><FormLabel>Your Location</FormLabel><FormControl><Input placeholder="e.g., Nakuru, Kenya" {...field} /></FormControl><FormMessage /></FormItem>

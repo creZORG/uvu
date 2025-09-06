@@ -56,16 +56,11 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="font-headline font-semibold mb-4">Contact</h3>
-            {contact ? (
-              <ul className="space-y-2 text-muted-foreground">
-                <li>{contact.email}</li>
-                <li>{contact.phone}</li>
-                <li>{contact.location}</li>
-              </ul>
-            ) : (
-                <p className="text-muted-foreground">Loading...</p>
-            )}
+            <h3 className="font-headline font-semibold mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li><Link href="/terms-of-service" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
+              <li><Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
+            </ul>
           </div>
           <div>
             <h3 className="font-headline font-semibold mb-4">Follow Us</h3>

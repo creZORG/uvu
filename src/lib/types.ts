@@ -17,6 +17,7 @@ export type Course = {
 
 export type TutorProfile = {
   photoUrl: string;
+  phoneNumber: string;
   location: string;
   bio: string;
   subjects: string[];

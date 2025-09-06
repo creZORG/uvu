@@ -122,13 +122,17 @@ export default function TutorsPage() {
             <div className="py-4">
                 <div className="flex items-center gap-3 font-semibold text-lg">
                     <Phone size={20} />
-                    <span>{selectedTutor?.phoneNumber}</span>
+                    <span>{selectedTutor?.tutorProfile?.phoneNumber || "Not Provided"}</span>
                 </div>
             </div>
             <div className="p-4 rounded-md bg-destructive/10 border border-destructive/50 text-destructive-foreground">
-                <h4 className="font-bold flex items-center gap-2 mb-2"><AlertTriangle/>Safety Notice</h4>
+                <h4 className="font-bold flex items-center gap-2 mb-2"><AlertTriangle/>Important Safety Notice</h4>
                 <p className="text-xs">
-                    Please exercise caution when contacting individuals you meet online. For your safety, we have logged that you have viewed this contact information. Do not share sensitive personal information and arrange to meet in public places if necessary.
+                    Please exercise extreme caution. Tutors are independent contractors and are not employed by Uvumbuzi Digital Hub. We cannot fully verify the identity or background of any tutor.
+                    <br/><br/>
+                    <strong>Do NOT pay for any services in advance.</strong> Uvumbuzi Digital Hub is not responsible for any financial transactions or interactions that occur outside of this website.
+                    <br/><br/>
+                    By using this service, you agree to our <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="underline font-bold">Terms of Service</a> and acknowledge that Uvumbuzi Digital Hub is not liable for any outcomes from your interactions. This action has been logged for safety purposes.
                 </p>
             </div>
           <AlertDialogFooter>
