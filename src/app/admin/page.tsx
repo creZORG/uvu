@@ -82,7 +82,13 @@ export default function AdminPage() {
 
   const contentForm = useForm<SiteContent>();
   const mailForm = useForm<SendMailInput>();
-  const projectForm = useForm<Project>();
+  const projectForm = useForm<Project>({
+      defaultValues: {
+          title: "",
+          content: "",
+          imageUrls: []
+      }
+  });
   
   const { fields: carouselFields, append: appendCarousel, remove: removeCarousel } = useFieldArray({ control: contentForm.control, name: "carouselImages" });
   const { fields: programFields, append: appendProgram, remove: removeProgram } = useFieldArray({ control: contentForm.control, name: "programs" });
@@ -191,6 +197,7 @@ export default function AdminPage() {
                 toast({ title: "Project Created!" });
             }
             setEditingProject(null);
+            projectForm.reset();
         } catch (error) {
             console.error("Error saving project:", error);
             toast({ variant: "destructive", title: "Error", description: "Could not save project." });

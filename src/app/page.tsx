@@ -116,8 +116,8 @@ export default function Home() {
                     ]}
                 >
                     <CarouselContent>
-                    {sliderImages.map((image) => (
-                        <CarouselItem key={image.src}>
+                    {sliderImages.map((image, index) => (
+                        <CarouselItem key={`${image.src}-${index}`}>
                         <div className="relative h-[60vh] md:h-[80vh] w-full">
                             <div
                                 className="absolute inset-0 bg-black/40 z-10"
