@@ -9,14 +9,14 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Loader2, Search, GraduationCap, Book, UserRoundCheck, Calendar, Ban } from "lucide-react";
-import { ProfileEditModal, UserProfile } from "@/components/profile-edit-modal";
+import { ProfileEditModal } from "@/components/profile-edit-modal";
 import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import type { Course } from "@/lib/types";
+import type { Course, UserProfile } from "@/lib/types";
 
 
 export default function StudentHubPage() {
@@ -112,6 +112,26 @@ export default function StudentHubPage() {
     );
   }
 
+  if (profile?.status === 'suspended') {
+     return (
+        <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1 flex items-center justify-center p-4">
+                <Card className="w-full max-w-md text-center border-destructive bg-destructive/10">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive-foreground"><Ban /> Account Suspended</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="text-destructive-foreground/90">Your account has been suspended. Please contact the administration for more information.</p>
+                        <Button asChild variant="secondary"><Link href="/contact">Contact Support</Link></Button>
+                    </CardContent>
+                </Card>
+            </main>
+            <Footer />
+        </div>
+    );
+  }
+
   if (isModalRequired) {
     return (
        <div className="flex flex-col min-h-screen bg-background">
@@ -124,7 +144,6 @@ export default function StudentHubPage() {
                     user={user}
                     existingProfile={profile}
                     onProfileUpdate={handleProfileUpdate}
-                    hideCloseButton={true}
                 />
             )}
         </main>
