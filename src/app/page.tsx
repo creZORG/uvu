@@ -67,13 +67,13 @@ export default function Home() {
         }
     };
 
-    const projectsQuery = query(collection(db, "projects"), orderBy("createdAt", "desc"), limit(4));
+    const projectsQuery = query(collection(db, "projects"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(projectsQuery, (querySnapshot) => {
         const projs: Project[] = [];
         querySnapshot.forEach((doc) => {
             projs.push({ id: doc.id, ...doc.data() } as Project);
         });
-        setProjects(projs);
+        setProjects(projs.slice(0,4));
         setLoadingProjects(false);
     });
 
