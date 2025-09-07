@@ -205,7 +205,18 @@ export default function AdminPage() {
 
   const onContentSubmit = async (data: SiteContent) => {
     try {
-      const cleanedData = { ...data };
+      const cleanedData = {
+        ...data,
+        contact: {
+          ...data.contact,
+          socials: {
+            instagram: data.contact.socials?.instagram || "",
+            twitter: data.contact.socials?.twitter || "",
+            facebook: data.contact.socials?.facebook || "",
+            linkedin: data.contact.socials?.linkedin || "",
+          }
+        }
+      };
       await setDoc(doc(db, "siteContent", "content"), cleanedData, { merge: true });
       toast({ title: "Success!", description: "Site content updated." });
     } catch (error) {
