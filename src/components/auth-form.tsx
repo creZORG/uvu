@@ -47,7 +47,7 @@ const signupSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  role: z.enum(["student", "tutor", "visitor"], {
+  role: z.enum(["student", "visitor"], {
     required_error: "You must select a role.",
   }),
 });
@@ -106,9 +106,6 @@ export function AuthForm() {
       switch (values.role) {
         case "student":
           router.push("/student-hub");
-          break;
-        case "tutor":
-          router.push("/tutor");
           break;
         default:
           router.push("/");
@@ -197,10 +194,6 @@ export function AuthForm() {
                                     <div><FormLabel className="font-normal">Student</FormLabel><p className="text-xs text-muted-foreground">Access courses, borrow books, and engage with the community.</p></div>
                                 </FormItem>
                                 <FormItem className="flex items-center space-x-3 space-y-0">
-                                    <FormControl><RadioGroupItem value="tutor" /></FormControl>
-                                    <div><FormLabel className="font-normal">Tutor</FormLabel><p className="text-xs text-muted-foreground">Offer your expertise and guide students on their learning path.</p></div>
-                                </FormItem>
-                                <FormItem className="flex items-center space-x-3 space-y-0">
                                     <FormControl><RadioGroupItem value="visitor" /></FormControl>
                                     <div><FormLabel className="font-normal">Visitor</FormLabel><p className="text-xs text-muted-foreground">Explore our programs, projects, and public resources.</p></div>
                                 </FormItem>
@@ -228,3 +221,5 @@ export function AuthForm() {
     </Card>
   );
 }
+
+    

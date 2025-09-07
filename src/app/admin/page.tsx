@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserPlus, UserCheck, UserX, Calendar, Ban, UserCog, RotateCcw } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Send, LayoutDashboard, FileText, Mail, Users, Settings, FolderKanban, MoreHorizontal, Book, Lightbulb, GraduationCap, GripVertical, ArrowUp, ArrowDown, UserCog, Ban, RotateCcw } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ type Submission = {
   status: "submitted" | "disqualified" | "passed" | "failed";
 };
 
-type AdminView = "submissions" | "content" | "users" | "projects" | "students" | "books" | "bookRequests" | "courses" | "tutors";
+type AdminView = "submissions" | "content" | "users" | "projects" | "students" | "books" | "bookRequests" | "courses";
 
 export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -81,7 +81,6 @@ export default function AdminPage() {
   const [bookRequests, setBookRequests] = useState<BookRequest[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [students, setStudents] = useState<UserProfile[]>([]);
-  const [tutors, setTutors] = useState<UserProfile[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -154,7 +153,6 @@ export default function AdminPage() {
         const userList = querySnapshot.docs.map(d => ({userId: d.id, ...d.data()} as UserProfile));
         setAllUsers(userList);
         setStudents(userList.filter(u => u.role === 'student'));
-        setTutors(userList.filter(u => u.role === 'tutor'));
     });
 
     const bookRequestsQuery = query(collection(db, "newBookRequests"), orderBy("requestedAt", "desc"));
@@ -275,19 +273,6 @@ export default function AdminPage() {
         }
     };
     
-    const handleTutorApproval = async (tutorId: string, status: 'approved' | 'rejected') => {
-        const tutorRef = doc(db, "userProfiles", tutorId);
-        try {
-            await updateDoc(tutorRef, { "tutorProfile.applicationStatus": status });
-            toast({
-                title: `Tutor ${status}`,
-                description: `The tutor's application has been ${status}.`
-            });
-        } catch (error) {
-             toast({ variant: "destructive", title: "Error", description: "Could not update tutor status."});
-        }
-    };
-    
     const handleStudentStatus = async (student: UserProfile, newStatus: 'active' | 'suspended') => {
         const studentRef = doc(db, "userProfiles", student.userId);
         try {
@@ -301,7 +286,7 @@ export default function AdminPage() {
         }
     };
     
-    const handleRoleChange = async (userId: string, newRole: 'student' | 'tutor' | 'admin') => {
+    const handleRoleChange = async (userId: string, newRole: 'student' | 'admin') => {
         const userRef = doc(db, "userProfiles", userId);
         try {
             await updateDoc(userRef, { role: newRole });
@@ -392,14 +377,13 @@ export default function AdminPage() {
                             <TableRow key={u.userId}>
                                 <TableCell className="font-medium">{u.fullName}</TableCell>
                                 <TableCell>{u.email}</TableCell>
-                                <TableCell><Badge variant={u.role === 'admin' ? 'destructive' : u.role === 'tutor' ? 'default' : 'secondary'} className="capitalize">{u.role}</Badge></TableCell>
+                                <TableCell><Badge variant={u.role === 'admin' ? 'destructive' : 'secondary'} className="capitalize">{u.role}</Badge></TableCell>
                                 <TableCell className="text-right">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                              <DropdownMenuSeparator/>
                                              <DropdownMenuItem onClick={() => handleRoleChange(u.userId, 'student')}>Make Student</DropdownMenuItem>
-                                             <DropdownMenuItem onClick={() => handleRoleChange(u.userId, 'tutor')}>Make Tutor</DropdownMenuItem>
                                              <DropdownMenuItem onClick={() => handleRoleChange(u.userId, 'admin')}>Make Admin</DropdownMenuItem>
                                              <DropdownMenuSeparator/>
                                         </DropdownMenuContent>
@@ -606,69 +590,6 @@ export default function AdminPage() {
                 <div><Table><TableHeader><TableRow><TableHead>Book Title</TableHead><TableHead>Author</TableHead><TableHead>Reason</TableHead><TableHead>Requested By</TableHead><TableHead>Date</TableHead></TableRow></TableHeader>
                         <TableBody>{bookRequests.map((req) => (<TableRow key={req.id}><TableCell className="font-medium">{req.title}</TableCell><TableCell>{req.author}</TableCell><TableCell className="text-sm text-muted-foreground">{req.reason}</TableCell><TableCell>{req.requestedBy}</TableCell><TableCell>{req.requestedAt ? format(req.requestedAt.toDate(), "PPP") : "N/A"}</TableCell></TableRow>))}</TableBody>
                     </Table>{bookRequests.length === 0 && (<p className="text-center text-muted-foreground py-8">No book requests yet.</p>)}</div>)
-        case "tutors":
-            return (
-                <div>
-                    <h3 className="font-headline text-2xl mb-4">Tutor Applications</h3>
-                    <Table>
-                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Subjects</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-                        <TableBody>
-                            {tutors.map((tutor) => (
-                            <TableRow key={tutor.userId}>
-                                <TableCell className="font-medium flex items-center gap-3">
-                                    <Avatar>
-                                        <AvatarImage src={tutor.tutorProfile?.photoUrl} alt={tutor.fullName} />
-                                        <AvatarFallback>{tutor.fullName.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p>{tutor.fullName}</p>
-                                        <p className="text-xs text-muted-foreground">{tutor.email}</p>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{tutor.tutorProfile?.subjects.join(', ')}</TableCell>
-                                <TableCell>
-                                    <Badge variant={tutor.tutorProfile?.applicationStatus === 'approved' ? 'default' : tutor.tutorProfile?.applicationStatus === 'rejected' ? 'destructive' : 'secondary'}>
-                                        {tutor.tutorProfile?.applicationStatus || 'No Application'}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <AlertDialog>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                {tutor.tutorProfile?.applicationStatus === 'pending' && (
-                                                    <>
-                                                        <DropdownMenuItem onClick={() => handleTutorApproval(tutor.userId, 'approved')}><UserCheck className="mr-2 h-4 w-4"/>Approve</DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleTutorApproval(tutor.userId, 'rejected')}><UserX className="mr-2 h-4 w-4"/>Reject</DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                    </>
-                                                )}
-                                                <AlertDialogTrigger asChild>
-                                                    <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete Tutor</DropdownMenuItem>
-                                                </AlertDialogTrigger>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    This will permanently delete the tutor profile for <strong>{tutor.fullName}</strong>. This action cannot be undone. This does not delete their Firebase Auth account.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => deleteItem('userProfiles', tutor.userId)}>Yes, delete tutor</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </TableCell>
-                            </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {tutors.length === 0 && <p className="text-center text-muted-foreground py-8">No tutors found.</p>}
-                </div>
-            )
         default: return null;
     }
   }
@@ -684,7 +605,6 @@ export default function AdminPage() {
     { view: "books", label: "Books", icon: Book },
     { view: "bookRequests", label: "Book Requests", icon: Lightbulb },
     { view: "students", label: "Students", icon: Users },
-    { view: "tutors", label: "Tutors", icon: UserPlus },
     { view: "users", label: "All Users", icon: UserCog },
     { view: "content", label: "Site Content", icon: Settings },
   ] as const;
@@ -693,10 +613,10 @@ export default function AdminPage() {
     <div className="flex flex-col min-h-screen bg-background">
         <Header />
         <main className="flex-1">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="flex">
                     <SidebarProvider>
-                        <Sidebar variant="floating" collapsible="icon" className="top-20">
+                        <Sidebar variant="floating" collapsible="icon">
                             <SidebarContent>
                                 <SidebarMenu>
                                     {navItems.map(item => (
@@ -715,7 +635,7 @@ export default function AdminPage() {
                             </SidebarContent>
                         </Sidebar>
                         <SidebarInset>
-                             <Card className="flex-1 my-4">
+                             <Card className="flex-1">
                                 <CardHeader className="flex flex-row items-center gap-4">
                                     <SidebarTrigger/>
                                     <div>
@@ -764,3 +684,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+    

@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Loader2, Search, GraduationCap, Book, UserRoundCheck, Calendar, Ban } from "lucide-react";
+import { Loader2, Search, GraduationCap, Book, Calendar, Ban } from "lucide-react";
 import { ProfileEditModal } from "@/components/profile-edit-modal";
 import { ProfileDisplay } from "@/components/profile-display";
 import { isProfileComplete } from "@/lib/utils";
@@ -102,7 +102,7 @@ export default function StudentHubPage() {
                         <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive"><Ban /> Access Denied</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>You are registered as a <span className="font-bold capitalize">{profile?.role || 'visitor'}</span>. This portal is for students only.</p>
+                        <p>This portal is for students only.</p>
                         <Button asChild className="mt-4"><Link href="/">Return to Homepage</Link></Button>
                     </CardContent>
                 </Card>
@@ -165,11 +165,10 @@ export default function StudentHubPage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {[
                     { title: "My Learning", icon: <GraduationCap/>, buttonText: "View My Learning", href: "/courses" },
                     { title: "Browse Books", icon: <Book/>, buttonText: "Browse Catalog", href: "/books" },
-                    { title: "Hire a Tutor", icon: <UserRoundCheck/>, buttonText: "Find a Tutor", href: "/tutors" },
                     { title: "Upcoming Events", icon: <Calendar/>, buttonText: "View Calendar", href: "/events" }
                 ].map((item) => (
                     <Card key={item.title} className="text-center p-6 flex flex-col items-center justify-between shadow-md hover:shadow-xl transition-shadow">
@@ -220,3 +219,5 @@ export default function StudentHubPage() {
     </div>
   );
 }
+
+    

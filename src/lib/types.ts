@@ -15,23 +15,10 @@ export type Course = {
     isStatic?: boolean;
 }
 
-export type TutorProfile = {
-  photoUrl: string;
-  phoneNumber: string;
-  location: string;
-  bio: string;
-  subjects: string[];
-  qualifications: string;
-  applicationStatus: 'pending' | 'approved' | 'rejected';
-  availability: string;
-  sessionInfo: string;
-  terms: string;
-}
-
 export type UserProfile = {
   userId: string;
   email: string;
-  role: 'student' | 'admin' | 'tutor' | 'visitor';
+  role: 'student' | 'admin' | 'visitor';
   fullName: string;
   location: string;
   dateOfBirth: any; 
@@ -44,7 +31,6 @@ export type UserProfile = {
   parentName?: string;
   parentPhoneNumber?: string;
   codingCourseProgress?: { module: number; page: number };
-  tutorProfile?: TutorProfile;
   status?: 'active' | 'suspended';
 };
 
@@ -87,6 +73,5 @@ export type SocialLinks = {
   linkedin?: string;
   instagram?: string;
 }
-    
 
     

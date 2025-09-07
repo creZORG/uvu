@@ -27,9 +27,7 @@ const mainSiteLinks = [
    { id: "nav-about", href: "/about", label: "About" },
   { id: "nav-programs", href: "/programs", label: "Programs" },
   { id: "nav-gallery", href: "/gallery", label: "Gallery" },
-  { id: "nav-tutors", href: "/tutors", label: "Find a Tutor" },
   { id: "nav-student-hub", href: "/student-hub", label: "Student Hub" },
-  { id: "nav-tutor-profile", href: "/tutor", label: "Tutor Portal" },
 ];
 
 
@@ -73,7 +71,6 @@ export function Header() {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild><Link href="/profile">My Profile</Link></DropdownMenuItem>
             {userRole === 'student' && <DropdownMenuItem asChild><Link href="/student-hub">Student Hub</Link></DropdownMenuItem>}
-            {userRole === 'tutor' && <DropdownMenuItem asChild><Link href="/tutor">Tutor Portal</Link></DropdownMenuItem>}
             {userRole === 'admin' && (
                 <DropdownMenuItem asChild><Link href="/admin">Admin Dashboard</Link></DropdownMenuItem>
             )}
@@ -158,3 +155,5 @@ export function Header() {
     </header>
   );
 }
+
+    

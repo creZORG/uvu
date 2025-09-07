@@ -1,306 +1,44 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "@/lib/firebase";
-import { doc, updateDoc, onSnapshot } from "firebase/firestore";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, Clock, AlertTriangle, Ban, CheckCircle, LayoutDashboard, User, Users } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import type { UserProfile, TutorProfile } from "@/lib/types";
-import Link from "next/link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-
-
-const tutorApplicationSchema = z.object({
-  photoUrl: z.string().url({ message: "Please enter a valid URL for your photo." }),
-  phoneNumber: z.string().min(10, "Please enter a valid phone number."),
-  location: z.string().min(3, "Location is required."),
-  bio: z.string().min(50, "Bio must be at least 50 characters long.").max(500, "Bio must be under 500 characters."),
-  subjects: z.string().min(3, "Please list at least one subject."),
-  qualifications: z.string().min(10, "Please describe your qualifications."),
-  availability: z.string().min(10, "Please describe your general availability (e.g., weekdays 5pm-9pm).").max(200),
-  sessionInfo: z.string().min(10, "Describe how sessions are conducted (e.g., online, in-person location).").max(200),
-  terms: z.string().min(10, "State your payment terms clearly (e.g., 'Payment per session via M-Pesa').").max(200),
-});
-
-type TutorApplicationFormValues = z.infer<typeof tutorApplicationSchema>;
-
-const TutorApplicationForm = ({ onSubmit, defaultValues, isSubmitting }: { onSubmit: (data: TutorApplicationFormValues) => void, defaultValues: any, isSubmitting: boolean }) => {
-    const form = useForm<TutorApplicationFormValues>({
-        resolver: zodResolver(tutorApplicationSchema),
-        defaultValues,
-    });
-    
-    useEffect(() => {
-        form.reset(defaultValues);
-    }, [defaultValues, form]);
-
-    return (
-         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField control={form.control} name="photoUrl" render={({ field }) => (
-                    <FormItem><FormLabel>Profile Photo URL</FormLabel><FormControl><Input placeholder="https://example.com/your-photo.jpg" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="phoneNumber" render={({ field }) => (
-                    <FormItem><FormLabel>Contact Phone Number</FormLabel><FormControl><Input placeholder="e.g., 0712345678" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="location" render={({ field }) => (
-                    <FormItem><FormLabel>Your Location</FormLabel><FormControl><Input placeholder="e.g., Nakuru, Kenya" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="subjects" render={({ field }) => (
-                    <FormItem><FormLabel>Subjects You Teach (comma-separated)</FormLabel><FormControl><Input placeholder="e.g., Mathematics, Python, Web Design" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="bio" render={({ field }) => (
-                    <FormItem><FormLabel>Your Bio</FormLabel><FormControl><Textarea placeholder="Tell students about yourself, your teaching style, and your experience..." className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="qualifications" render={({ field }) => (
-                    <FormItem><FormLabel>Your Qualifications</FormLabel><FormControl><Textarea placeholder="List your degrees, certifications, and relevant experience." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="availability" render={({ field }) => (
-                    <FormItem><FormLabel>Availability</FormLabel><FormControl><Textarea placeholder="Describe your general availability, e.g., 'Weekdays 5 PM - 9 PM, weekends 10 AM - 6 PM'." {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                 <FormField control={form.control} name="sessionInfo" render={({ field }) => (
-                    <FormItem><FormLabel>Session Details</FormLabel><FormControl><Textarea placeholder="How are your sessions conducted? e.g., 'Online via Google Meet, or in-person at the Nakuru public library'." {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                 <FormField control={form.control} name="terms" render={({ field }) => (
-                    <FormItem><FormLabel>Terms</FormLabel><FormControl><Textarea placeholder="What are your payment terms? e.g., 'KES 1000 per hour, payment required at the start of each session via M-Pesa'." {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="animate-spin mr-2" />}
-                    {defaultValues?.bio ? "Update Profile" : "Submit Application"}
-                </Button>
-            </form>
-        </Form>
-    );
-};
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Ban } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function TutorPage() {
-  const [user, loading] = useAuthState(auth);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      router.push("/auth");
-      return;
-    }
-
-    const profileRef = doc(db, "userProfiles", user.uid);
-    const unsubscribe = onSnapshot(profileRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = { userId: docSnap.id, ...docSnap.data() } as UserProfile;
-        setProfile(data);
-        if (data.role === 'tutor' || data.role === 'admin') {
-            setIsAuthorized(true);
-        } else {
-            setIsAuthorized(false);
-        }
-      } else {
-        setIsAuthorized(false);
-      }
-      setIsLoadingProfile(false);
-    });
-
-    return () => unsubscribe();
-  }, [user, loading, router]);
-
-  const onSubmit = async (data: TutorApplicationFormValues) => {
-    if (!user) return;
-    setIsSubmitting(true);
-    try {
-      const isUpdate = !!profile?.tutorProfile;
-      const tutorProfileData: TutorProfile = {
-          ...data,
-          subjects: data.subjects.split(',').map(s => s.trim()),
-          applicationStatus: profile?.tutorProfile?.applicationStatus === 'rejected' ? 'pending' : (profile?.tutorProfile?.applicationStatus || 'pending')
-      };
-
-      const userProfileRef = doc(db, "userProfiles", user.uid);
-      await updateDoc(userProfileRef, {
-          tutorProfile: tutorProfileData,
-          // Also update main user profile fields if they've changed
-          phoneNumber: data.phoneNumber,
-          location: data.location,
-      });
-
-      toast({
-        title: isUpdate ? "Profile Updated!" : "Application Submitted!",
-        description: isUpdate ? "Your profile has been successfully updated." : "Your application is under review. We will notify you once it's processed.",
-      });
-    } catch (error) {
-      console.error("Error submitting application: ", error);
-      toast({ variant: "destructive", title: "Submission Failed", description: "There was a problem submitting your application." });
-    } finally {
-        setIsSubmitting(false);
-    }
-  };
-  
-  const getStatusBadge = (status: string | undefined) => {
-      switch(status) {
-          case 'approved': return <Badge variant="default" className="text-base"><CheckCircle className="mr-2"/>Approved</Badge>;
-          case 'pending': return <Badge variant="secondary" className="text-base"><Clock className="mr-2"/>Pending Review</Badge>;
-          case 'rejected': return <Badge variant="destructive" className="text-base"><AlertTriangle className="mr-2"/>Rejected</Badge>;
-          default: return <Badge variant="outline" className="text-base">Not Submitted</Badge>;
-      }
-  }
-
-  const renderContent = () => {
-    if (isLoadingProfile) {
-      return (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      );
-    }
-    
-    if (!isAuthorized) {
-         return (
-             <Card className="w-full max-w-md text-center border-destructive mx-auto">
-                 <CardHeader>
-                     <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive"><Ban /> Access Denied</CardTitle>
-                 </CardHeader>
-                 <CardContent>
-                     <p>You are registered as a <span className="font-bold capitalize">{profile?.role || 'visitor'}</span>. This portal is for tutors only.</p>
-                     <Button asChild className="mt-4"><Link href="/">Return to Homepage</Link></Button>
-                 </CardContent>
-             </Card>
-         );
-    }
-    
-    const applicationStatus = profile?.tutorProfile?.applicationStatus;
-    
-    if (!profile?.tutorProfile) {
-         return (
-            <Card className="max-w-2xl mx-auto">
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Become a Tutor</CardTitle>
-                    <CardDescription>Complete the form below to apply. Your profile will be reviewed by an administrator before being publicly listed.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <TutorApplicationForm 
-                        onSubmit={onSubmit}
-                        isSubmitting={isSubmitting}
-                        defaultValues={{
-                            photoUrl: "",
-                            phoneNumber: profile?.phoneNumber || "",
-                            location: profile?.location || "",
-                            bio: "",
-                            subjects: "",
-                            qualifications: "",
-                            availability: "",
-                            sessionInfo: "",
-                            terms: "",
-                        }}
-                    />
-                </CardContent>
-            </Card>
-        );
-    }
-
-
-    return (
-        <Tabs defaultValue="dashboard" className="max-w-4xl mx-auto">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="dashboard"><LayoutDashboard className="mr-2"/>Dashboard</TabsTrigger>
-                <TabsTrigger value="profile"><User className="mr-2"/>My Profile</TabsTrigger>
-                <TabsTrigger value="students"><Users className="mr-2"/>My Students</TabsTrigger>
-            </TabsList>
-            <TabsContent value="dashboard">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Tutor Dashboard</CardTitle>
-                         <CardDescription>Welcome back, {profile.fullName}. Here's a summary of your tutor account.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <div className="flex flex-wrap items-center gap-4">
-                           <h3 className="text-lg font-semibold">Application Status:</h3>
-                           {getStatusBadge(applicationStatus)}
-                       </div>
-                       {applicationStatus === 'rejected' && (
-                           <div className="p-4 rounded-md bg-destructive/10 text-destructive-foreground">
-                               <p>We regret to inform you that your application was not approved at this time. Please review your profile for completeness and accuracy, then resubmit it from the 'My Profile' tab. If you have questions, please contact administration.</p>
-                           </div>
-                       )}
-                        {applicationStatus === 'approved' && (
-                           <div className="p-4 rounded-md bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200">
-                               <p>Congratulations! Your profile is approved and live on the <Link href="/tutors" className="underline font-bold">tutors page</Link>. You can update your information anytime under the 'My Profile' tab.</p>
-                           </div>
-                       )}
-                    </CardContent>
-                </Card>
-            </TabsContent>
-            <TabsContent value="profile">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Manage Your Tutor Profile</CardTitle>
-                        <CardDescription>Keep your public profile up-to-date to attract students. Your changes will be live immediately after saving.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <TutorApplicationForm 
-                            onSubmit={onSubmit}
-                            isSubmitting={isSubmitting}
-                            defaultValues={{
-                                ...profile?.tutorProfile,
-                                subjects: profile?.tutorProfile?.subjects.join(', ') || '',
-                            }}
-                        />
-                    </CardContent>
-                </Card>
-            </TabsContent>
-            <TabsContent value="students">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">My Students</CardTitle>
-                        <CardDescription>Manage your student bookings and communication.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center py-12">
-                        <p className="text-muted-foreground">This feature is coming soon!</p>
-                        <p className="text-muted-foreground">You'll be able to view your student list, manage sessions, and communicate directly through the portal.</p>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-        </Tabs>
-    );
-  }
+    // Redirect users away from this page as the feature is removed.
+    router.replace('/');
+  }, [router]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-1">
-        <section className="py-16 md:py-24">
-          <div className="container px-4 md:px-6">
-            <div className="text-center mb-12">
-              <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                Tutor Portal
-              </h1>
-              <p className="max-w-3xl mx-auto text-muted-foreground mt-4 text-lg">
-                Manage your profile, availability, and student sessions.
-              </p>
-            </div>
-            {renderContent()}
-          </div>
-        </section>
+      <main className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center border-destructive">
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2 text-destructive">
+              <Ban /> Feature Not Available
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>The tutor portal is no longer available.</p>
+            <Button asChild className="mt-4">
+              <Link href="/">Return to Homepage</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </main>
       <Footer />
     </div>
   );
 }
+
+    

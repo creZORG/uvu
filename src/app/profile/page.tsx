@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Loader2, User, UserCheck, UserPlus, LogIn, ArrowRight } from "lucide-react";
+import { Loader2, User, UserPlus, LogIn, ArrowRight } from "lucide-react";
 import type { UserProfile } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,10 +58,11 @@ export default function ProfilePage() {
 
   const roleActions = {
       student: { label: "Go to Student Hub", href: "/student-hub", icon: <User /> },
-      tutor: { label: "Go to Tutor Portal", href: "/tutor", icon: <UserCheck /> },
       admin: { label: "Go to Admin Dashboard", href: "/admin", icon: <UserPlus /> },
       visitor: { label: "Explore Our Courses", href: "/courses", icon: <ArrowRight /> },
   }
+
+  const currentRole = profile?.role || 'visitor';
 
   return (
     <div className="flex flex-col min-h-screen bg-primary/5">
@@ -86,9 +87,9 @@ export default function ProfilePage() {
                                 <Badge className="text-lg capitalize mt-2">{profile.role}</Badge>
                             </div>
                             <Button asChild size="lg">
-                                <Link href={roleActions[profile.role]?.href || '/'}>
-                                    {roleActions[profile.role]?.icon}
-                                    {roleActions[profile.role]?.label}
+                                <Link href={roleActions[currentRole as keyof typeof roleActions]?.href || '/'}>
+                                    {roleActions[currentRole as keyof typeof roleActions]?.icon}
+                                    {roleActions[currentRole as keyof typeof roleActions]?.label}
                                 </Link>
                             </Button>
                         </div>
@@ -111,3 +112,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
